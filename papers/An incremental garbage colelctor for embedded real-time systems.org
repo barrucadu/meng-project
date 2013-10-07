@@ -1,0 +1,25 @@
+* An incremental garbage collector for embedded real-time systems
+- Authors :: Malcome Wallace and Colin Runciman
+- Year    :: 1993
+
+Embedded real-time systems often have a single processor and small memory. This combination runs contrary to frequent architectural assumptions in the context of functional programming — parallel processing and/or large memory. The dichotomy is especially a problem when it comes to memory management, for an incremental garbage collection scheme is needed to achieve real-time, but present algorithms require either an extra processor or additional memory — the very thing an embedded system cannot afford. We present an incremental garbage collector of the mark-sweep type, which minimises structural overhead without sacrificing performance. It uses a very small stack for marking the live heap, with 'safety bits' to ensure that stack overflow does not hinder collection. We report on how the algorithm performs and discuss its correctness.
+
+** Summary
+Reviews two other garbage collection algorithms, Mark-During-Sweep and Stack Collect, and then presents an algorithm combining the time and space properties of each: producing a Mark-Sweep collector operating in an incremental fashion with little space overhead, and so possibly suitable for real-time embedded systems. The mutator must be modified slightly in order to track destructive alterations, but other than this, there is no mutator overhead. An informal argument of correctness is given, with discussion of how this could be expanded into a formal proof. Finally, the algorithm is evaluated using the Gofer interpreter running on an embedded real-time system.
+
+** Relevance to Project
+A new garbage collection algorithm is presented with an argument that it is correct. Whilst a long way from a proof, this is probably the sort of thinking that a proof would be derived from.
+
+** References
+- Abdullahi et al. 92 :: Collection schemes for distributed garbage
+- Appel et al. 88 :: Real-time concurrent garbage collection on stock multiprocessors
+- Baker 78 :: List processing in real-time on a serial computer
+- Baker 92 :: The treadmill: real-time garbage collection without motion sickness
+- Ben-Ari 84 :: Algorithms for on-the-fly garbage collection
+- Brooks 84 :: Trading data space for reduced time and code space in real-time garbage collection on stock hardware
+- Jones 91 :: Gofer functional programming environment version 2.21
+- Lieberman & Hewitt 83 :: A real-time garbage collector based on the life-times of objects
+- McCarthy 60 :: Recursive functions of symbolic expressions and their computation by machine
+- Quiennec et al. 89 :: Mark DURING sweep rather than mark THEN sweep
+- Wilson 92 :: Uniprocessor garbage collection techniques
+- Yuasa 90 :: Real-time garbage collection on general-purpose machines
