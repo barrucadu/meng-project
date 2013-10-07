@@ -1,0 +1,36 @@
+A Verified Memory Management System for Dynamic Languages
+=========================================================
+
+Dynamic programming languages abstract away much (or all) of the need
+for manual memory management, handling it all for the programmer via a
+runtime support system. However, these systems typically have no
+formal verification and rely on developer testing and user-submitted
+bug reports. Furthermore, different garbage collection systems can
+have very different time and space requirements[1], and so what is
+suitable for one situation may not be suitable for another.
+
+In this project, the literature will be studied to formalise the
+requirements of a simple memory management system for such a language,
+with the assumption that it is executing on a typical desktop
+computer. A system meeting these requirements will then be implemented
+and proven correct with respect to the specification.
+
+Goals
+-----
+
+ - Study the literature to determine the properties of an ideal memory
+   manager.
+ 
+ - Implement a simple system.
+ 
+ - Prove the system correct with respect to the given ideal
+   properties.
+ 
+ - Discuss briefly how else the system could have been implemented,
+   and where each alternative would be perhaps more appropriate.
+
+References
+----------
+
+[1] Comparison of Compacting Algorithms for Garbage Collection,
+    J. Cohen and A. Nicolau, Brandeis University, 1983
