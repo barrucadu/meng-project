@@ -1,0 +1,21 @@
+* A LISP Garbage Collector for Virtual-Memory Computer Systems
+- Authors :: Robert R. Fenichel and Jerome C. Yochelson
+- Year    :: 1969
+- Source  :: Communications of the ACM
+
+In this paper, a garbage-collection algorithm for list-processing systems which operate within very large virtual memories is described. The object of the algorithm is more the compaction of active storage than the discovery of free storage. Because free storage is never really exhausted, the decision to garbage collect is not easily made; therefore, various criteria of this decision are discussed.
+
+** Summary
+A very optimistic paper inspired by the early virtual-memory systems, which seemed to offer a nearly limitless supply of memory. The authors posit that garbage collection is never *necessary* in a system with billions of potential LISP cells, only increasingly desirable. Clearly, we now know this to be false, but at the time this assumption would have seemed perfectly reasonable. Thus, they describe a semispace-copying collector, as they are motivated by the need to compact memory usage in order to improve performance.
+
+** Relevance to Project
+One of the early papers on copying collectors (perhaps the first? not sure), and as such it introduces a novel (for the time) new algorithm, with a completely new approach to garbage collection.
+
+** References
+- McCarthy 60 :: Recursive functions of symbolic expressions and their computation by machine
+- Corbató & Vyssotsky 65 :: Introduction and overview of the MULTICS system
+- Comfort 65 :: A computing system design for user service
+- Bobrow 67 :: Structure of a LISP system using two-level storage
+- Edwards 64 :: Secondary storage in LISP
+- Knuth 68 :: The Art of Computer Programming, I
+- Yochelson 67 :: Multics LISP
