@@ -1,0 +1,32 @@
+* Address/Memory Management For A Gigantic LISP Environment or, GC Considered Harmful
+- Authors :: Jon L. White
+- Year    :: 1980
+
+The possibility of incredibly cheap, fantastically large media for storage gives rise to a realistic LISP memory management scheme under which GC may be postponed for days, or even indefinitely; the idea is encapsulated in the acronym "DDI" — "GC? Don't Do It!". Tertiary memory is used to archive pages of the LISP environment which are perhaps reclaimable, but which have not been proven so; whereas the standard technique of "paging" is used to swap active data from the main memory to a secondary store such as a magnetic disk. Some scenarios are presented considering a variety of currently-available technologies, and of one speculative possibility — videodisk — by which a requisite compactifying GC would be done "overnight", or over the weekend. With enough tertiary available, one design could last for over 12 years without a GC. "Write-once" memories, probably unusable for most applications, would not be at a disadvantage here.
+
+** Summary
+Another very optimistic paper (now humorously so) which proposes that in "gigantic" LISP systems (which as much memory as 1 million LISP cells in primary memory, 100 to 300MB of secondary memory, and then a tertiary write-once memory of magnetic tape or videodisk), garbage collection can be almost entirely replaced by paging, sending very rarely accessed pages to tertiary storage, and compacting every so often. The author proposes that garbage collecting once a year may be enough to keep such a system running.
+
+** Relevance to Project
+Another very early paper on compacting collectors, which also addresses how necessary garbage collection is in systems with "large" amounts of memory.
+
+** References
+- Baker 78 :: List Processing in Real Time on a Serial Computer
+- Bishop 77 :: Garbage Collection in a Very Large Address Space
+- Bobrow & Clark 79 :: Compact Encodings of List Structure
+- Clark & Green 77 :: An Empirical Study of List Structure in LISP
+- Deutsch 78 :: Experience With A Microprogrammed Interlisp System
+- Doyle 79 :: A Truth Maintenance System
+- Edwards 63 :: Secondary Storage in LISP
+- [[file:A%20LISP%20Garbage-Collector%20for%20Virtual-Memory%20Computer%20Systems.org][Fenichel & Yochelson 69 :: A LISP Garbage Collector for Virtual-Memory Computer Systems]]
+- Greenblatt 74 :: The LISP Machine
+- Greenblatt et al. 77 :: LISP Machine Progress Report
+- Ingalls 78 :: The SMALLTALK Programming System Design and Implementation
+- Lieberman & Hewitt 80 :: A Real Time Garbage Collector That Can Recover Temporary Storage Quickly
+- Marti, Hearne, Griss & Griss 78 :: Standard LISP Report
+- McWilliams, Widdoes & Wood 77 :: The S-1 Project
+- Minsky 63 :: A LISP Garbage Collector Using Serial Secondary Storage
+- Nadan 78 :: Optical Information Storage and Retrieval Systems
+- Steele 77 :: Data Representations in PDP-10 Maclisp
+- White 79 :: NIL — A Perspective
+- White 78 :: LISP/370: A Short Technical Description of the Implementation
