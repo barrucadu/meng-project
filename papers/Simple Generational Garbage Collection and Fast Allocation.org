@@ -20,7 +20,7 @@ A very simple, yet performant, generational scheme which may be fun to verify.
 ** References
 - McCarthy 60 :: Recursive functions of symbolic expressions and their computation by machine - I
 - [[file:A%20LISP%20Garbage-Collector%20for%20Virtual-Memory%20Computer%20Systems.org][Fenichel & Yochelson 69 :: A LISP garbage-collector for virtual-memory computer systems]]
-- Appel 87 :: Garbage collection can be faster than stack allocation
+- [[file:Garbage%20Collection%20Can%20Be%20Faster%20Than%20Stack%20Allocation.org][Appel 87 :: Garbage collection can be faster than stack allocation]]
 - Lieberman & Hewitt 83 :: A real-time garbage collector based on the lifetimes of objects
 - [[file:Generation%20Scavenging:%20A%20Non-disruptive%20High%20Performance%20Storage%20Reclamation%20Algorithm.org][Ungar 84 :: Generation scavenging: a non-disruptive high performance storage reclamation algorithm]]
 - Moon 84 :: Garbage collection in a large LISP system
