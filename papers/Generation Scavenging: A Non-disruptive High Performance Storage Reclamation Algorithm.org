@@ -1,0 +1,50 @@
+* Generation Scavenging: A Non-disruptive High Performance Storage Reclamation Algorithm
+- Authors :: David Ungar
+- Year    :: 1984
+- Source  :: SIGSOFT / SIGPLAN 1
+
+Many interactive computing environments provide automatic storage reclamation and virtual memory to ease the burden of managing storage. Unfortunately, many storage reclamation algorithms impede interaction with distracting pauses. Generation Scavenging is a reclamation algorithm that has no noticeable pauses, eliminates page faults for transient objects, compacts objects without resorting to indirection, and reclaims circular structures, in one third the time of traditional approaches.
+
+We have incorporated Generation Scavenging in Berkely Smalltalk (BS), our Smalltalk 80 implementation, and instrumented it to obtain performance data. We are also designing a microprocessor with hardware support for Generation Scavenging.
+
+** Summary
+Introduces generational garbage collection, dividing the memory up into three regions (one for new allocations, two for old objects), with only one of the old regions active at a time. During a "scavenge", all live objects in the old and new regions are copied to the second old region, and the roles of the two old regions are then swapped and the new region cleared. Old to new pointers are stored in a "remembered set". The paper starts by discussing the flaws of reference counting and mark-sweep collection, and then makes use of the fact that objects tend to die young to propose generational collection. The system appears similar to a semispace copying collector, but allows for greater heap usage by dividing memory into three regions, rather than two.
+
+** Relevance to Project
+One of the very first papers on generational garbage collection.
+
+** References
+- Baden 82 :: High Performance Storage Reclamation in an Object-Based Memory System
+- Baker 77 :: List Processing in Real Time on a Serial Computer
+- Ballard & Shirron 83 :: The Design and Implementation of VAX/Smalltalk-80
+- Becker & Fagen 74 :: Throw Back the Little Ones
+- Blau 83 :: Paging on an Object-Oriented Personal Computer
+- Blomseth & Davis 83 :: The Orion Project — A Home for SOAR
+- Cohen 81 :: Garbage Collection of Linked Data Structures
+- Collins 60 :: A Method for Overlapping and Erasure of Lists
+- Denning 70 :: Virtual Memory
+- [[file:An%20Efficient,%20Incremental,%20Automatic%20Garbage%20Collector.org][Deutsch & Bobrow 76 :: An Efficient Incremental Automatic Garbage Collector]]
+- Deutsch 82 :: An Upper Bound for Smalltalk-80 Execution on a Motorola 68000
+- Deutsch 82 :: Storage Reclamation
+- Deutsch 83 :: Storage Management
+- Deutsch & Schiffman 84 :: Efficient Implementation of the Smalltalk-80 System
+- Fateman 83 :: Garbage Collection Overhead
+- Foderaro & Fateman :: Characterization of VAX Macsyma
+- Goldberg & Robson 83 :: Smalltalk-80: The Language and Its Implementation
+- Ingalls 83 :: The Evolution of the Smalltalk Virtual Machine
+- Kaehler & Krasner :: LOOM—Large Object-Oriented Memory for Smalltalk-80 Systems
+- Kilburn, Edwards, Lanigan & Sumner 82 :: One-Level Storage System
+- Klein & Foley 83 :: Preliminary SOAR Architecture
+- Knuth 73 :: The Art of Computer Programming
+- Lieberman & Hewitt 83 :: A Real-Time Garbage Collector Based on the Lifetimes of Objects
+- Lonergan & King 82 :: Design of the B 5500 System
+- McCall 83 :: The Smalltalk-80 Benchmarks
+- McCarthy 60 :: Recursive Functions of Symbolic Expressions and Their Computation by Machine
+- Patterson 83 :: Smalltalk on a RISC: Architectural Investigations
+- Sheil 83 :: Environments for Exploratory Programming
+- Stamos 82 :: A Large Object-Oriented Virtual Memory: Grouping Strategies, Measurements, and Performance
+- Standish 80 :: Data Structure Techniques
+- Thadhani 81 :: Interactive User Productivity
+- Ungar & Patterson 83 :: Berkeley Smalltalk: Who Knows Where The Time Goes?
+- Ungar, Blau, Foley, Samples & Patterson 84 :: Architecture of SOAR: Smalltalk on a RISC
+- [[file:Address%E2%80%93Memory%20Management%20For%20A%20Gigantic%20LISP%20Environment%20or,%20GC%20Considered%20Harmful.org][White 80 :: Address/Memory Management For A Gigantic LISP Environment or, GC Considered Harmful]]
