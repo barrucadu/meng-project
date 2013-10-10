@@ -1,0 +1,23 @@
+* An Efficient, Incremental, Automatic Garbage Collector
+- Authors :: Peter Deutsch and Daniel Bobrow
+- Year    :: 1976
+- Source  :: Communications of the ACM
+
+This paper describes a new way of solving the storage reclamation problem for a system such as Lisp that allocates storage automatically from a heap, and does not require the programmer to give any indication that particular items are no longer useful or accessible. A reference count scheme for reclaiming non-self-referential structures, and a linearizing, compacting, copying scheme to reorganize all storage at the users discretion are proposed. The algorithms are designed to work well in systems which use multiple levels of storage, and large virtual address space. They depend on the fact that most cells are referenced exactly once, and that reference counts need only be accurate when storage is about to be reclaimed. A transaction file stores changes to reference counts, and a multiple reference table stores the count for items which are referenced more than once.
+
+** Summary
+Proposes a new hybrid reference counting / copying collector hybrid for Lisp systems. There are two tables in memory, a "Zero-Count Table" which contains a list of all cells with zero references, and a "Multi Reference Table", which contains a list of all cells with more than one reference (and the number of references). This is derived from the observation that most cells only have one reference. Then, pointer-affecting operations are stored in a sequential transaction file, which is periodically processed to update the tables. A copying collector is used for compacting memory and reclaiming cyclic data structures.
+
+This is novel as reference counting systems typically require per-cell overhead, which can amount to a lot of wasted space if most cells are small (as is the case with Lisp cons cells), whereas this system avoids the issue entirely by making use of empirically-observed properties of the data. The worst case is still the same, storing a reference count for every cell, but the average case is must improved.
+
+** Relevance to Project
+Proposes a new, but fairly simple, algorithm. Verifying the reference counting part of it may be a good exercise (and possible inclusion into the project) once partial correctness has been formalised.
+
+** References
+- Bobrow 68 :: Storage management in LISP
+- Bobrow 75 :: A note on hash linking
+- Bobrow & Murphy 67 :: Structure of a LISP system using two-level storage
+- Clark & Green 77 :: An empirical study of list structure in LISP
+- [[file:A%20LISP%20Garbage-Collector%20for%20Virtual-Memory%20Computer%20Systems.org][Fenichel & Yochelson 69 :: A LISP Garbage-Collector for Virtual-Memory Computer Systems]]
+- Minsky 63 :: A LISP garbage collector algorithm using secondary serial storage
+- Van der Poel 74 :: A manual of HISP for the PDP-9
