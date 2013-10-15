@@ -1,0 +1,23 @@
+* Introduction
+As systems become more complicated, we have a greater need for
+higher-level languages which abstract away from much of the underlying
+machine. A key part of such a language is a run-time memory management
+system, and in particular the automatic disposal of unneeded allocated
+memory: that is, garbage collection.
+
+** Motivation
+Garbage collection is an important part of many modern programming
+languages, however there is an implicit assumption that it never goes
+wrong. It would not be feasible for the programmer to account for all
+the ways in which the run-time support system may fail, and doing so
+would remove the benefit of using a higher level language in the first
+place. But these systems are not perfect, they are written by humans,
+and tested by humans, with formal verification being very uncommon.
+
+The aim of this project is to design and prove correct a garbage
+collection algorithm, to then implement it in (unverified) Java, and
+to benchmark how it performs in a full JVM. Whilst the implementation
+will not be verified, this would not be impossible.
+
+** Outline
+To be filled in when I actually know wtf I'm talking about.
