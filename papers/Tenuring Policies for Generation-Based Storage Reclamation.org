@@ -1,0 +1,31 @@
+* Tenuring Policies for Generation-Based Storage Reclamation
+- Authors :: David Ungar and Frank Jackson
+- Year    :: 1988
+- Source  :: OOPSLA
+
+One of the most promising automatic storage reclamation techniques, generation-based storage reclamation, suffers poor performance if many objects live for a fairly long time and then die. We have investigated the severity of this problem by simulating generation Scavenging automatic storage reclamation from traces of actual four-hour sessions. There was a wide variation in the sample runs, with garbage-collection overhead ranging from insignificant, during the interactive runs, to severe, during a single non-interactive run. All runs demonstrated that performance could be improved with two techniques: segregating large bitmaps and strings, and mediating tenuring with demographic feedback. These two improvements deserve consideration for any generation-based storage reclamation strategy.
+
+** Summary
+Differentiates objects into four types: transient (born and die within the lifetime of the system), permanent (born before and die after the lifetime of the system), departure (born before but die within the lifetime of the system), and arrival (born within but die after the lifetime of the system), and then measures object birth and death data from actual use of the system over four-hour periods. The data is then fed into a generational garbage collection simulator, and its performance evaluated. It is found that by moving the content of large objects to a special large-object area (but keeping headers and pointers in the normal region of memory) increases performance, as does delaying tenuring based on how likely the *next* collection is to introduce an unacceptably long delay.
+
+** Relevance to Project
+Not directly relevant (unless I go with implementing a generational collector), but further develops the ideas behind generational collection, and so is a historical insight.
+
+** References
+- Baker 77 :: List Processing in Real Time on a Serial Computer
+- Collins 60 :: A Method for Overlapping and Erasure of Lists
+- Brownbridge 84 :: Recursive Structures in Computer Science
+- Caudill 86 :: A Third Generation Smalltalk-80 Implementation
+- [[file:An%20Efficient,%20Incremental,%20Automatic%20Garbage%20Collector.org][Deutsch & Bobrow 76 :: An Efficient Incremental Automatic Garbage Collector]]
+- Deutsch & Shiffman 84 :: Efficient Implementation of the Smalltalk-80 System
+- Foderaro & Fateman :: Characterization of VAX Macsyma
+- Goldberg & Robson 83 :: Smalltalk-80 The Language and its Implementation
+- Kaehler & Krasner 83 :: LOOM — Large Object-Oriented Memory for Smalltalk-80 Systems
+- Lieberman & Hewitt 83 :: A Real-Time Garbage Collection Based on the Lifetimes of Objects
+- McCarthy 60 :: Recursive Functions of Symbolic Expressions and Their Computation by Machine, I
+- Moon 85 :: Architecture of the Symbolics 6500
+- Stamos 82 :: A Large Object-Oriented Virtual Memory: Grouping, Measurements, and Performance
+- Stamos 84 :: Static Grouping of Small Objects to Enhance Performance of a Paged Virtual Memory
+- Standish 80 :: Data Structure Techniques
+- [[file:Generation%20Scavenging:%20A%20Non-disruptive%20High%20Performance%20Storage%20Reclamation%20Algorithm.org][Ungar 84 :: Generation Scavenging: A Non-Disruptive High Performance Storage Reclamation Algorithm]]
+- Ungar 86 :: The Design and Evaluation of a High Performance Smalltalk System
