@@ -1,0 +1,30 @@
+* One Pass Real-Time Generational Mark-Sweep Garbage Collection
+- Authors :: Joe Armstrong and Robert Virding
+- Year    :: 1995
+- Source  :: International Workshop on Memory Management
+
+Traditional mark-sweep garbage collection algorithms do not allow reclamation of data until the mark phase of the algorithm has terminated.
+
+For the class of languages in which destructive operations are not allowed we can arrange that all pointers in the heap always point backwards towards "older" data. In this paper we present a simple scheme for reclaiming data for such language classes with a single pass mark-sweep collector.
+
+We also show how the simple scheme can be modified so that the collection can be done in an incremental manner (making it suitable for real-time collection). Following this we show how the collector can be modified for generational garbage collection, and finally how the scheme can be used for a language with concurrent processes.
+
+** Summary
+Tailors the standard mark-sweep algorithm for the case of languages with truly immutable data, thus allowing the two to be combined into one linear sweep of the heap. Each cell contains a pointer to the previously allocated cell, forming a linked "history list" through memory. The heap is then scanned along the list, with pointers followed and marked. If a cell is visited which is not marked, it is removed, as pointers can only point backwards and so it must be garbage. The algorithm can function incrementally by only scanning a small part of the list at a time, and generationally by stopping once cells of a certain age are reached (until a major collection is necessary).
+
+** Relevance to Project
+Very simple and elegant algorithm, and should not be too difficult to prove correct.
+
+** References
+- Armstrong, Virding & Williams 93 :: Concurrent Programming in ERLANG
+- Augustsson 84 :: A compiler for lazy ML
+- Baker 77 :: List processing in real time on a serial computer
+- Fischer 74 :: Bounded workspace garbage collection in an address-order preserving list processing environment
+- Johnsson 84 :: Efficient compilation of lazy evaluation
+- Lieberman & Hewitt 83 :: A real-time garbage collector based on the lifetimes of objects
+- Schorr & Waite 67 :: An efficient machine-independent procedure for garbage collection in various list structures
+- Steele 77 :: Data representation in PDP-10 MACLISP
+- Terashima & Goto 78 :: Genetic order and compactifying garbage collectors
+- [[file:Tenuring%20Policies%20for%20Generation-Based%20Storage%20Reclamation.org][Ungar & Jackson 88 :: Tenuring policies for generation-based storage reclamation]]
+- Virding 95 :: A garbage collector for the real-time concurrent language Erlang
+- Wilson 92 :: Uniprocessor garbage collection techniques
