@@ -1,0 +1,116 @@
+\documentclass[10pt,a4paper,twoside,openright]{report}
+
+% Nicer fonts
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% Short verbatim "between these"
+\usepackage{shortvrb}
+\MakeShortVerb{"}
+
+% Graphics support
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.eps}{pdf}{.pdf}{`epstopdf #1}
+
+% Hyperlinks, URLs etc.
+\usepackage{hyperref}
+\usepackage{url}
+\hypersetup{
+    colorlinks=true,
+    citecolor=black,
+    urlcolor=black,
+    linkcolor=black,
+    pagecolor=black,
+    anchorcolor=black
+}
+
+% Advanced maths features
+\usepackage{amsmath}
+% Conditional macros
+\usepackage{xifthen}
+
+% Drawings
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+% Red underlined TODO messages!
+\usepackage[normalem]{ulem}
+\newcommand{\todo}[1]{{\color{red}{\uline{#1}}}}
+% [citation needed]
+\newcommand{\cn}{{\color{red}$^{\text{[citation needed]}}$}}
+
+\title{%
+{\normalsize\scshape University of York}\\
+\vspace{2em}
+\hrule
+\vspace{1em}
+{\huge\bfseries A Verified Memory Management System for Dynamic Languages}\\
+\vspace{1em}
+\hrule
+\vfill%
+{\normalsize Number of words: TODO as counted by "detex | wc -w",\\
+excluding code listings and appendices.}
+}
+
+\author{%
+Author: Michael Walker\\
+Supervisor: Colin Runciman
+}
+
+\date{}
+
+\begin{document}
+
+\pagestyle{empty}
+
+\maketitle
+
+\cleardoublepage
+\begin{abstract}
+Programming languages with managed runtimes abstract away from much,
+sometimes even all, of the need for manual memory management. Whilst
+a lot of work has gone into how to make these critical systems
+performant, there has not been so much work on formal verification,
+and developers often rely on traditional testing and bug
+reporting. This is far from ideal, as source-level verification of
+software is pointless if the runtime may have arbitrary bugs lurking
+within.
+
+In this project, I propose a formalism of partial correctness for
+garbage collection, and then show how some common algorithms are
+correct under this formalism. Finally, I propose a new garbage
+collection algorithm based on a review of the literature, prove that
+it is correct, and then measure the performance of a (non-verified)
+Java implementation in Jikes RVM.  \vfill
+
+\paragraph{Statement of Ethics}
+
+This project concerns only the development and implementation of
+algorithms. No human participation is involved at any point and as
+such there are no specific ethical implications.
+\end{abstract}
+
+
+% Table of contents, roman numeral page numbers
+\cleardoublepage
+\pagestyle{plain}
+\pagenumbering{roman}
+\setcounter{page}{1}
+\tableofcontents
+
+%\listoffigures
+%\listoftables
+%\lstlistoflistings
+
+% Reset page numbering for content
+\newpage
+\cleardoublepage
+\pagenumbering{arabic}
+
+\include{01-introduction}
+
+\bibliographystyle{IEEEtran.bst}
+\bibliography{references}
+
+\end{document}
