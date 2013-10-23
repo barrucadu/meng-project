@@ -83,7 +83,17 @@ marked.
 
 \subsubsection{Copying}
 
-\todo{What it is, when it was introduced, flaws, benefits}
+Copying collectors divide the heap into two \textit{semispaces}, where
+allocation is only done in one of them at a time. In garbage
+collection, all live block are copied to the other semispace, and the
+roles of the semispaces are swapped\cite{Fenichel69}. Unlike
+mark-sweep collectors, the pause time of a copying collector is
+proportional only to the number of live blocks in the heap, rather
+than the size of the entire heap.
+
+Copying collectors have become fairly popular due to the low cost of
+allocation and reduction of fragmentation, however it has a cost of a
+half of the heap space\cite{GarbageCollection}.
 
 \subsubsection{Mark-Compact}
 
