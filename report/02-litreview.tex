@@ -126,8 +126,25 @@ which allocation occurs) and copying collector.
 
 \subsubsection{Generational Collectors}
 
-\todo{What it is, when it was introduced, flaws, benefits,
-  generational hypotheses}
+Generational garbage collection is a type of hybrid collector: the
+heap is divided into a number of \textit{generations}, where each
+generation holds progressively older blocks. This is based on
+empirical observations of block lifetimes resulting in the
+generational hypothesis: young objects die quickly, whereas old
+objects stick around\cite{Ungar84}.
+
+Allocation happens in the youngest generation, and when that fills up
+a \textit{minor collection} is started. The generation is garbage
+collected, and old enough blocks get copied to the next generation. In
+the simplest case, all live blocks at the time of a minor collection
+get promoted. If the entire heap is full, a \textit{major collection}
+is started, which uses some other garbage collection
+algorithm\cite{GarbageCollection}.
+
+Generational garbage collection tends to perform well for languages
+where old-to-young pointers are rare, such as most functional
+languages, and so has become fairly popular amongst implementers of
+such languages.
 
 \section{Algorithm Verification}
 
