@@ -97,7 +97,22 @@ half of the heap space\cite{GarbageCollection}.
 
 \subsubsection{Mark-Compact}
 
-\todo{What it is, when it was introduced, flaws, benefits}
+Heap fragmentation can be a great problem: there may be more than
+enough space to allocate something, but not enough contiguous space to
+do so. Furthermore, high fragmentation can increase the rate of page
+faults and cache misses, reducing the performance of the mutator.
+
+Thus, we come to the mark-compact collectors. These first mark the
+live portion of the heap, and then copy marked blocks over garbage
+ones, moving everything towards one end of the heap in order to remove
+fragmentation. There are three ways of performing this compacting:
+blocks can be moved without regard for their original order; blocks
+which point to each other can be placed next to each other; and blocks
+can simply ``slide'' towards one end of the heap.
+
+Unfortunately, these collectors require multiple traversals over the
+heap, and so are potentially even slower than mark-sweep
+collectors\cite{GarbageCollection}.
 
 \subsection{Hybrid Collectors}
 
