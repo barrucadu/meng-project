@@ -116,7 +116,13 @@ collectors\cite{GarbageCollection}.
 
 \subsection{Hybrid Collectors}
 
-\todo{Why they are sometimes good}
+Sometimes any one of the traditional algorithms is not quite good
+enough for a particular problem, and a better collector can be formed
+by combining them. For example, reference counting could be combined
+with periodic copying, in order to reclaim cyclic structures and
+reduce fragmentation. For another example, Immix\cite{Blackburn08} is
+a hybrid mark-region (memory is divided into large regions, inside
+which allocation occurs) and copying collector.
 
 \subsubsection{Generational Collectors}
 
