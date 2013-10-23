@@ -7,13 +7,56 @@ production of verified garbage collectors.
 
 \section{Garbage Collection}
 
-\todo{What is garbage collection}
+Garbage collection is the process of automatically reclaiming unneeded
+memory from a program. In languages with manual memory management,
+such as C, a programmer can allocate new memory with \texttt{malloc},
+but then must remember to release it with \texttt{free}. If this is
+not done, a memory leak occurs, and the program may gradually consume
+more and more memory.
+
+In a garbage collected language, however, the programmer can allocate
+new memory, but typically cannot (and does not need to) explicitly
+deallocate it. Instead, some runtime system determines when blocks of
+memory are no longer needed, typically by determining if they can be
+reached by following pointers from the ``roots''---the set of
+variables in scope---or not.
 
 \subsection{The Traditional Algorithms}
 
+We can divide most garbage collection algorithms into four camps:
+reference counting, mark-sweep, copying, and mark-compact. Each is
+suited to different use-cases, and the choice of which to use is often
+determined by the behaviour of the particular system in which they
+will be used.
+
 \subsubsection{Reference Counting}
 
-\todo{What it is, when it was introduced, flaws, benefits}
+Reference counting is a very simple scheme where each block contains a
+\textit{reference count}, some integer field which keeps track of the
+number of references to the block. In the most basic form of the
+algorithm, the compiler maintains a write barrier, which increments
+and decrements the count immediately as references are created or
+destroyed. Furthermore, as soon as the count reaches zero, the block
+is deallocated\cite{Collins60}.
+
+This strategy seems good, as it distributes the load of memory
+management throughout the computation, however it results in the
+problem of unbounded time taken to free a block, as freeing it may
+cause other things to be freed, and so on\cite{GarbageCollection}.
+This problem can be offset by pushing to a free list, rather than
+doing the recursive free, or by deferring the reference counting.
+
+The Deutsch--Bobrow algorithm is an example of this kind, where
+reference count adjustments are stored in a transaction file, which is
+routinely processed to adjust the state of the entire
+system\cite{Deutsch76}.
+
+A fatal flaw, alas, with reference counting is that it cannot reclaim
+self-referential structures, even if they are
+garbage\cite{McBeth63}. Some systems make use of ``weak references'',
+references which do not cause the count to be modified, to offset
+this. However, this places a burden on the programmer and so loses
+some of the convenience of the system.
 
 \subsubsection{Mark-Sweep}
 
