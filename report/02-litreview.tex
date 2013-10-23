@@ -60,7 +60,26 @@ some of the convenience of the system.
 
 \subsubsection{Mark-Sweep}
 
-\todo{What it is, when it was introduced, flaws, benefits}
+The mark-sweep method was invented for the early Lisp
+systems\cite{McCarthy60}, and it functions by giving every block a
+\textit{mark bit}, which is initially unset. Upon running out of
+memory, all cells reachable from the roots are marked (this can be
+done recursively quite simply), and then all blocks in the heap are
+examined: those which are unmarked are freed, and those which are
+marked are unmarked, ready for the next collection.
+
+Compared to reference counting, mark-sweep is a very different beast:
+it handles cycles easily and there is no overhead on pointer
+operations. It does, however, ``stop the world'' in order to perform a
+collection\cite{GarbageCollection}. Furthermore, garbage collection
+becomes more frequent as heap residency increases.
+
+These problems can be offset somewhat by interleaving the sweeping
+with the mutator (the user program, so called because it mutates the
+heap). Hughes's lazy sweep algorithm\cite{Hughes82} does this by
+performing a fixed amount of sweeping at each allocation, and so the
+only long garbage collection pause happens when the heap needs to be
+marked.
 
 \subsubsection{Copying}
 
