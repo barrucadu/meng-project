@@ -12,21 +12,23 @@ Garbage collection is an important part of many modern programming
 languages, however there is an implicit assumption that it never goes
 wrong. It would not be feasible for the programmer to account for all
 the ways in which the run-time support system may fail, and doing so
-would remove the benefit of using a higher level language in the first
-place. But these systems are not perfect, they are written by humans,
-and tested by humans, with formal verification being very uncommon.
+would remove the benefit of using a managed language in the first
+place. But these systems are not perfect: they are written and tested
+by humans, with formal verification being very uncommon.
 
-The aim of this project is to design and prove correct a garbage
-collection algorithm, to then implement it in (unverified) Java, and
-to benchmark how it performs in a full JVM. Whilst the implementation
-will not be verified, this would not be impossible.
+An arguably better approach is to design a garbage collector which is
+then formally verified, in order to be able to definitively eliminate
+all bugs from the collector, and so release the programmer from the
+possible worry of how it may fail. For total certainty, any
+implementation must be proven to be a faithful translation of the
+algorithm to machine code, however merely having a verified algorithm
+is a good stepping-stone towards this.
 
 \section{Outline}
 
-In Chapter 2, the historical context and recent developments in the
-field of the project are presented, and is built upon in Chapter 3
-where the full aims and motivations of the project are
-presented.
+Chapter 2 summarises the historical context and recent developments in
+the field of the project are presented, and is built upon in Chapter 3
+where the full aims and motivations of the project are presented.
 
 Chapter 4 proceeds to formalise partial correctness for
 garbage collection, and justifies the formalism chosen by proving
