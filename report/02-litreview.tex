@@ -172,3 +172,35 @@ such languages.
   (extraction/proof). Comparison of logic (HOL/separation). Comparison
   of goals (new, old). Comparison of collectors (both
   copying). Contributions (beyond the obvious one).}
+
+Finally, we look at two examples of garbage collectors which have been
+verified in different ways.
+
+\subsection{Reusable verification of a copying collector}
+
+Myreen\cite{Myreen10} has constructed a verified garbage collector
+using the extraction method: correctness was formalised using the HOL4
+theorem prover, was refined to produce an algorithm for correct
+copying collectors, and was then refined further to the level of
+verified machine code.
+
+The collectors produced have been named L1, which is a specification
+of garbage collection; L2, which is an implementation of L1 as the
+transitive closure of a step relation; L3, which is a deterministic
+implementation of L2 with more realistic memory semantics; L4, which
+uses actual implementation types; and L5, which is verified machine
+code. L5 is constructed by earlier work of Myreen, on constructing a
+certifying compiler.
+
+Other than the obvious, the main contribution of Myreen is that his
+proof is quite generic, as only the lowest level of refinement (L5)
+makes use of a specific programming logic, and could be applied to many
+different copying collectors, just by changing the specific refinement
+steps taken.
+
+It is possible that his L1 collector could be applied to non-copying
+collectors, providing an already formalised notion of correctness
+``for free''.
+
+\subsection{Local Reasoning about a Copying Garbage Collector}
+
