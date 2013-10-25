@@ -2,7 +2,38 @@
 
 \section{What Partial Correctness Means}
 
-\todo{What is partial correctness for garbage collection? English ``formalisms''.}
+To precisely formalise garbage collection, we must first informally
+determine what the whole process is about. Myreen\cite{Myreen10}
+starts by defining the heap as a finite partial mapping from addresses
+to a list of pointers and some data. He then proceeds to formalise
+garbage collection as a state isomorphism with no garbage cells left
+over, however this is a rather strict definition.
+
+\begin{definition}[Weak Garbage Collection (informal)]
+  A garbage collector satisfies the weak garbage collection property
+  if it is a state isomorphism, where the number of garbage cells in
+  the resultant heap is strictly less than in the original heap.
+\end{definition}
+
+This may not appear to be terribly useful, but in some cases it is the
+strongest statement we can make. For example, in the case of
+generational garbage collection, the nepotism effect (tenured garbage
+cells pointing to cells in the younger generation) may cause some
+cells which are, strictly speaking, garbage to survive a minor
+collection. These cells are then collected whenever there is a major
+collection, but to say that a generational collects only ``collects''
+when the entire heap is examined would be a very strange abuse of
+terminology.
+
+\begin{definition}[Strong Garbage Collection (informal)]
+  A garbage collector satisfies the strong garbage collection property
+  if it is a state isomorphism, where there are no garbage cells in
+  the resultant heap.
+\end{definition}
+
+This is an English-language restatement of Myreen's formal notion of
+garbage collection correctness, which is expressed more precisely in
+terms of a filtering function.
 
 \subsection{Logic}
 
