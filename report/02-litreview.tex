@@ -151,11 +151,38 @@ such languages.
 
 \section{Algorithm Verification}
 
-\todo{What is verification}
+Algorithm, or software, verification is the process of constructing a
+mathematical proof that an algorithm behaves as we expect it to. In
+the case of software, we may prove the actual code implements the
+specification, in the case of an algorithm, we may be satisfied with
+merely proving that it satisfies various properties (such as
+termination).
+
+We need verification because testing can never show that there are no
+bugs, it can only show that there have been no bugs found yet. A
+formal proof provides a much stronger guarantee than can be obtained
+by testing or inspection alone.
+
+There are two methods of verification: constructing the algorithm and
+then proving things about it, and constructing a proof and then
+extracting an algorithm out of it.
 
 \subsection{Verification by Proof}
 
-\todo{How to take some code and a specification and prove the two equivalent}
+This is arguably the more difficult method of verification, as it
+consists of taking a fairly low-level implementation (often at the
+level of code) and a very high-level specification and proving things
+about the two.
+
+To begin with, the implementation must be formalised using some logic
+such as Hoare logic\cite{Hoare69}, which define the semantics for a
+very simple imperative language, or separation logic\cite{Reynolds02},
+which is similar to Hoare logic but adds axioms for reasoning about
+the stack and heap.
+
+Once formalised, the axioms of the logic can be used to deduce
+propositions about the implementation. This can be, to some extent,
+automated using proof assistants, but in general this is undecidable.
 
 \subsection{Verification by Extraction}
 
