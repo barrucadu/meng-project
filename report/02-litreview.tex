@@ -186,7 +186,23 @@ automated using proof assistants, but in general this is undecidable.
 
 \subsection{Verification by Extraction}
 
-\todo{How to refine a specification until we can pluck out code}
+The other approach is to gradually work downwards from the high-level
+specification to the low-level implementation. This is called
+extraction, or refinement.
+
+We start out by formalising the specification in some logic, such as Z
+or HOL, and then construct a slightly lower-level specification and
+prove that it is a correct refinement of the higher-level one. Whilst
+it may take many refinement steps to get actual code out of this
+process, each proof is between two very similar specifications, and so
+may be easier than the verification by proof method. Proof assistants
+may be more useful here than in verification by proof, but here the
+difficulty lies in finding the appropriate invariant to relate the two
+steps.
+
+Furthermore, there are often multiple choices of refinement step
+available, and so first few steps can be reused to construct different
+algorithms, simply by making different choices at the lower levels.
 
 \subsection{Proof Assistants}
 
