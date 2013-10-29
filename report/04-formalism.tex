@@ -9,10 +9,18 @@ to a list of pointers and some data. He then proceeds to formalise
 garbage collection as a state isomorphism with no garbage cells left
 over, however this is a rather strict definition.
 
+\begin{definition}[Garbage (informal)]
+  A cell is called garbage if it is not reachable by following a chain
+  of pointers from the variables currently in scope.
+\end{definition}
+
+Now that we know what garbage is, we can start talking about what we
+mean by collecting it.
+
 \begin{definition}[Weak Garbage Collection (informal)]
   A garbage collector satisfies the weak garbage collection property
   if it is a state isomorphism, where the number of garbage cells in
-  the resultant heap is strictly less than in the original heap.
+  the resultant heap is no greater than in the original heap.
 \end{definition}
 
 This may not appear to be terribly useful, but in some cases it is the
@@ -22,18 +30,20 @@ cells pointing to cells in the younger generation) may cause some
 cells which are, strictly speaking, garbage to survive a minor
 collection. These cells are then collected whenever there is a major
 collection, but to say that a generational collects only ``collects''
-when the entire heap is examined would be a very strange abuse of
+when the entire heap is examined would be a very strange use of
 terminology.
 
 \begin{definition}[Strong Garbage Collection (informal)]
   A garbage collector satisfies the strong garbage collection property
-  if it is a state isomorphism, where there are no garbage cells in
-  the resultant heap.
+  if it is a state isomorphism, where the number of garbage cells in
+  the resultant heap is strictly less than in the original heap.
 \end{definition}
 
-This is an English-language restatement of Myreen's formal notion of
-garbage collection correctness, which is expressed more precisely in
-terms of a filtering function.
+This is a slightly relaxed version of Myreen's statement, which is
+suitable for collectors which only do a fixed amount of work at each
+collection, rather than examining the entire heap. This is common for
+collectors which try to impose a bound on pause times, but (more
+generally) is a property of any incremental collector.
 
 \subsection{Logic}
 
