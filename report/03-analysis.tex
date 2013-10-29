@@ -1,8 +1,39 @@
 \chapter{Problem Analysis}
 
-\section{Aims and Motivation}
+\section{Aims Revisited}
 
-\todo{Literature-motivated specific aims for the project}
+Reviewing the literature reveals that much of the recent work in
+garbage collection development has been focused on concurrency, and
+obtaining real-time guarantees. The topic of verified garbage
+collection has received comparatively little interest, and is perhaps
+viewed as something which would be nice, but not as important as
+making garbage collectors as fast as possible. This is a shame, as
+garbage collection bugs can be a very difficult problem to solve
+through testing alone.
+
+There have been a few verified garbage collectors, however these tend
+to be proofs for specific extant algorithms, or extraction using very
+strict definitions of garbage collection. The former cannot,
+unfortunately, typically generalise to other collectors, and the
+latter makes generalising to types of collectors other than what the
+author had in mind very difficult.
+
+This project explores the route of using generic and flexible
+formalisms, not tied to any particular class of collector, and which
+can be used for the proof or extraction methods. The aim, through
+algorithm/formalism co-design, is to produce:
+
+\begin{itemize}
+  \item a family of increasingly strict formalisms for garbage
+    collection partial correctness, in terms of the amount of work
+    done by the collector in each collection;
+
+  \item an illustration of the utility of the formalisms by proofs of
+    correctness of two simple mark-sweep collectors: one specialised
+    for immutable languages, and one more general;
+
+  \item design, proof, and implementation of a copying collector.
+\end{itemize}
 
 \section{Development Methodology}
 
