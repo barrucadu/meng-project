@@ -1,0 +1,10 @@
+digraph G {
+    R1 -> B
+    R2 -> B
+
+    bgcolor="transparent"
+
+    R1 [label="root", style="filled", fillcolor="darkgoldenrod1"]
+    R2 [label="root", style="filled", fillcolor="darkgoldenrod1"]
+    B [label="B", style="filled", fillcolor="lawngreen"]
+}

@@ -11,6 +11,7 @@
 \date{October, 2013}
 
 \setbeamercovered{transparent}
+\setbeamertemplate{caption}{\insertcaption}
 
 \begin{document}
 
@@ -25,28 +26,83 @@
     \item \alert<3>{Verification by Birkedal \textit{et al.} of Cheney's copying
       collector}
     \item \alert<4>{Expected results of the project}
-    \item \alert<5>{Bibliography}
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Garbage Collection}
-  What it is, why we need to get it right.
+  \begin{description}[<+->]
+    \item[roots] \alert<1>{variables currently in scope}
+    \item[cell] \alert<2>{lump of memory}
+    \item[garbage] \alert<3>{cell which cannot be reached by following
+        pointers from the roots}
+  \end{description}
+\end{frame}
+
+\begin{frame}{Garbage Collection}
+  \only<1>{
+    \begin{figure}[h!]
+      \centering
+      \includegraphics{heap1}
+      \caption{No garbage: $A$ and $B$ reachable from the roots}
+    \end{figure}
+  }
+
+  \only<2>{
+    \begin{figure}[h!]
+      \centering
+      \includegraphics{heap2}
+      \caption{$A$ becomes garbage when one of the roots is changed to
+        point at $B$.}
+    \end{figure}
+  }
+
+  \only<3>{
+    \begin{figure}[h!]
+      \centering
+      \includegraphics{heap3}
+      \caption{Remove $A$, so the heap is now minimal.}
+    \end{figure}
+  }
+\end{frame}
+
+\begin{frame}{Correctness is Important}
+  \begin{itemize}[<+->]
+    \item \alert<1>{Bugs in the garbage collector can have dire
+        consequences}
+    \item \alert<2>{Usually rely on testing}
+    \item \alert<3>{Very little formal verification done}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{The State of the Art}
-  Reynold's verification of Cheney's collector, why it's not perfect.
+  \begin{itemize}[<+->]
+    \item \alert<1>{Cheney's copying collector\cite{Birkedal04}}
+    \item \alert<2>{Separation logic}
+      \[\{P\} C \{Q\}\]
+    \item \alert<3>{Verification by proof}
+    \item \alert<4>{Can't really be generalised to other collectors}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Expected Results}
-  What I hope to achieve
+  \begin{itemize}[<+->]
+    \item \alert<1>{High-level formalism of partial correctness}
+    \item \alert<2>{Verification of two extant algorithms}
+    \item \alert<3>{Design and verification of a very different
+        algorithm}
+    \item \alert<4>{Implementation of this algorithm}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Summary}
-  Summary of presentation
+  \begin{itemize}[<+->]
+    \item \alert<1>{Overview of garbage collection}
+    \item \alert<2>{What's wrong with how we currently do it}
+    \item \alert<3>{How I hope to fix that}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{References}
-  \nocite{*}
   \bibliographystyle{IEEEtran}
   \bibliography{../../report/references.bib}
 \end{frame}
