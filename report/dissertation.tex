@@ -30,6 +30,7 @@
 
 % Advanced maths features
 \usepackage{amsmath}
+\usepackage{amssymb}
 % Conditional macros
 \usepackage{xifthen}
 
@@ -46,6 +47,34 @@
 \newcommand{\todo}[1]{{\color{red}{\uline{#1}}}}
 % [citation needed]
 \newcommand{\cn}{{\color{red}$^{\text{[citation needed]}}$}}
+
+% Page layout jiggery pokery
+\usepackage{pdflscape}
+\usepackage{multicol}
+
+\newenvironment{wide}{%
+  \begin{list}{}{%
+      \setlength{\topsep}{0pt}%
+      \addtolength{\leftmargin}{-1.5cm}%
+      \addtolength{\rightmargin}{-1.5cm}%
+      \setlength{\listparindent}{\parindent}%
+      \setlength{\itemindent}{\parindent}%
+      \setlength{\parsep}{\parskip}}%
+  \item[]%
+}{%
+  \end{list}%
+}
+
+\newenvironment{lscape}{\begin{landscape}\begin{wide}}{\end{wide}\end{landscape}}
+
+% Logic
+\usepackage{bussproofs}
+\newcommand{\htriple}[3]{\left\{#1\right\}\ \mbox{#2}\ \left\{#3\right\}}
+\newcommand{\len}{\mathrm{len}~}
+\newcommand{\true}{\mathbf{true}}
+\newcommand{\false}{\mathbf{false}}
+\renewcommand{\iff}{\Leftrightarrow}
+\renewcommand{\implies}{\Rightarrow}
 
 \title{%
 {\normalsize\scshape University of York}\\

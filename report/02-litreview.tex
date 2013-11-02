@@ -184,6 +184,130 @@ Once formalised, the axioms of the logic can be used to deduce
 propositions about the implementation. This can be, to some extent,
 automated using proof assistants, but in general this is undecidable.
 
+As an example of verification by proof, consider the following short
+program, to find the index of the minimal element in a sequence of
+integers:
+
+\begin{verbatim}
+i := 0;
+j := 0;
+while j < len xs do
+    if xs[j] < xs[i] then
+        i := j
+    else
+        skip
+    j := j + 1
+\end{verbatim}
+
+We shall call this program $P$, and $xs$ is some sequence of
+integers. For (partial) correctness of this program, we want to
+establish (using Hoare triples) $\htriple{\len xs > 0}{P}{xs[i] = \min
+  xs}$
+
+A full proof tree is displayed on the next page.
+
+\subsubsection{Loop Invariants}
+
+Proofs of programs involving loops rely on finding a loop invariant:
+some property which does not change over time as the loop is
+executed. This is expressed in Hoare logic with the while rule:
+
+\begin{prooftree}
+  \AxiomC{$\htriple{I \land B}{S}{I}$}
+  \UnaryInfC{$\htriple{I}{while B do S}{\lnot B \land I}$}
+\end{prooftree}
+
+$I$ is the loop invariant, $B$ is the loop condition, and $S$ is the
+statement that is the loop body. The premise is read ``If the
+proposition $I \land B$ holds, then after doing S once, the
+proposition $I$ holds,'' and the consequence is read ``If the
+proposition $I$ holds, then after doing the loop \textit{while B do
+  S}, the proposition $\lnot B \land I$ holds''. Thus, we can see that
+$I$ is invariant.
+
+The only information we can ``get out'' of a loop, then (at least
+under Hoare logic), is $\lnot B$, which doesn't seem very useful. The
+loop may be doing something very complicated, but it seems we can only
+extract a very small bit of information about this. The difficulty,
+then, lies in finding a loop invariant that, when combined with $\lnot
+B$, yields the result we want.
+
+\begin{lscape}
+
+\begin{prooftree}
+  \AxiomC{$\htriple{I[1/j][0/i]}{i := 0}{I[0/j]}$}
+  \AxiomC{$\htriple{I[1/j]}{j := 1}{I}$}
+  \BinaryInfC{$\htriple{I[1/j][0/i]}{i := 0; j := 1}{I}$}
+  \AxiomC{$L \implies I[1/j][0/i]$}
+  \BinaryInfC{$\htriple{L}{i := 0; j := 1}{I}$}
+
+  \AxiomC{$C_{T} \implies S[j/i]$}
+  \UnaryInfC{$\htriple{C_{T}}{i := j}{S}$}
+
+  \AxiomC{$C_{F} \iff S$}
+  \AxiomC{$\htriple{C_{F}}{skip}{C_{F}}$}
+  \BinaryInfC{$\htriple{C_{F}}{skip}{S}$}
+  \BinaryInfC{$\htriple{I \land R(j)}{if \ldots}{S}$}
+
+  \AxiomC{$S \implies I[j + 1/j]$}
+  \AxiomC{$S \implies I$}
+  \BinaryInfC{$\htriple{S}{j := j + 1}{I}$}
+
+  \BinaryInfC{$\htriple{R(j) \land I}{if \ldots; j := j + 1}{I}$}
+  \UnaryInfC{$\htriple{I}{while \ldots}{\lnot R(j) \land I}$}
+
+  \BinaryInfC{$\htriple{L}{P}{C}$}
+\end{prooftree}
+
+\begin{multicols}{3}
+\subsubsection{Common Definitions}
+\begin{align*}
+  L &\iff \len xs > 0\\
+  R(x) &\iff x < \len xs\\
+  C &\iff xs[i] = \min xs\\
+  C_{T}&\iff I \land R(j) \land xs[j] < xs[i]\\
+  C_{F}&\iff I \land R(j) \land \lnot(xs[j] < xs[i])\\
+  I&\iff xs[i] = \min \{xs[a]~|~0 \leq a < j\}\\
+  S&\iff I \land xs[i] \leq xs[j] \land R(j)
+\end{align*}
+\vfill
+
+\subsubsection{Proofs}
+\begin{align*}
+  I[1/j][0/i] &\iff xs[0] = \min \{xs[a]~|~0 \leq a < 1\}\\
+  &\iff \len xs > 0 \implies xs[0] = \min \{xs[0]\}\\
+  &\iff \len xs > 0 \implies xs[0] = xs[0]\\
+  &\iff \len xs > 0 \implies \true\\
+  &\iff \len xs > 0\\
+  \therefore L &\implies I[1/j][0/i]\\\\
+%
+  S[j/i] &\iff \left(I \land xs[i] \leq xs[j] \land R(j)\right)[j/i]\\
+  &\iff I \land xs[j] \leq xs[j] \land R(j)\\
+  &\iff I \land R(j)\\
+  \therefore C_{T} &\implies S[j/i]\\\\
+%
+  I[j+1/j] &\iff I \land xs[i] \leq xs[j]\\
+  \therefore S &\implies I[j+1/j]
+\end{align*}
+
+\begin{align*}
+  \lnot\left(xs[j] < xs[i]\right) &\iff xs[i] \leq xs[j]\\
+  \therefore C_{F} &\iff S\\\\
+%
+  I \land xs[i] \leq xs[j] \land R(j) &\implies I\\
+  \therefore S &\implies I\\\\
+%
+  \lnot R(j) \land I &\iff j \geq \len xs \land xs[i] = \min
+  \{xs[a]~|~0 \leq a < j\}\\
+  &\iff xs[i] = \min \{x~|~x \in xs\}\\
+  &\iff xs[i] = \min xs\\
+  \therefore \lnot R(j) \land I &\implies C
+\end{align*}
+\vfill
+\end{multicols}
+
+\end{lscape}
+
 \subsection{Verification by Extraction}
 
 The other approach is to gradually work downwards from the high-level
