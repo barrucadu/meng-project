@@ -238,7 +238,7 @@ B$, yields the result we want.
   \AxiomC{$\htriple{I[1/j][0/i]}{i := 0}{I[0/j]}$}
   \AxiomC{$\htriple{I[1/j]}{j := 1}{I}$}
   \BinaryInfC{$\htriple{I[1/j][0/i]}{i := 0; j := 1}{I}$}
-  \AxiomC{$L \implies I[1/j][0/i]$}
+  \AxiomC{$I[1/j][0/i] \iff L$}
   \BinaryInfC{$\htriple{L}{i := 0; j := 1}{I}$}
 
   \AxiomC{$C_{T} \implies S[j/i]$}
@@ -279,7 +279,7 @@ B$, yields the result we want.
   &\iff \len xs > 0 \implies xs[0] = xs[0]\\
   &\iff \len xs > 0 \implies \true\\
   &\iff \len xs > 0\\
-  \therefore L &\implies I[1/j][0/i]\\\\
+  \therefore I[1/j][0/i] &\iff L\\\\
 %
   S[j/i] &\iff \left(I \land xs[i] \leq xs[j] \land R(j)\right)[j/i]\\
   &\iff I \land xs[j] \leq xs[j] \land R(j)\\
