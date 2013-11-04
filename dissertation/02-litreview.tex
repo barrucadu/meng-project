@@ -205,9 +205,69 @@ while j < len xs do
 We shall call this program $P$, and $xs$ is some sequence of
 integers. For (partial) correctness of this program, we want to
 establish (using Hoare triples) $\htriple{\len xs > 0}{P}{xs[i] = \min
-  xs}$
+  xs}$. A Hoare triple $\htriple{P}{S}{Q}$ states that if the
+assertion $P$ holds before executing a statement $S$, then the
+assertion $Q$ holds afterwards.
 
-A full proof tree is displayed on the next page.
+A full proof tree is displayed on page \pageref{lit_hoare_proof}, you
+may wish to glance at that before reading the following sections,
+which explain the ideas used in the proof, and then examine it more
+closely.
+
+\subsubsection{Preconditions and Postconditions}
+
+A precondition is some assertion which must hold before executing some
+code, and a postcondition is some assertion which must hold
+afterwards. Hoare triples express this.
+
+In the case of languages with formally specified semantics, we must be
+able to derive the postcondition from the precondition and the
+code. Sometimes ``backwards'' reasoning is used, by establishing the
+desired postcondition (the result of executing the code), and then
+working from end to beginning, in order to figure out what the
+necessary preconditions are. If both the precondition and
+postcondition of some sequence of code are known, then the proof can
+progress inwards from both ends, meeting in the middle. If the two
+proof efforts cannot be unified, then there is a flaw in the code.
+
+Common to many proof systems is the ability to strengthen
+preconditions and weaken postconditions. This is expressed by the
+Hoare consequence rule:
+
+\begin{prooftree}
+  \AxiomC{$P' \implies P$}
+  \AxiomC{$\htriple{P}{S}{Q}$}
+  \AxiomC{$Q \implies Q'$}
+  \TrinaryInfC{$\htriple{P'}{S}{Q'}$}
+\end{prooftree}
+
+This allows localised proofs to be used in a larger proof, and so
+facilitates modularity.
+
+\subsubsection{Axiomatic Semantics}
+
+Axiomatic semantics allow us to reason about programs by providing
+tools to reason about the effect of program statements on program
+state. These are closely connected with Hoare logic. A simple example
+is the Hoare rule for composition:
+
+\begin{prooftree}
+  \AxiomC{$\htriple{P}{S}{Q}$}
+  \AxiomC{$\htriple{Q}{T}{R}$}
+  \BinaryInfC{$\htriple{P}{S; T}{R}$}
+\end{prooftree}
+
+This states that if we have two statements, $S$ and $T$, where the
+postcondition of $S$ is the precondition of $T$, then we can combine
+the two into the compound statement $S;T$\cite{Hoare69}. There are
+rules for assignment, ``skip'' (the statement which does nothing),
+while loops, conditional statements, and consequence (which allows the
+strengthening of preconditions and weakening of postconditions).
+
+Given these rules, we can very easily deconstruct a program into a
+proof tree showing how all of the assertions are related, which is
+often a very good starting point for then constructing a specific
+proof for the property we wish to establish.
 
 \subsubsection{Loop Invariants}
 
@@ -237,6 +297,9 @@ then, lies in finding a loop invariant that, when combined with $\lnot
 B$, yields the result we want.
 
 \begin{lscape}
+
+\phantomsection
+\label{lit_hoare_proof}
 
 \begin{prooftree}
   \AxiomC{$\htriple{I[1/j][0/i]}{i := 0}{I[0/j]}$}
