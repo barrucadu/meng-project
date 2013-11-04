@@ -73,7 +73,7 @@
 
 \newenvironment{lscape}{\begin{landscape}\begin{wide}}{\end{wide}\end{landscape}}
 
-% Logic
+% Logic & Maths
 \usepackage{bussproofs}
 
 \newcommand{\htriple}[3]{\left\{#1\right\}\ \mbox{#2}\ \left\{#3\right\}}
@@ -82,6 +82,23 @@
 \newcommand{\false}{\mathbf{false}}
 \renewcommand{\iff}{\Leftrightarrow}
 \renewcommand{\implies}{\Rightarrow}
+
+\newcommand{\finparmap}{\rightharpoonup}
+\newcommand{\pointsto}{\hookrightarrow}
+\newcommand{\restrict}{\downharpoonright}
+\newcommand{\addr}{\mathrm{Addr}}
+\newcommand{\data}{\mathrm{Data}}
+\newcommand{\nullp}{\mathit{null}}
+\newcommand{\listof}[1]{#1\ \mathbf{list}}
+\newcommand{\x}{\times}
+\newcommand{\of}{\circ}
+\newcommand{\reach}[2]{\mathrm{reach}\left(#1, #2\right)}
+\newcommand{\garbage}[2]{\mathrm{garbage}\left(#1, #2\right)}
+\newcommand{\map}[2]{\mathrm{map}\left(#1, #2\right)}
+\newcommand{\rename}[2]{\mathrm{rename}\left(#1, #2\right)}
+\newcommand{\gc}{\xrightarrow{gc}}
+\newcommand{\translate}{\xrightarrow{translate}}
+\newcommand{\id}{\mathrm{id}}
 
 \title{%
 {\normalsize\scshape University of York}\\

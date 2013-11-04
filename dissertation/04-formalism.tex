@@ -2,53 +2,94 @@
 
 \section{What Partial Correctness Means}
 
-To precisely formalise garbage collection, we must first informally
-determine what the whole process is about. Myreen\cite{Myreen10}
-starts by defining the heap as a finite partial mapping from addresses
-to a list of pointers and some data. He then proceeds to formalise
-garbage collection as a state isomorphism with no garbage cells left
-over, however this is a rather strict definition.
+Myreen starts out by formalising the \gls{heap} as a finite partial
+mapping from addresses to \glspl{cell} of \glspl{pointer} and
+\gls{data}. He then goes on to define garbage collection as removing
+all \gls{garbage} \glspl{cell} from the
+\gls{heap}\cite{Myreen10}. This may appear to be quite strict, as not
+all \glspl{garbage collector} examine the entire \gls{heap} in every
+collection, but I shall show how this can be generalised to other
+types of \gls{collector}.
 
-\begin{definition}[Garbage (informal)]
-  A cell is called garbage if it is not reachable by following a chain
-  of pointers from the variables currently in scope.
+\begin{definition}[Heap]
+  The heap is a finite partial mapping, $h$, from addresses (and null) to data:
+
+  \[h : \addr \finparmap \listof{\left(\addr + \nullp\right)} \x \data\]
+
+  We allow null fields in order to store data inside pointers.
 \end{definition}
 
-Now that we know what garbage is, we can start talking about what we
-mean by collecting it.
+We assume that there is a set $roots$ which contains the \glspl{root}
+to be used during \gls{garbage collection}. In practice, this set
+would consist of all variables in scope.
 
-\begin{definition}[Weak Garbage Collection (informal)]
-  A garbage collector satisfies the weak garbage collection property
-  if it is a state isomorphism, where the number of garbage cells in
-  the resultant heap is no greater than in the original heap.
+\begin{definition}[Reachable]
+  All roots are reachable; all cells which can be reached by following
+  pointers from the roots are reachable.
+
+  \begin{minipage}{.5\textwidth}
+    \begin{prooftree}
+      \AxiomC{$r \in roots$}
+      \UnaryInfC{$r \in \reach{h}{roots}$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{.5\textwidth}
+    \begin{prooftree}
+      \AxiomC{$r \in \reach{h}{roots}$}
+      \AxiomC{$r \pointsto x$}
+      \BinaryInfC{$x \in \reach{h}{roots}$}
+    \end{prooftree}
+  \end{minipage}
+
+  The notation $r \pointsto x$ means that there is a pointer in the
+  cell $r$ to the cell $x$.
 \end{definition}
 
-This may not appear to be terribly useful, but in some cases it is the
-strongest statement we can make. For example, in the case of
-generational garbage collection, the nepotism effect (tenured garbage
-cells pointing to cells in the younger generation) may cause some
-cells which are, strictly speaking, garbage to survive a minor
-collection. These cells are then collected whenever there is a major
-collection, but to say that a generational collects only ``collects''
-when the entire heap is examined would be a very strange use of
-terminology.
+\begin{definition}[Garbage]
+  A cell is garbage if it is not reachable.
 
-\begin{definition}[Strong Garbage Collection (informal)]
-  A garbage collector satisfies the strong garbage collection property
-  if it is a state isomorphism, where the number of garbage cells in
-  the resultant heap is strictly less than in the original heap.
+  \begin{prooftree}
+    \AxiomC{$x \notin \reach{h}{roots}$}
+    \UnaryInfC{$x \in \garbage{h}{roots}$}
+  \end{prooftree}
 \end{definition}
 
-This is a slightly relaxed version of Myreen's statement, which is
-suitable for collectors which only do a fixed amount of work at each
-collection, rather than examining the entire heap. This is common for
-collectors which try to impose a bound on pause times, but (more
-generally) is a property of any incremental collector.
+Now we can formalise what we mean by ``\gls{garbage collection}''. It
+is the process of removing from the heap all \glspl{cell} which are
+not reachable. We can express this with a domain
+restriction. In order to reason about \glspl{collector} which update
+addresses (to borrow another idea from Myreen), we also need to allow
+addresses to be renamed.
 
-\subsection{Logic}
+\begin{definition}[Translation]
+  Given a function $f : \addr \to \addr$, let $\map{f}{x}$ apply $f$
+  to every non-null pointer in a cell $x$, and $\rename{f}{h}$ update
+  all addresses in a heap $h$ by $f$.
 
-\todo{Introduction of the logic being used in the project. Restatement
-of the English formalisms in the logic.}
+  We now define a relation which performs consistent renaming over the
+  entire heap:
+
+  \begin{prooftree}
+    \AxiomC{$f \of f = \id$}
+    \UnaryInfC{$(h, roots) \translate \left(\rename{f}{h},
+        \map{f}{roots}\right)$}
+  \end{prooftree}
+\end{definition}
+
+\begin{definition}[Garbage Collection]
+  Garbage collection is the process of removing all garbage cells from
+  the heap, and performing a consistent renaming of addresses.
+
+  \[(h, r) \gc (h', r') = (h \restrict \reach{h}{roots}, r) \translate
+  (h', r')\]
+\end{definition}
+
+In the case of \gls{reference counting} or \gls{mark-sweep} where
+\glspl{pointer} are not updated, we can of course use $f = \id$.
+
+\subsection{Generational Collectors}
+
+\subsection{Incremental Collectors}
 
 \section{Correctness of a Mark-Sweep Collector for Immutable
   Languages}

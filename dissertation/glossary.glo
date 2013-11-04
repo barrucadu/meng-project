@@ -227,3 +227,9 @@
   description={a property which does not change during execution of a
     loop}
 }
+
+\newglossaryentry{data}
+{
+  name=data,
+  description={something in the heap which is not a pointer}
+}
