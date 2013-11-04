@@ -1,0 +1,229 @@
+\newglossaryentry{memory management}
+{
+  name=memory management,
+  description={the process of allocating and deallocating memory
+    cells as needed}
+}
+
+\newglossaryentry{garbage collection}
+{
+  name=garbage collection,
+  description={the process of automatically deallocating unneeded
+    memory cells}
+}
+
+\newglossaryentry{garbage collector}
+{
+  name=garbage collector,
+  plural=garbage collectors,
+  description={an algorithm which performs garbage collection}
+}
+
+\newglossaryentry{collector}
+{
+  name=collector,
+  plural=collectors,
+  description={alternative name for \gls{garbage collector}}
+}
+
+\newglossaryentry{cell}
+{
+  name=cell,
+  plural=cells,
+  description={a contiguous block of memory, the name stems from LISP
+    cons cells}
+}
+
+\newglossaryentry{root}
+{
+  name=root,
+  plural=roots,
+  description={a variable which is in scope, or, a root of the
+    \gls{heap}}
+}
+
+\newglossaryentry{heap}
+{
+  name=heap,
+  plural=heaps,
+  description={the sum total of memory available to the program which
+    is not in the \gls{call stack}, or, a digraph of cells, connected
+    by \glspl{pointer}}
+}
+
+\newglossaryentry{call stack}
+{
+  name=call stack,
+  plural=call stacks,
+  description={a stack containing all variables in scope and function
+    return addresses, calling a function pushes more entries to the
+    stack, and returning pops}
+}
+
+\newglossaryentry{pointer}
+{
+  name=pointer,
+  plural=pointers,
+  description={a reference to a location in the heap, may not be a
+    \gls{cell}}
+}
+
+\newglossaryentry{reference counting}
+{
+  name=reference counting,
+  description={simple \gls{garbage collection} strategy where
+    \glspl{cell} contain a count of how many inbound \glspl{pointer}
+    there are, and which are freed when this count falls to zero}
+}
+
+\newglossaryentry{mark-sweep}
+{
+  name=mark-sweep,
+  description={\gls{garbage collection} strategy where the entire
+    \gls{heap} is traversed from the \glspl{root}, \glspl{cell}
+    encountered are ``marked'', and then all unmarked \glspl{cell} are
+    freed}
+}
+
+\newglossaryentry{copying}
+{
+  name=copying,
+  description={\gls{garbage collection} strategy where the \gls{heap}
+    is divided into multiple spaces, of which one is ``active''. The
+    live \gls{heap} is traversed from the \glspl{root}, \glspl{cell}
+    encountered are copied to the other space, the roles of the spaces
+    are then flipped.}
+}
+
+\newglossaryentry{mark-compact}
+{
+  name=mark-compact,
+  description={\gls{garbage collection} strategy where the entire \gls{heap}
+    is traversed, and encountered \glspl{cell} are moved towards one
+    end of the \gls{heap}, overwriting \gls{garbage} \glspl{cell}.}
+}
+
+\newglossaryentry{garbage}
+{
+  name=garbage,
+  description={a \gls{cell} which cannot be reached by traversing the
+    \gls{heap} from the \glspl{root}}
+}
+
+\newglossaryentry{free list}
+{
+  name=free list,
+  description={a list of free \glspl{cell}, used by some
+    \glspl{garbage collector}}
+}
+
+\newglossaryentry{weak reference}
+{
+  name=weak reference,
+  plural=weak references,
+  description={a \gls{pointer} which the garbage collector does not
+    treat as a pointer, sometimes used with \gls{reference counting}
+    to allow cyclic structures to be reclaimed}
+}
+
+\newglossaryentry{stop the world}
+{
+  name=stop the world,
+  description={a method of \gls{garbage collector} operation where the
+  \gls{mutator} is frozen whilst the \gls{collector} runs}
+}
+
+\newglossaryentry{mutator}
+{
+  name=mutator,
+  plural=mutators,
+  description={the user program, so called because it mutates the heap}
+}
+
+\newglossaryentry{heap residency}
+{
+  name=heap residency,
+  description={the proportion of the \gls{heap} taken up by
+    \glspl{live cell}}
+}
+
+\newglossaryentry{live cell}
+{
+  name=live cell,
+  plural=live cells,
+  description={a \gls{cell} which is not \gls{garbage}}
+}
+
+\newglossaryentry{fragmentation}
+{
+  name=fragmentation,
+  description={the property of \glspl{live cell} being very spread out
+    over the \gls{heap}}
+}
+
+\newglossaryentry{generational garbage collection}
+{
+  name=generational garbage collection,
+  description={\gls{garbage collection} strategy which make use of the
+  observation that long-lived \glspl{cell} tend to remain live for a
+  long time}
+}
+
+\newglossaryentry{hybrid collector}
+{
+  name=hybrid collector,
+  description={a \gls{garbage collector} which combines multiple
+    collection strategies together, often for performance}
+}
+
+\newglossaryentry{old-to-young pointer}
+{
+  name=old-to-young pointer,
+  plural=old-to-young pointers,
+  description={a \glspl{pointer} from an old \gls{cell} to a younger
+    \gls{cell}}
+}
+
+\newglossaryentry{algorithm verification}
+{
+  name=algorithm verification,
+  description={the process of proving that an algorithm meets its
+    \gls{specification}}
+}
+
+\newglossaryentry{specification}
+{
+  name=specification,
+  plural=specifications,
+  description={high-level description of what is desired}
+}
+
+\newglossaryentry{proof assistant}
+{
+  name=proof assistant,
+  plural=proof assistants,
+  description={a program designed to assist with, or automate, proof}
+}
+
+\newglossaryentry{verification by embedding}
+{
+  name=verification by embedding,
+  description={the process of taking an algorithm, and embedding it
+    into a theory in order to extract a proof about its
+    properties. Contrast with \gls{verification by extraction}}
+}
+
+\newglossaryentry{verification by extraction}
+{
+  name=verification by extraction,
+  description={the process of taking a proof, and refining it in order
+    to extract an algorithm implementing it. Contrast with
+    \gls{verification by embedding}}
+}
+
+\newglossaryentry{loop invariant}
+{
+  name=loop invariant,
+  description={a property which does not change during execution of a
+    loop}
+}

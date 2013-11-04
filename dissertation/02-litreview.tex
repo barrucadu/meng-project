@@ -19,35 +19,35 @@ more and more memory.
 
 In a garbage collected language, however, the programmer can allocate
 new memory, but typically cannot (and does not need to) explicitly
-deallocate it. Instead, some runtime system determines when blocks of
-memory are no longer needed, typically by determining if they can be
-reached by following pointers from the ``roots''---the set of
+deallocate it. Instead, some runtime system determines when
+\glspl{cell} no longer needed, typically by determining if they can be
+reached by following pointers from the \glspl{root}---the set of
 variables in scope---or not.
 
 \subsection{The Traditional Algorithms}
 
 We can divide most garbage collection algorithms into four camps:
-reference counting, mark-sweep, copying, and mark-compact. Each is
-suited to different use-cases, and the choice of which to use is often
-determined by the behaviour of the particular system in which they
-will be used.
+\gls{reference counting}, \gls{mark-sweep}, \gls{copying}, and
+\gls{mark-compact}. Each is suited to different use-cases, and the
+choice of which to use is often determined by the behaviour of the
+particular system in which they will be used.
 
 \subsubsection{Reference Counting}
 
-Reference counting is a very simple scheme where each block contains a
-\textit{reference count}, some integer field which keeps track of the
-number of references to the block. In the most basic form of the
-algorithm, the compiler maintains a write barrier, which increments
-and decrements the count immediately as references are created or
-destroyed. Furthermore, as soon as the count reaches zero, the block
-is deallocated\cite{Collins60}.
+Reference counting is a very simple scheme where each \gls{cell}
+contains a \textit{reference count}, some integer field which keeps
+track of the number of references to the \gls{cell}. In the most basic
+form of the algorithm, the compiler maintains a write barrier, which
+increments and decrements the count immediately as references are
+created or destroyed. Furthermore, as soon as the count reaches zero,
+the \gls{cell} is deallocated\cite{Collins60}.
 
 This strategy seems good, as it distributes the load of memory
 management throughout the computation, however it results in the
-problem of unbounded time taken to free a block, as freeing it may
-cause other things to be freed, and so on\cite{GarbageCollection}.
-This problem can be offset by pushing to a free list, rather than
-doing the recursive free, or by deferring the reference counting.
+problem of unbounded time taken to free a \gls{cell}, as freeing it
+may cause other things to be freed, and so on\cite{GarbageCollection}.
+This problem can be offset by pushing to a \gls{free list}, rather
+than doing the recursive free, or by deferring the reference counting.
 
 The Deutsch--Bobrow algorithm is an example of this kind, where
 reference count adjustments are stored in a transaction file, which is
@@ -56,30 +56,30 @@ system\cite{Deutsch76}.
 
 A fatal flaw, alas, with reference counting is that it cannot reclaim
 self-referential structures, even if they are
-garbage\cite{McBeth63}. Some systems make use of ``weak references'',
-references which do not cause the count to be modified, to offset
-this. However, this places a burden on the programmer and so loses
-some of the convenience of the system.
+garbage\cite{McBeth63}. Some systems make use of ``\glspl{weak
+  reference}'', references which do not cause the count to be
+modified, to offset this. However, this places a burden on the
+programmer and so loses some of the convenience of the system.
 
 \subsubsection{Mark-Sweep}
 
 The mark-sweep method was invented for the early Lisp
-systems\cite{McCarthy60}, and it functions by giving every block a
-\textit{mark bit}, which is initially unset. Upon running out of
+systems\cite{McCarthy60}, and it functions by giving every \gls{cell}
+a \textit{mark bit}, which is initially unset. Upon running out of
 memory, all cells reachable from the roots are marked (this can be
-done recursively quite simply), and then all blocks in the heap are
-examined: those which are unmarked are freed, and those which are
+done recursively quite simply), and then all \glspl{cell} in the heap
+are examined: those which are unmarked are freed, and those which are
 marked are unmarked, ready for the next collection.
 
 Compared to reference counting, mark-sweep is a very different beast:
 it handles cycles easily and there is no overhead on pointer
-operations. It does, however, ``stop the world'' in order to perform a
-collection\cite{GarbageCollection}. Furthermore, garbage collection
-becomes more frequent as heap residency increases.
+operations. It does, however, ``\gls{stop the world}'' in order to
+perform a collection\cite{GarbageCollection}. Furthermore, garbage
+collection becomes more frequent as \gls{heap residency} increases.
 
 These problems can be offset somewhat by interleaving the sweeping
-with the mutator (the user program, so called because it mutates the
-heap). Hughes's lazy sweep algorithm\cite{Hughes82} does this by
+with the \gls{mutator} (the user program, so called because it mutates
+the heap). Hughes's lazy sweep algorithm\cite{Hughes82} does this by
 performing a fixed amount of sweeping at each allocation, and so the
 only long garbage collection pause happens when the heap needs to be
 marked.
@@ -88,11 +88,11 @@ marked.
 
 Copying collectors divide the heap into two \textit{semispaces}, where
 allocation is only done in one of them at a time. In garbage
-collection, all live block are copied to the other semispace, and the
-roles of the semispaces are swapped\cite{Fenichel69}. Unlike
+collection, all live \gls{cell} are copied to the other semispace, and
+the roles of the semispaces are swapped\cite{Fenichel69}. Unlike
 mark-sweep collectors, the pause time of a copying collector is
-proportional only to the number of live blocks in the heap, rather
-than the size of the entire heap.
+proportional only to the number of live \glspl{cell} in the heap,
+rather than the size of the entire heap.
 
 Copying collectors have become fairly popular due to the low cost of
 allocation and reduction of fragmentation, however it has a cost of a
@@ -100,18 +100,20 @@ half of the heap space\cite{GarbageCollection}.
 
 \subsubsection{Mark-Compact}
 
-Heap fragmentation can be a great problem: there may be more than
-enough space to allocate something, but not enough contiguous space to
-do so. Furthermore, high fragmentation can increase the rate of page
-faults and cache misses, reducing the performance of the mutator.
+Heap \gls{fragmentation} can be a great problem: there may be more
+than enough space to allocate something, but not enough contiguous
+space to do so. Furthermore, high fragmentation can increase the rate
+of page faults and cache misses, reducing the performance of the
+mutator.
 
 Thus, we come to the mark-compact collectors. These first mark the
-live portion of the heap, and then copy marked blocks over garbage
-ones, moving everything towards one end of the heap in order to remove
-fragmentation. There are three ways of performing this compacting:
-blocks can be moved without regard for their original order; blocks
-which point to each other can be placed next to each other; and blocks
-can simply ``slide'' towards one end of the heap.
+live portion of the heap, and then copy marked \glspl{cell} over
+garbage ones, moving everything towards one end of the heap in order
+to remove fragmentation. There are three ways of performing this
+compacting: \glspl{cell} can be moved without regard for their
+original order; \glspl{cell} which point to each other can be placed
+next to each other; and \glspl{cell} can simply ``slide'' towards one
+end of the heap.
 
 Unfortunately, these collectors require multiple traversals over the
 heap, and so are potentially even slower than mark-sweep
@@ -129,12 +131,12 @@ which allocation occurs) and copying collector.
 
 \subsubsection{Generational Collectors}
 
-Generational garbage collection is a type of hybrid collector: the
-heap is divided into a number of \textit{generations}, where each
-generation holds progressively older blocks. This is based on
-empirical observations of block lifetimes resulting in the
-generational hypothesis: young objects die quickly, whereas old
-objects stick around\cite{Ungar84}.
+\Gls{generational garbage collection} is a type of \gls{hybrid
+  collector}: the heap is divided into a number of
+\textit{generations}, where each generation holds progressively older
+blocks. This is based on empirical observations of block lifetimes
+resulting in the generational hypothesis: young objects die quickly,
+whereas old objects stick around\cite{Ungar84}.
 
 Allocation happens in the youngest generation, and when that fills up
 a \textit{minor collection} is started. The generation is garbage
@@ -145,18 +147,18 @@ is started, which uses some other garbage collection
 algorithm\cite{GarbageCollection}.
 
 Generational garbage collection tends to perform well for languages
-where old-to-young pointers are rare, such as most functional
+where \glspl{old-to-young pointer} are rare, such as most functional
 languages, and so has become fairly popular amongst implementers of
 such languages.
 
 \section{Algorithm Verification}
 
-Algorithm, or software, verification is the process of constructing a
-mathematical proof that an algorithm behaves as we expect it to. In
-the case of software, we may prove the actual code implements the
-specification, in the case of an algorithm, we may be satisfied with
-merely proving that it satisfies various properties (such as
-termination).
+\Gls{algorithm verification} (or software verification) is the process
+of constructing a mathematical proof that an algorithm behaves as we
+expect it to. In the case of software, we may prove the actual code
+implements the specification, in the case of an algorithm, we may be
+satisfied with merely proving that it satisfies various properties
+(such as termination).
 
 We need verification because testing can never show that there are no
 bugs, it can only show that there have been no bugs found yet. A
@@ -167,7 +169,7 @@ There are two methods of verification: constructing the algorithm and
 then proving things about it, and constructing a proof and then
 extracting an algorithm out of it.
 
-\subsection{Verification by Proof}
+\subsection{Verification by Embedding}
 
 This is arguably the more difficult method of verification, as it
 consists of taking a fairly low-level implementation (often at the
@@ -182,11 +184,12 @@ the stack and heap.
 
 Once formalised, the axioms of the logic can be used to deduce
 propositions about the implementation. This can be, to some extent,
-automated using proof assistants, but in general this is undecidable.
+automated using \glspl{proof assistant}, but in general this is
+undecidable.
 
-As an example of verification by proof, consider the following short
-program, to find the index of the minimal element in a sequence of
-integers:
+As an example of \gls{verification by embedding}, consider the
+following short program, to find the index of the minimal element in a
+sequence of integers:
 
 \begin{verbatim}
 i := 0;
@@ -208,9 +211,10 @@ A full proof tree is displayed on the next page.
 
 \subsubsection{Loop Invariants}
 
-Proofs of programs involving loops rely on finding a loop invariant:
-some property which does not change over time as the loop is
-executed. This is expressed in Hoare logic with the while rule:
+Proofs of programs involving loops rely on finding a \gls{loop
+  invariant}: some property which does not change over time as the
+loop is executed. This is expressed in Hoare logic with the while
+rule:
 
 \begin{prooftree}
   \AxiomC{$\htriple{I \land B}{S}{I}$}
@@ -312,17 +316,17 @@ B$, yields the result we want.
 
 The other approach is to gradually work downwards from the high-level
 specification to the low-level implementation. This is called
-extraction, or refinement.
+\gls{verification by extraction}, or refinement.
 
 We start out by formalising the specification in some logic, such as Z
 or HOL, and then construct a slightly lower-level specification and
 prove that it is a correct refinement of the higher-level one. Whilst
 it may take many refinement steps to get actual code out of this
-process, each proof is between two very similar specifications, and so
-may be easier than the verification by proof method. Proof assistants
-may be more useful here than in verification by proof, but here the
-difficulty lies in finding the appropriate invariant to relate the two
-steps.
+process, each proof is between two very similar \glspl{specification},
+and so may be easier than the verification by proof
+method. \Glspl{proof assistant} may be more useful here than in
+verification by proof, but here the difficulty lies in finding the
+appropriate invariant to relate the two steps.
 
 Furthermore, there are often multiple choices of refinement step
 available, and so first few steps can be reused to construct different
@@ -335,24 +339,24 @@ algorithms, simply by making different choices at the lower levels.
 
 \section{Verified Garbage Collection}
 
-Finally, we look at two examples of garbage collectors which have been
-verified in different ways.
+Finally, we look at two examples of \glspl{garbage collector} which
+have been verified in different ways.
 
 \subsection{Reusable verification of a copying collector}
 
-Myreen\cite{Myreen10} has constructed a verified garbage collector
-using the extraction method: correctness was formalised using the HOL4
-theorem prover, was refined to produce an algorithm for correct
-copying collectors, and was then refined further to the level of
-verified machine code.
+Myreen\cite{Myreen10} has constructed a verified \gls{garbage
+  collector} using the extraction method: correctness was formalised
+using the HOL4 theorem prover, was refined to produce an algorithm for
+correct \gls{copying} \glspl{collector}, and was then refined further
+to the level of verified machine code.
 
-The collectors produced have been named L1, which is a specification
-of garbage collection; L2, which is an implementation of L1 as the
-transitive closure of a step relation; L3, which is a deterministic
-implementation of L2 with more realistic memory semantics; L4, which
-uses actual implementation types; and L5, which is verified machine
-code. L5 is constructed by earlier work of Myreen, on constructing a
-certifying compiler.
+The \glspl{collector} produced have been named L1, which is a
+specification of \gls{garbage collection}; L2, which is an
+implementation of L1 as the transitive closure of a step relation; L3,
+which is a deterministic implementation of L2 with more realistic
+memory semantics; L4, which uses actual implementation types; and L5,
+which is verified machine code. L5 is constructed by earlier work of
+Myreen, on constructing a certifying compiler.
 
 Other than the obvious, the main contribution of Myreen is that his
 proof is quite generic, as only the lowest level of refinement (L5)
@@ -367,18 +371,18 @@ collectors, providing an already formalised notion of correctness
 \subsection{Local Reasoning about a Copying Garbage Collector}
 
 Birkedal, Torp-Smith, and Reynolds\cite{Birkedal04} take a very
-different approach to Myreen, they take an existing garbage collector
-(Cheney's copying collector) and prove it correct, using a variant of
-separation logic.
+different approach to Myreen, they take an existing \gls{garbage
+  collector} (Cheney's copying collector) and prove it correct, using
+a variant of separation logic.
 
 Similarly to Myreen, they define correctness in terms of a heap
 isomorphism modulo garbage cells, and in particular, that the
 resultant heap has no garbage cells whatsoever.
 
 The motivation of this paper is to be a stepping stone towards
-programming logics which incorporate garbage collection, and so being
-able to prove the correctness of the combination of a program and a
-language runtime, which has thus far not been feasible.
+programming logics which incorporate \gls{garbage collection}, and so
+being able to prove the correctness of the combination of a program
+and a language runtime, which has thus far not been feasible.
 
 This paper contributes to the field an extension of separation logic
 with semantics for more types of assertion over finite sets, which is
