@@ -87,9 +87,42 @@ addresses to be renamed.
 In the case of \gls{reference counting} or \gls{mark-sweep} where
 \glspl{pointer} are not updated, we can of course use $f = \id$.
 
-\subsection{Generational Collectors}
+\subsection{Less Strict Collectors}
 
-\subsection{Incremental Collectors}
+The requirement of removing all \gls{garbage} may appear to be too
+strict for some types of collectors, such as generational (which only
+look at a part of the heap at a time) or incremental (which only
+perform a fixed amount of work each collection), however the formalism
+can also be applied to these types of collectors.
+
+\subsubsection{Generational Collectors}
+
+The problem with generational collectors is that we only look at one
+generation at a time, and so the heap may contain garbage in other
+generations which is not touched. Even worse, there may be
+\gls{garbage} in the collected generation, but which is pointed to by
+something from an older generation, and so is treated as live! This
+latter problem is known as \gls{nepotism}, and is a problem that must
+be overcome with \glspl{generational garbage collection}.
+
+We can resolve this problem with two tactics.
+
+\begin{enumerate}
+  \item For the correctness of minor collection, regard each
+    generation (along with all younger ones) as its own
+    \gls{heap}. The \glspl{root} are then the \glspl{root} of the
+    computation, plus any inbound \glspl{old-to-young pointer}.
+
+  \item For the correctness of major collection, consider the
+    \gls{heap} as a whole.
+\end{enumerate}
+
+Generational correctness, then, consists of showing that both the
+minor and major collections are correct. Furthermore, if the collector
+records young-to-old pointers as well as old-to-young, each generation
+can be regarded as its own heap.
+
+\subsubsection{Incremental Collectors}
 
 \section{Correctness of a Mark-Sweep Collector for Immutable
   Languages}

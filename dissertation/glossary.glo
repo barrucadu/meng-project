@@ -233,3 +233,19 @@
   name=data,
   description={something in the heap which is not a pointer}
 }
+
+\newglossaryentry{nepotism}
+{
+  name=nepotism,
+  description={the tendency for \gls{garbage} \glspl{cell} in old
+    generations to keep \glspl{cell} in younger generations alive, by
+    pointing to them}
+}
+
+\newglossaryentry{incremental collector}
+{
+  name=incremental collector,
+  plural=incremental collectors,
+  description={\gls{garbage collection} strategy where only a fixed
+    amount of work is done in each collection}
+}
