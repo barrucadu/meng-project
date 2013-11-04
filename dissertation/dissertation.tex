@@ -7,10 +7,6 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 
-% Short verbatim "between these"
-\usepackage{shortvrb}
-\MakeShortVerb{"}
-
 % Graphics support
 \usepackage{graphicx}
 \usepackage{epstopdf}
@@ -28,9 +24,19 @@
     anchorcolor=black
 }
 
+% Stuff at the end
+\usepackage[toc,page]{appendix}
+\usepackage[xindy]{glossaries}
+\usepackage[xindy]{imakeidx}
+\loadglsentries{glossary.glo}
+\renewcommand*{\glossaryentrynumbers}[1]{}
+\makeglossaries
+\makeindex
+
 % Advanced maths features
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{amsfonts}
 % Conditional macros
 \usepackage{xifthen}
 
@@ -69,6 +75,7 @@
 
 % Logic
 \usepackage{bussproofs}
+
 \newcommand{\htriple}[3]{\left\{#1\right\}\ \mbox{#2}\ \left\{#3\right\}}
 \newcommand{\len}{\mathrm{len}~}
 \newcommand{\true}{\mathbf{true}}
@@ -159,7 +166,16 @@ such there are no specific ethical implications.
 \include{06-results}
 \include{07-conclusion}
 
-\bibliographystyle{plain}
-\bibliography{references}
+\begin{appendices}
+  % \addcontentsline{toc}{subsection}{Index}
+  % \printindex
+
+  \addcontentsline{toc}{subsection}{Glossary}
+  \printglossaries
+
+  \addcontentsline{toc}{subsection}{Bibliography}
+  \bibliographystyle{plain}
+  \bibliography{references}
+\end{appendices}
 
 \end{document}

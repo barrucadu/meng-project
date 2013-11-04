@@ -2,9 +2,9 @@
 
 As systems become more complicated, we have a greater need for
 higher-level languages which abstract away from much of the underlying
-machine. A key part of such a language is a run-time memory management
-system, and in particular the automatic disposal of unneeded allocated
-memory: that is, garbage collection.
+machine. A key part of such a language is a run-time \gls{memory
+  management} system, and in particular the automatic disposal of
+unneeded allocated memory: that is, \gls{garbage collection}.
 
 \section{Motivation}
 
@@ -16,13 +16,13 @@ would remove the benefit of using a managed language in the first
 place. But these systems are not perfect: they are written and tested
 by humans, with formal verification being very uncommon.
 
-An arguably better approach is to design a garbage collector which is
-then formally verified, in order to be able to definitively eliminate
-all bugs from the collector, and so release the programmer from the
-possible worry of how it may fail. For total certainty, any
-implementation must be proven to be a faithful translation of the
-algorithm to machine code, however merely having a verified algorithm
-is a good stepping-stone towards this.
+An arguably better approach is to design a \gls{garbage collector}
+which is then formally verified, in order to be able to definitively
+eliminate all bugs from the \gls{collector}, and so release the
+programmer from the possible worry of how it may fail. For total
+certainty, any implementation must be proven to be a faithful
+translation of the algorithm to machine code, however merely having a
+verified algorithm is a good stepping-stone towards this.
 
 \section{Outline}
 
