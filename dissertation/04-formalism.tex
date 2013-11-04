@@ -124,6 +124,32 @@ can be regarded as its own heap.
 
 \subsubsection{Incremental Collectors}
 
+\Glspl{incremental collector}, similarly to generational collectors, only do
+a fixed amount of work each time. However, rather than dividing the
+heap up into subheaps, they pick up where they left off at the start
+of each collection. When the entire heap has been collected, they
+start again at the beginning.
+
+We can envision the collector as being somewhat like this:
+
+\begin{verbatim}
+set up the initial collector state
+
+while there is work to be done:
+    do a little collection
+    do a little mutation
+
+do any finalisation work
+\end{verbatim}
+
+Hopefully it can be seen that there is a trivial transformation from
+any \gls{incremental collector} to a stop-the-world \gls{collector}:
+we simply remove the ``do a little mutation'' step from the
+collector. The collector can still be invoked under the same
+circumstances as it would be when it was incremental, but now we pause
+the \gls{mutator} until all of the collection is done, and then return
+control to it.
+
 \section{Correctness of a Mark-Sweep Collector for Immutable
   Languages}
 
