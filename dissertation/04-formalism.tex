@@ -150,11 +150,55 @@ circumstances as it would be when it was incremental, but now we pause
 the \gls{mutator} until all of the collection is done, and then return
 control to it.
 
-\section{Correctness of a Mark-Sweep Collector for Immutable
-  Languages}
+\section{A Framework for Proof}
+
+In this section, a framework for proving correctness is proposed, as a
+series of specific lemmata, which should hopefully be easier to work
+with than the abstract formalism of correctness.
+
+\subsection{Garbage Collection: The Commonalities}
+
+Firstly, we must establish what it is that is common to all
+\glspl{garbage collector}. Somewhat trivially, we can see that
+\glspl{garbage collector}:
+
+\begin{enumerate}
+  \item Partition the \glspl{cell} into cells to keep and cells to
+    discard.
+  \item Free the cells to be discarded.
+  \item Move the cells to be kept.
+\end{enumerate}
+
+In the case of non-moving collectors, such as mark-sweep, the last
+point is not performed. In the case of moving collectors, such as
+mark-compact, the second is not explicitly performed. We can, however,
+intuitively see that these three steps are necessary for a garbage
+collector to be correct.
+
+Points 1 and 2 are performed by the \gls{heap} domain restriction, and
+point 3 is performed by the address translation function.
+
+\subsection{Heap Domain Restriction}
+
+\subsubsection{Cells to be Preserved}
+
+\subsubsection{Invariance of Data}
+
+\subsection{Address Translation}
+
+\subsubsection{Involution of Translation Function}
+
+\subsubsection{Consistency of Function Application}
+
+\section{Correctness of Mark-Sweep Collectors}
+
+\todo{Show how proof framework can be specialised for the case of
+  mark-sweep collectors}
+
+\subsection{For Immutable Languages}
 
 \todo{Proof of correctness of the Erlang collector}
 
-\section{Correctness of a Mark-Sweep Collector for Mutable Languages}
+\subsection{For Mutable Languages}
 
 \todo{Proof of correctness of the Runciman collector}
