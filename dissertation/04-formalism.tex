@@ -62,18 +62,14 @@ addresses (to borrow another idea from Myreen), we also need to allow
 addresses to be renamed.
 
 \begin{definition}[Translation]
-  Given a function $f : \addr \to \addr$, let $\map{f}{x}$ apply $f$
-  to every non-null pointer in a cell $x$, and $\rename{f}{h}$ update
-  all addresses in a heap $h$ by $f$.
+  Given an injective function $f : \addr \to \addr$, let $\map{f}{x}$
+  apply $f$ to every non-null pointer in a cell $x$, and
+  $\rename{f}{h}$ update all addresses in a heap $h$ by $f$.
 
   We now define a relation which performs consistent renaming over the
   entire heap:
 
-  \begin{prooftree}
-    \AxiomC{$f \of f = \id$}
-    \UnaryInfC{$(h, roots) \translate \left(\rename{f}{h},
-        \map{f}{roots}\right)$}
-  \end{prooftree}
+  \[(h, roots) \translate \left(\rename{f}{h}, \map{f}{roots}\right)\]
 \end{definition}
 
 \begin{definition}[Garbage Collection]
@@ -237,25 +233,26 @@ consideration.
 
 We shall call this translation function $f$.
 
-\subsubsection{Involution of Translation Function}
+\subsubsection{Consistency of Translation Function}
 
 Fundamentally, we need the translation function to be consistent. It
 cannot merge two addresses. It cannot throw any addresses
 away. Furthermore, it must (trivially) be from the set of addresses to
 the set of addresses.
 
-\begin{lemma}[$f$ is a permutation]
-  This follows from $f$ being a bijection on the set of addresses.
+We can express all of these with two requirements,
+
+\begin{lemma}[$f$ must be a function]
+  If $f$ is a function, then every address maps to one other address.
+
+  \[\forall a : \addr,\ \exists ! b : \addr,\ (a, b) \in f\]
 \end{lemma}
 
-More simply, we need $f$ to be a swap function: for all addresses $a$
-and $b$, if $f(a) = b$, then $f(b) = a$. To see why, consider that we
-are moving things in memory. We're moving \glspl{live cell} over
-\gls{garbage} ones (if there is any movement, that is), and so we can
-visualise this as swapping the two \glspl{cell}.
+\begin{lemma}[$f$ must be injective]
+  If $f$ is injective, then every pair of unique addresses map to
+  unique addresses.
 
-\begin{lemma}[$f$ is an involution]
-  This follows from $f$ being a permutation and a swap function.
+  \[\forall a, b \in \dom~f,\ f(a) = f(b) \iff a = b\]
 \end{lemma}
 
 \subsubsection{Consistency of Function Application}
@@ -275,8 +272,12 @@ entire \gls{heap}. We can separate this into thinking about the
   As address remapping is done after the domain restriction, we only
   need to concern ourselves with live cells here:
 
-  \[\reach{h'}{roots'} = \reach{\rename{f}{\reach{h}{roots}}}{roots'}\]
+  \[h' \restrict \reach{h'}{roots'} = \rename{f}{h \restrict \reach{h}{roots}}\]
 \end{lemma}
+
+\subsection{Sufficiency of the Framework}
+
+\todo{Prove that lemmata, together, imply partial correctness}
 
 \section{Correctness of Mark-Sweep Collectors}
 
