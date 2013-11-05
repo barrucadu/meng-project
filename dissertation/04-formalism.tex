@@ -272,12 +272,62 @@ entire \gls{heap}. We can separate this into thinking about the
   As address remapping is done after the domain restriction, we only
   need to concern ourselves with live cells here:
 
-  \[h' \restrict \reach{h'}{roots'} = \rename{f}{h \restrict \reach{h}{roots}}\]
+  \[h' \restrict \keep{h'}{roots'} = \rename{f}{h \restrict \keep{h}{roots}}\]
 \end{lemma}
 
 \subsection{Sufficiency of the Framework}
 
-\todo{Prove that lemmata, together, imply partial correctness}
+We now show that the lemmata, together, show that a relation is a
+garbage collection relation.
+
+\begin{theorem}[Heap Domain Restriction]
+  Firstly, we must show that only those cells which are live are
+  preserved by the domain restriction.
+
+  \begin{align*}
+    \keep{h}{roots} &\subseteq \reach{h}{roots} & \mbox{lemma 1}\\
+    \reach{h}{roots} &\subseteq \keep{h}{roots} & \mbox{lemma 2}\\
+    \therefore \keep{h}{roots} &= \reach{h}{roots}
+  \end{align*}
+
+  As lemmata 3 and 4 show that data is not modified, we can simply state,
+
+  \[h' = h \restrict \reach{h}{roots}\]
+\end{theorem}
+
+\begin{theorem}[Address Translation]
+  Given lemmata 5 and 6, $f$ is a consistent renaming function, and so
+  we simply need to show that we can deduce a translation relation. We
+  can see from lemma 8 that there is no garbage in the resultant heap:
+
+  \begin{align*}
+    h' \restrict \keep{h'}{roots'} &= \rename{f}{h \restrict
+      \keep{h}{roots}} &\mbox {lemma 8}\\
+    &= h' & \mbox{rename}
+  \end{align*}
+
+  We can now consider the moving/renaming part of the garbage
+  collector as a whole:
+
+  \begin{align*}
+    (h, r) \to (h', r') &= (h, r) \to \left(\rename{f}{h \restrict
+        \keep{h}{roots}}, \map{f}{r}\right) & \mbox{lemma 7}\\
+    &= (h \restrict \keep{h}{roots}, r) \translate (h', r') &\mbox{translate}
+  \end{align*}
+\end{theorem}
+
+Now these two results can be put together to show correct garbage
+collection.
+
+\begin{theorem}[Sufficiency of Framework]
+  \begin{align*}
+    (h, r) \to (h', r') &= (h \restrict \keep{h}{roots}, r) \translate
+    (h', r') & \mbox{thm. 2}\\
+    &= (h \restrict \reach{h}{roots}, r) \translate (h', r') &
+    \mbox{thm. 1}\\
+    &= (h, r) \gc (h', r') &\mbox{gc}
+  \end{align*}
+\end{theorem}
 
 \section{Correctness of Mark-Sweep Collectors}
 
