@@ -180,9 +180,45 @@ point 3 is performed by the address translation function.
 
 \subsection{Heap Domain Restriction}
 
+In order to show that the \gls{collector} performs a correct
+\gls{heap} domain restriction, we must show that nothing necessary is
+freed and no garbage is preserved, and that data fields are
+in the same state at the end of collection as they were at the start.
+
 \subsubsection{Cells to be Preserved}
 
+We define a set, $\keep{h}{roots}$ consisting of the set of
+\glspl{cell} preserved by the collector.
+
+\begin{lemma}[Nothing live discarded]
+  \[\reach{h}{roots} \subseteq \keep{h}{roots}\]
+\end{lemma}
+
+\begin{lemma}[No garbage preserved]
+  \[\garbage{h}{roots} \cap \keep{h}{roots} = \emptyset\]
+
+  It may be easier to prove the equivalent, reformulated, version:
+
+  \[\keep{h}{roots} \subseteq \reach{h}{roots}\]
+\end{lemma}
+
+It should be very easy to see that proving these two lemmata shows
+that $\keep{h}{roots} = \reach{h}{roots}$.
+
 \subsubsection{Invariance of Data}
+
+The only operations performed by the abstract collector are removing
+garbage cells and renaming pointers; there is no room for modifying
+data, or modifying pointers outside of the translation function (but
+that will be covered in the next subsection).
+
+Thus, we also need to show:
+
+\begin{lemma}[Data is unmodified]
+\end{lemma}
+
+\begin{lemma}[Null pointers remain null]
+\end{lemma}
 
 \subsection{Address Translation}
 
