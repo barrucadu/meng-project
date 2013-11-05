@@ -156,6 +156,12 @@ In this section, a framework for proving correctness is proposed, as a
 series of specific lemmata, which should hopefully be easier to work
 with than the abstract formalism of correctness.
 
+Additionally, having such a framework allows us to reason about small
+parts of a \gls{garbage collector}, rather the entire thing. It may be
+unfeasible to prove correctness for a large and complicated
+\gls{collector}, but proving that (for example) \glspl{pointer} are
+modified correctly may be enough.
+
 \subsection{Garbage Collection: The Commonalities}
 
 Firstly, we must establish what it is that is common to all
@@ -208,9 +214,10 @@ that $\keep{h}{roots} = \reach{h}{roots}$.
 \subsubsection{Invariance of Data}
 
 The only operations performed by the abstract collector are removing
-garbage cells and renaming pointers; there is no room for modifying
-data, or modifying pointers outside of the translation function (but
-that will be covered in the next subsection).
+garbage cells and renaming \glspl{pointer}; there is no room for
+modifying data, or modifying \glspl{pointer} outside of the
+translation function (but that will be covered in the next
+subsection).
 
 Thus, we also need to show:
 
@@ -222,9 +229,54 @@ Thus, we also need to show:
 
 \subsection{Address Translation}
 
+The second operation which the abstract \gls{collector} performs is a
+consistent renaming of \glspl{pointer} across the entire
+\gls{heap}. In order to reason about this, we must extract the
+\gls{pointer} renaming portion of the \gls{garbage collector} under
+consideration.
+
+We shall call this translation function $f$.
+
 \subsubsection{Involution of Translation Function}
 
+Fundamentally, we need the translation function to be consistent. It
+cannot merge two addresses. It cannot throw any addresses
+away. Furthermore, it must (trivially) be from the set of addresses to
+the set of addresses.
+
+\begin{lemma}[$f$ is a permutation]
+  This follows from $f$ being a bijection on the set of addresses.
+\end{lemma}
+
+More simply, we need $f$ to be a swap function: for all addresses $a$
+and $b$, if $f(a) = b$, then $f(b) = a$. To see why, consider that we
+are moving things in memory. We're moving \glspl{live cell} over
+\gls{garbage} ones (if there is any movement, that is), and so we can
+visualise this as swapping the two \glspl{cell}.
+
+\begin{lemma}[$f$ is an involution]
+  This follows from $f$ being a permutation and a swap function.
+\end{lemma}
+
 \subsubsection{Consistency of Function Application}
+
+Finally, we need to show that $f$ is applied consistently across the
+entire \gls{heap}. We can separate this into thinking about the
+\gls{root} set and the live \gls{heap}
+
+\begin{lemma}[Roots are remapped]
+  Specifically, the roots are remapped, no new roots are introduced,
+  and no roots are thrown away:
+
+  \[roots' = \map{f}{roots}\]
+\end{lemma}
+
+\begin{lemma}[Heap is remapped]
+  As address remapping is done after the domain restriction, we only
+  need to concern ourselves with live cells here:
+
+  \[\reach{h'}{roots'} = \reach{\rename{f}{\reach{h}{roots}}}{roots'}\]
+\end{lemma}
 
 \section{Correctness of Mark-Sweep Collectors}
 
