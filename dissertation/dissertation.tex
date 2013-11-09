@@ -47,6 +47,7 @@
 \newtheorem{theorem}{Theorem}
 
 % Drawings
+\usepackage[usenames,dvipsnames]{color}
 \usepackage{tikz}
 \usetikzlibrary{trees}
 
@@ -103,6 +104,21 @@
 \newcommand{\translate}{\xrightarrow{translate}}
 \newcommand{\id}{\mathrm{id}}
 \newcommand{\dom}{\mathrm{dom}}
+
+% Listings
+\usepackage{listings}
+
+\definecolor{LightGray}{rgb}{0.9,0.9,0.9}
+
+\lstset{basicstyle=\small\ttfamily}
+\lstset{showstringspaces=false}
+\lstset{numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt}
+\lstset{keywordstyle=\color{MidnightBlue}\bfseries}
+\lstset{commentstyle=\color{JungleGreen}}
+\lstset{identifierstyle=\color{OliveGreen}}
+\lstset{stringstyle=\color{Red}}
+\lstset{backgroundcolor=\color{LightGray}}
+\lstset{breaklines=true}
 
 \title{%
 {\normalsize\scshape University of York}\\

@@ -395,6 +395,161 @@ Furthermore, there are often multiple choices of refinement step
 available, and so first few steps can be reused to construct different
 algorithms, simply by making different choices at the lower levels.
 
+Another method of extraction is to write a constructive proof that the
+problem in question is soluble, and then to translate that into a
+program. If the problem is simple enough to admit a constructive
+proof, then this is a much simpler approach than refining all the way
+down from a specification. However, for nontrivial problems,
+constructing such a proof (easily) may not be possible.
+
+A worked example is presented on page \pageref{lit_extraction}, and
+some of the ideas used are discussed in the following sections.
+
+\subsubsection{Constructive Proof}
+
+Often when proving that a problem is soluble, we do not care about how
+an answer can be found, only that one exists. This can lead to very
+concise existence proofs; when extracting a program directly from the
+proof, however, we need to be able to show how to find the answer.
+
+We can do this by using witnesses in our proof. A witness is a value
+which shows a proposition to be correct. For example, $x = 2$ is a
+witness for $\exists x \in \mathbb N, x > 1$. If we have witnesses for
+everything we prove, then we know how to solve the problem.
+
+\subsubsection{Case Analysis}
+
+Proofs often diverge into multiple cases to be shown. For example, an
+inductive proof (covered in more detail in the next section) has a
+base case and an inductive case. Only by proving both cases do we
+prove the whole.
+
+Given a constructive proof, we can translate a case analysis to a
+switch statement (or conditional statement) in our program, and use
+the witnesses for each case to construct the solution to the entire
+switch.
+
+\subsubsection{Induction, Recursion, and Iteration}
+
+Proofs by induction require proving a base case, and then proving an
+inductive case given the inductive hypothesis (being able to solve a
+slightly smaller problem) holds. This naturally translates to the
+programming methodology of reduce-and-conquer.
+
+We can translate induction into iteration as follows:
+
+\begin{enumerate}
+  \item The base case is set up by the program at the beginning
+  \item The inductive case is performed one step at a time in a while
+    loop
+\end{enumerate}
+
+This is similar to the ladder-climbing analogy for induction: if you
+can get on the first rung, then you can get to the top, simply by
+going up one rung at a time.
+
+We can translate induction into recursion similarly:
+
+\begin{enumerate}
+  \item The base case is the recursive base case
+  \item The inductive case is the recursive case
+\end{enumerate}
+
+This, perhaps, is a more natural translation of induction, as it
+directly illustrates the splitting up of the problem into a slightly
+smaller one.
+
+\subsubsection{Types}
+
+We must be careful to honour any ``hidden'' assumptions in the
+proof. For example, if a proof requires a value to be a natural
+number, then we cannot use machine words in our program, unless it can
+also be proven that the natural numbers in question will always fit
+into this range.
+
+More generally, types in programming languages may not be identical to
+types used in proofs, and we must be careful not to invalidate the
+proof by getting the implementation types incorrect.
+
+\subsubsection{Program Transformations}
+
+When we extract a program from a proof, the structure of the program
+very closely mirrors that of the proof, as would be expected. However,
+this may not be considered good style. We can apply arbitrary
+transformations to the code of the extracted program, as long as these
+transformations preserve the semantics.
+
+\subsubsection{Worked Example}
+
+\phantomsection
+\label{lit_extraction}
+
+\begin{theorem}[Minimum Index]
+  For all nonempty sequences of integers, there exists an index of a
+  minimum element.
+
+  \[\forall n \in \mathbb N,\ 
+  \forall x_{1}, x_{2}, \ldots x_{n} \in \mathbb Z,\ 
+  \exists 1 \leq m \leq n,\ 
+  \forall 1 \leq i \leq n,\ 
+  x_{m} \leq x_{i}\]
+\end{theorem}
+
+\begin{proof}
+  By induction.
+
+  \begin{description}
+    \item[Base case (n=1)] $m = 1$ is a witness, by reflexivity of
+      $\leq$.
+
+    \item[Inductive case (n=k+1)] Divide the sequence into its head
+      and tail (the latter being of length $k$). Call the head $x$ and
+      the tail $xs$, for simplicity. Solve the case for $xs$, and call
+      the witness $m_{k}$.
+      \begin{description}
+        \item[If $x \leq xs_{m_k}$] Then $m = 1$ is a witness, by
+          transitivity of $\leq$.
+
+        \item[If $xs_{m_k} < x$] Then $m = m_{k} + 1$ is a witness, as
+          $xs_{1}$ is actually as position 2 in the original sequence
+          (it is all shifted right by one place).
+      \end{description}
+  \end{description}
+\end{proof}
+
+We can now, fairly directly, translate this proof into the following
+Haskell program:
+
+\begin{lstlisting}[language=haskell]
+import Data.List (genericIndex)
+
+f :: [Integer] -> Integer
+f sequence = case sequence of
+               [_] -> 1
+               (x:xs) -> let mk = f xs
+                        in if x <= genericIndex xs (mk - 1)
+                           then 1
+                           else 1 + mk
+\end{lstlisting}
+
+Even in such a short program, there are a couple of language-imposed
+complications, due to the mismatch of types. Firstly, the
+\texttt{genericIndex} function has to be used, as the list-indexing
+operator \texttt{(!!)} takes the index as a machine word; and
+secondly, the \texttt{mk} value has to be decremented when indexing,
+as list indices in Haskell start from 0, not 1.
+
+We can now apply semantics-preserving transformations to produce more
+idiomatic code:
+
+\begin{lstlisting}[language=haskell]
+f :: [Integer] -> Integer
+f [_] = 1
+f (x:xs) | x <= genericIndex xs (mk - 1) = 1
+         | otherwise = 1 + mk
+         where mk = f xs
+\end{lstlisting}
+
 \subsection{Proof Assistants}
 
 \todo{If I decide to use one, brief summary of what they are, and then
