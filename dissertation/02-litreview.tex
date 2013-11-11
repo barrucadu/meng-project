@@ -214,6 +214,14 @@ may wish to glance at that before reading the following sections,
 which explain the ideas used in the proof, and then examine it more
 closely.
 
+This approach is good to take if the property to be proven is more
+easily expressed by code than by proof. For example, a garbage
+collector may move things around in memory. Producing a constructive
+proof (as is used in extraction) that this is soluble and then
+plucking out the desired algorithm may be more difficult than
+implementing the algorithm, and then showing that is satisfies a
+``non-heap-clobbering'' invariant.
+
 \subsubsection{Preconditions and Postconditions}
 
 A precondition is some assertion which must hold before executing some
@@ -404,6 +412,13 @@ constructing such a proof (easily) may not be possible.
 
 A worked example is presented on page \pageref{lit_extraction}, and
 some of the ideas used are discussed in the following sections.
+
+This approach is good to take if the algorithm to be proven is quite
+complex, and would be difficult to prove correct by itself, but where
+the process of refining it from an initial specification may be
+easier. For example, we could start out with a formalism for garbage
+collection correctness, and then refine that until we produce an
+actual collector (as done by Myreen\cite{Myreen10}).
 
 \subsubsection{Constructive Proof}
 
