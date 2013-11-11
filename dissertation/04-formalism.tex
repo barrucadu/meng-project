@@ -155,6 +155,21 @@ circumstances as it would be when it was incremental, but now we pause
 the \gls{mutator} until all of the collection is done, and then return
 control to it.
 
+\subsection{Specialisation}
+
+This is intended to be a fairly general formalism that can be applied
+to a wide variety of garbage collectors, however this also means that
+it can be specialised in some cases.
+
+In the case of non-moving collectors, such as mark-sweep, the address
+translation function ($f$) is simply the identity function. Trivially,
+this is an injective function.
+
+Similarly, in copying collectors, where data is moved from one space
+to another, $f$ can be modelled as a swap function such that $f \of f
+= \id$. This makes $f$ an involution, and is also an injective
+function.
+
 \section{A Framework for Proof}
 
 In this section, a framework for proving correctness is proposed, as a
