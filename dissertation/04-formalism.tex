@@ -72,6 +72,15 @@ addresses to be renamed.
   \[(h, roots) \translate \left(\rename{f}{h}, \map{f}{roots}\right)\]
 \end{definition}
 
+Myreen requires $f$ to be an involution, as he is concerned with
+correctness for copying collectors, and so considers only global swap
+functions. In general, however, if we merely wish to preserve the
+property of not ``clobbering'' the heap (merging addresses or throwing
+addresses away), an injective function is all that is necessary. Thus,
+we can see that even at his highest-level formalism, Myreen already
+specialises for the case of copying collectors, and so it is not
+applicable outside of that domain.
+
 \begin{definition}[Garbage Collection]
   Garbage collection is the process of removing all garbage cells from
   the heap, and performing a consistent renaming of addresses.
