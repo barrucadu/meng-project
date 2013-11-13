@@ -354,8 +354,22 @@ collection.
 
 \section{Correctness of Mark-Sweep Collectors}
 
-\todo{Show how proof framework can be specialised for the case of
-  mark-sweep collectors}
+\Gls{mark-sweep} \glspl{collector} perform no moving or address
+translation, and preserve all \glspl{cell} which get marked. The proof
+obligations are thus as follows:
+
+\begin{prooftree}
+  \AxiomC{$\markset{h}{roots} = \keep{h}{roots}$}
+  \AxiomC{$\keep{h}{roots} = \reach{h}{roots}$}
+  \BinaryInfC{$(h, roots) \gc (h', roots')$}
+\end{prooftree}
+
+In addition, for the lack of data mutation to hold, all mark flags
+must be reset at the end of collection.
+
+In this section, we shall consider two simple mark-sweep collectors,
+specialised for different types of language, and show how the proofs
+for each differ.
 
 \subsection{For Immutable Languages}
 
