@@ -5,11 +5,11 @@
 Myreen starts out by formalising the \gls{heap} as a finite partial
 mapping from addresses to \glspl{cell} of \glspl{pointer} and
 \gls{data}. He then goes on to define garbage collection as removing
-all \gls{garbage} \glspl{cell} from the
-\gls{heap}\cite{Myreen10}. This may appear to be quite strict, as not
-all \glspl{garbage collector} examine the entire \gls{heap} in every
-collection, but I shall show how this can be generalised to other
-types of \gls{collector}.
+all \gls{garbage} \glspl{cell} from the \gls{heap} and then performing
+a consistent renaming of addresses\cite{Myreen10}. This may appear to
+be quite strict, as not all \glspl{garbage collector} examine the
+entire \gls{heap} in every collection, but it shall be shown how this
+can be generalised to other types of \gls{collector}.
 
 \begin{definition}[Heap]
   The heap is a finite partial mapping, $h$, from addresses (and null) to data:
@@ -49,8 +49,9 @@ would consist of all variables in scope.
   A cell is garbage if it is not reachable.
 
   \begin{prooftree}
+    \AxiomC{$x \in \dom~h$}
     \AxiomC{$x \notin \reach{h}{roots}$}
-    \UnaryInfC{$x \in \garbage{h}{roots}$}
+    \BinaryInfC{$x \in \garbage{h}{roots}$}
   \end{prooftree}
 \end{definition}
 
@@ -89,9 +90,6 @@ applicable outside of that domain.
   (h', r')\]
 \end{definition}
 
-In the case of \gls{reference counting} or \gls{mark-sweep} where
-\glspl{pointer} are not updated, we can of course use $f = \id$.
-
 \subsection{Less Strict Collectors}
 
 The requirement of removing all \gls{garbage} may appear to be too
@@ -125,7 +123,7 @@ We can resolve this problem with two tactics.
 Generational correctness, then, consists of showing that both the
 minor and major collections are correct. Furthermore, if the collector
 records young-to-old pointers as well as old-to-young, each generation
-can be regarded as its own heap.
+can be regarded as its own heap, simplifying the collection correctness.
 
 \subsubsection{Incremental Collectors}
 
@@ -161,14 +159,15 @@ This is intended to be a fairly general formalism that can be applied
 to a wide variety of garbage collectors, however this also means that
 it can be specialised in some cases.
 
-In the case of non-moving collectors, such as mark-sweep, the address
-translation function ($f$) is simply the identity function. Trivially,
-this is an injective function.
+In the case of non-moving collectors, such as mark-sweep, the
+translation relation ($\translate$) is the identity, which is
+equivalent to using $f = \id$, and so we must only consider the domain
+restriction.
 
 Similarly, in copying collectors, where data is moved from one space
-to another, $f$ can be modelled as a swap function such that $f \of f
-= \id$. This makes $f$ an involution, and is also an injective
-function.
+to another, the translation function ($f$) can be modelled as a swap
+function such that $f \of f = \id$. This makes $f$ an involution,
+which is a stricter requirement than being an injective function.
 
 \section{A Framework for Proof}
 
