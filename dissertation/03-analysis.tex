@@ -41,4 +41,40 @@ algorithm/formalism co-design, is to produce:
 
 \section{Evaluation Methodology}
 
-\todo{How I'm going to evaluate the work}
+The formalism and algorithm shall be evaluated separately.
+
+\subsection{Evaluating the Formalism}
+
+The formalism shall be evaluated by considering how well it applies to
+a variety of collectors. In this dissertation, only mark-sweep and
+copying will be proven, but the proof obligations for other types of
+collectors will be examined in order to determine if the formalism is
+capable of satisfying them.
+
+Furthermore, what the formalism doesn't state will be discussed, as in
+order to make it widely applicable it must abstract over the details
+which make each class of collector unique.
+
+Finally, it shall be compared to other formalisms, and the advantages
+and disadvantages of it over the others will be discussed.
+
+\subsection{Evaluating the Algorithm}
+
+The algorithm shall be compared to current garbage collection
+algorithms, in particular stop-the-world collectors, and the relative
+performance and ease of implementation discussed.
+
+\subsection{Qualiative Evaluation}
+
+Finally, how ``nice'' the formalism and algorithm are to use will be
+considered. The aim of the project is primarily to produce a flexible
+and generic formalism, but also to produce a formalism which can be
+used to ease the difficulty of proving correctness. Even if the
+formalism has everything that could be desired, if it is difficult to
+work with, there is scope for improvement.
+
+Similarly, the algorithm should be simplistic and primarily be used to
+illustrate the use of the formalism, but it should also be a
+realistically viable garbage collection algorithm. Whilst designing
+and verifying a concurrent real-time collector is out of scope for
+this project, it should still offer something new.
