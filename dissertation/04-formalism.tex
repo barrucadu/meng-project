@@ -373,7 +373,57 @@ for each differ.
 
 \subsection{For Immutable Languages}
 
-\todo{Proof of correctness of the Erlang collector}
+Armstrong and Virding\cite{Armstrong95} introduce a simple
+\gls{mark-sweep} \gls{collector} for Erlang, making use of the
+immutability of the language in order to combine the mark and sweep
+stages. The \gls{collector} operates on a \gls{heap} of cons cells,
+and uses a \gls{pointer} \texttt{SCAV} to keep track of the current
+position of the \gls{collector} in the heap.
+
+The algorithm is as follows:
+
+\begin{lstlisting}
+last = current
+SCAV = hist(last)
+while (SCAN != first) {
+    if (marked(SCAV)) {
+        possibly_mark(car(SCAV));
+        possibly_mark(cdr(SCAV));
+        unmark(SCAV);
+        last = SCAV;
+        SCAV = hist(last);
+    } else {
+        tmp = SCAV;
+        SCAV = hist(SCAV);
+        set_history(last, SCAV);
+        free_cons(tmp);
+    }
+}
+\end{lstlisting}
+
+The \texttt{possibly\_mark} function follows and marks its argument if
+it is a pointer; \texttt{first} and \texttt{current} point to the
+first and last allocated \glspl{cell}; the \texttt{hist} function
+returns a \gls{pointer} to the \gls{cell} allocated before its
+argument. It is assumed that all roots have been marked before calling
+the collector.
+
+This \gls{collector} works because the history fields form a linked
+list of allocated cells, going back to the beginning of time. As the
+language is immutable, pointers must always point back in time, and so
+if a cell is unmarked by the time it is reached (by following the
+history list), then it must be garbage.
+
+We can express this as a loop invariant: the portion of the heap which
+has been considered consists only of unmarked, reachable cells.
+
+\subsubsection{Partial Correctness}
+
+\todo{Proof that invariant holds}
+
+\subsubsection{Total Correctness}
+
+\todo{Proof that loop halts}
 
 \subsection{For Mutable Languages}
 
