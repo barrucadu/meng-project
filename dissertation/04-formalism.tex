@@ -385,7 +385,7 @@ The algorithm is as follows:
 \begin{lstlisting}
 last = current
 SCAV = hist(last)
-while (SCAN != first) {
+while (SCAV != first) {
     if (marked(SCAV)) {
         possibly_mark(car(SCAV));
         possibly_mark(cdr(SCAV));
@@ -419,11 +419,36 @@ has been considered consists only of unmarked, reachable cells.
 
 \subsubsection{Partial Correctness}
 
-\todo{Proof that invariant holds}
+Let $\id~x$ be the ``allocation ID'' of a cell $x$. The first cell has
+an ID of 0, and the ID of every other cell is 1 + the ID of the
+previously allocated cell.
+
+We can then express the loop invariant as follows:
+
+\[\forall x,\ \id~x > \id~\mathtt{SCAV} \implies
+\lnot \mathrm{marked}~x \land x \in \reach{h}{roots}\]
+
+The astute reader will notice that this says nothing about the first
+cell. This is because the collector contains no machinery to alter
+which cell is considered the ``first'' cell, and so cannot free it.
 
 \subsubsection{Total Correctness}
 
-\todo{Proof that loop halts}
+We can use allocation IDs to express that the history list forms an
+unbroken chain of cells, all the way back to the first cell, as
+follows:
+
+\[\forall x,\ \left(x = \mathrm{first} \implies x =
+  \mathrm{hist}(x)\right) \land \left(x \neq \mathrm{first} \implies
+  \exists n \in \mathbb N_{1},\ \id~x = n + \id~\mathrm{hist}(x)\right)\]
+
+The loop condition can be restated as $\id~\mathtt{SCAV} \neq 0$. As
+there are no IDs below 0 ($\mathrm{hist}(\mathrm{first}) =
+\mathrm{first}$), that can be further rewritten to $\id~\mathtt{SCAV}
+> 0$. \texttt{SCAV} starts out as the last-allocated cell, and so has
+an ID $\geq 0$. Now, in order to prove termination, we simply need to
+show that $\id~\mathtt{SCAV}$ decreases at every iteration of the
+loop.
 
 \subsection{For Mutable Languages}
 
