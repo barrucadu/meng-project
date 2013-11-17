@@ -450,6 +450,57 @@ an ID $\geq 0$. Now, in order to prove termination, we simply need to
 show that $\id~\mathtt{SCAV}$ decreases at every iteration of the
 loop.
 
+To simplify, let us throw away everything which does not relate to
+mutating \texttt{SCAV}, giving the following loop:
+
+\begin{lstlisting}
+while (SCAV != first) {
+    if (marked(SCAV)) {
+        last = SCAV;
+        SCAV = hist(last);
+    } else {
+        SCAV = hist(SCAV);
+    }
+}
+\end{lstlisting}
+
+Substituting variables, we get
+
+\begin{lstlisting}
+while (SCAV != first) {
+    if (marked(SCAV)) {
+        SCAV = hist(SCAV);
+    } else {
+        SCAV = hist(SCAV);
+    }
+}
+\end{lstlisting}
+
+And then we can eliminate the if statement:
+
+\begin{lstlisting}
+while (SCAV != first) {
+    SCAV = hist(SCAV);
+}
+\end{lstlisting}
+
+Trivially, we can now see that there are two cases:
+
+\begin{description}
+  \item[Case 1, $\mathtt{SCAV} = \mathrm{first}$] In this case,
+    $\mathrm{hist}(\mathtt{SCAV}) = \mathtt{SCAV}$, and so
+    $\id~\mathtt{SCAV}$ does not decrease, but this situation is
+    precisely the loop termination condition.
+
+  \item[Case 2, $\mathtt{SCAV} \neq \mathrm{first}$] In this case, we
+    know by the history list assumption that
+    $\id~\mathrm{hist}(\mathtt{SCAV}) < \id~\mathtt{SCAV}$, and so
+    $\id~\mathtt{SCAV}$ does decrease. Furthermore, we know that the
+    ID cannot decrease below zero, and so we get a strictly decreasing
+    sequence of positive natural numbers. Clearly, this sequence is
+    not infinite, and so the loop terminates.
+\end{description}
+
 \subsection{For Mutable Languages}
 
 \todo{Proof of correctness of the Runciman collector}
