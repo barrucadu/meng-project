@@ -405,8 +405,8 @@ The \texttt{possibly\_mark} function follows and marks its argument if
 it is a pointer; \texttt{first} and \texttt{current} point to the
 first and last allocated \glspl{cell}; the \texttt{hist} function
 returns a \gls{pointer} to the \gls{cell} allocated before its
-argument. It is assumed that all roots have been marked before calling
-the collector.
+argument. It is assumed that all roots (except \texttt{current}) have
+been marked before calling the collector.
 
 This \gls{collector} works because the history fields form a linked
 list of allocated cells, going back to the beginning of time. As the
@@ -426,11 +426,111 @@ previously allocated cell.
 We can then express the loop invariant as follows:
 
 \[\forall x,\ \id~x > \id~\mathtt{SCAV} \implies
-\lnot \mathrm{marked}~x \land x \in \reach{h}{roots}\]
+\lnot \mathrm{marked}(x) \land x \in \reach{h}{roots}\]
 
 The astute reader will notice that this says nothing about the first
 cell. This is because the collector contains no machinery to alter
-which cell is considered the ``first'' cell, and so cannot free it.
+which cell is considered the ``first'' cell, and so cannot free it. In
+order for the collector to be correct, we'll have to abuse terminology
+a bit and just define the first cell to be a root (and so not
+garbage).
+
+\todo{Actually prove these, an argument is a starting point, not a
+  proof. Read the Gries book to see if I could apply his array
+  reasoning.}
+
+\begin{lemma}[Lines 5 to 9 preserve the invariant]
+  \label{lem:erlang1}
+  \[\htriple{\mathrm{marked}(\mathrm{SCAV}) \land \mathrm{SCAV} \neq
+    \mathrm{first} \land I}{L5--9}{I}\]
+
+  Lines 5 and 6 aren't relevant here. Line 7 unmarks
+  \texttt{SCAV}. Then we have,
+
+  \begin{prooftree}
+    \AxiomC{$\htriple{I''}{L8}{I'}$}
+    \AxiomC{$\htriple{I'}{L9}{I}$}
+    \BinaryInfC{$\htriple{I''}{L8--9}{I}$}
+  \end{prooftree}
+
+  Where
+
+  \begin{align*}
+    I'' &\iff I'[\mathrm{hist}(\mathrm{last})/\mathrm{SCAV}]\\
+    &\iff
+    I[\mathrm{SCAV}/\mathrm{last}][\mathrm{hist}(\mathrm{last})/\mathrm{SCAV}]\\
+    &\iff \forall x,\ \id~x > \id~\mathrm{hist}(\mathrm{SCAV}) \implies
+    \lnot \mathrm{marked}(x) \land x \in \reach{h}{roots}\\
+  \end{align*}
+
+  We know that $I$ holds (by precondition), that \texttt{SCAV} is
+  reachable (by if rule), and that \texttt{SCAV} is unmarked (by line
+  7). Therefore, we know that $I''$ holds.
+
+  Thus, the lemma is true.
+\end{lemma}
+
+\begin{lemma}[Lines 11 to 14 preserve the invariant]
+  \label{lem:erlang2}
+  \[\htriple{\lnot\mathrm{marked}(\mathrm{SCAV}) \land \mathrm{SCAV}
+    \neq \mathrm{first} \land I}{L11--14}{I}\]
+
+  We know that \texttt{SCAV} is garbage, and that $I$ holds. Thus, if
+  we remove \texttt{SCAV}, $I$ will continue to hold as we
+  progress. This is what lines 13 and 14 do.
+\end{lemma}
+
+\begin{proof}[Garbage collection correctness]
+  Having proven these lemmata, we can now go ahead to show the
+  correctness of the collector as a whole,
+
+  \begin{prooftree}
+    \AxiomC{$\htriple{I''}{L1}{I'}$}
+    \AxiomC{$\htriple{I'}{L2}{I}$}
+    \BinaryInfC{$\htriple{I''}{L1--2}{I}$}
+
+    \AxiomC{lem. \ref{lem:erlang1}}
+    \AxiomC{lem. \ref{lem:erlang2}}
+    \BinaryInfC{$\htriple{I \land \mathrm{SCAV} \neq
+        \mathrm{first}}{L4--15}{I}$}
+
+    \UnaryInfC{$\htriple{I}{L3--16}{I \land \mathrm{SCAV} =
+        \mathrm{first}}$}
+
+    \BinaryInfC{$\htriple{I''}{\ldots}{I \land \mathrm{SCAV} =
+        \mathrm{first}}$}
+  \end{prooftree}
+
+  Where the following hold:
+
+  \begin{align*}
+    I &\iff \forall x,\ \id~x > \id~\mathtt{SCAV} \implies \lnot
+       \mathrm{marked}(x) \land x \in \reach{h}{roots}\\
+    I' &\iff I[\mathrm{hist}(\mathrm{last})/\mathrm{SCAV}]\\
+    &\iff \forall x,\ \id~x > \id~\mathrm{hist}(\mathrm{last})
+      \implies \lnot \mathrm{marked}(x) \land x \in \reach{h}{roots}\\
+    I'' &\iff I'[\mathrm{current}/\mathrm{last}]\\
+    &\iff \forall x,\ \id~x > \id~\mathtt{\mathrm{hist}(\mathrm{current})} \implies \lnot
+       \mathrm{marked}(x) \land x \in \reach{h}{roots}\\
+    &\iff \lnot\mathrm{marked}(\mathrm{current}) \land \mathrm{current}
+       \in \reach{h}{roots}
+  \end{align*}
+\end{proof}
+
+This proof, however, is flawed. It does not show that all reachable
+cells will be marked before they are collected. Thus, a separate proof
+of this is provided:
+
+\todo{Prove properly.}
+
+\begin{proof}[All reachable cells are marked before being collected]
+  We know that pointers can only point back in time, as the language
+  is immutable. This means that $a \pointsto b \implies \id~a >
+  \id~b$. By $I$ in Total Correctness, we know that the history list
+  is ordered by ID. By the code, we know that we traverse the history
+  list in order. Thus, if something is reachable, it will be marked
+  before it is visited.
+\end{proof}
 
 \subsubsection{Total Correctness}
 
@@ -500,6 +600,27 @@ Trivially, we can now see that there are two cases:
     sequence of positive natural numbers. Clearly, this sequence is
     not infinite, and so the loop terminates.
 \end{description}
+
+\subsubsection{Assumptions}
+
+In order for the proof to work I had to assume a few things:
+
+\begin{enumerate}
+  \item All roots get marked before calling the collection routine.
+
+  \item If \texttt{current} is a root, it does not get marked. This is
+    because it would then never be unmarked.
+
+  \item \texttt{current} and \texttt{first} are never garbage. This is
+    because the collector has no mechanism to remove these.
+\end{enumerate}
+
+The second is fairly unarguably a bug, as it requires a special case in
+the marking of the roots done before calling the collector. The third
+could be considered to not be a bug, as having the two ends of the
+history list be invariant does simplify the collector. It does,
+however, pose the risk that two cells which are, strictly speaking,
+garbage, survive a collection.
 
 \subsection{For Mutable Languages}
 
