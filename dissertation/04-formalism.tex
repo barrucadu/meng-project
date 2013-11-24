@@ -603,24 +603,38 @@ Trivially, we can now see that there are two cases:
 
 \subsubsection{Assumptions}
 
-In order for the proof to work I had to assume a few things:
+I have had to assume that all cells pointed to by roots are marked
+prior to collection, and furthermore have been able to establish
+details of how the allocator works. The allocator is not detailed in
+the Armstrong/Virding paper, but the precondition that
+\texttt{current} is never marked, and furthermore the observation that
+pointers in it are never followed, suggests details of how the
+allocator functions:
 
-\begin{enumerate}
-  \item All roots get marked before calling the collection routine.
+\begin{lstlisting}
+tmp = current
 
-  \item If \texttt{current} is a root, it does not get marked. This is
-    because it would then never be unmarked.
+current = get_new_cell()
+unmark(current)
+set_hist(current, tmp)
 
-  \item \texttt{current} and \texttt{first} are never garbage. This is
-    because the collector has no mechanism to remove these.
-\end{enumerate}
+car(tmp) = null
+cdr(tmp) = null
 
-The second is fairly unarguably a bug, as it requires a special case in
-the marking of the roots done before calling the collector. The third
-could be considered to not be a bug, as having the two ends of the
-history list be invariant does simplify the collector. It does,
-however, pose the risk that two cells which are, strictly speaking,
-garbage, survive a collection.
+return tmp
+\end{lstlisting}
+
+This ensures that \texttt{current} is always the cell at the end of
+the history list, and is the next cell to be allocated whenever one is
+requested. This does impose an overhead of one cell, but it simplifies
+the collector. We can also see that the free list is managed by
+\texttt{get\_new\_cell()} and \texttt{free\_cons()}.
+
+Finally, I have had to assume that \texttt{first} is never
+garbage. The collector has no machinery to remove it, and so if it
+does become garbage, the collector is no longer correct. In order to
+resolve this, we can just define the \texttt{first} cell to be always
+reachable. This imposes another one cell overhead.
 
 \subsection{For Mutable Languages}
 
