@@ -1,6 +1,7 @@
 \chapter{Correctness of Mark-Sweep Collectors}
 
-\todo{Outline of proof, formalism of necessary bits (eg heap)}
+\todo{Heap in terms of array formalism. Roots. Reachability. Keep
+  set. Garbage set. Free list. Partitioning the allocated cells.}
 
 \section{Marking}
 
@@ -16,6 +17,135 @@
 
 \section{Case Study: A Garbage Collector for Erlang}
 
-\todo{Slightly informal proof for Armstrong/Virding 
-collector. Informality is ok, because this is only to show the ideas
-are in the right direction.}
+Armstrong and Virding\cite{Armstrong95} introduce a simple
+\gls{mark-sweep} \gls{collector} for Erlang, making use of the
+immutability of the language in order to combine the mark and sweep
+stages. The \gls{collector} operates on a \gls{heap} of cons cells,
+and uses a \gls{pointer} \texttt{SCAV} to keep track of the current
+position of the \gls{collector} in the heap.
+
+The algorithm is as follows:
+
+\begin{lstlisting}
+last = current
+SCAV = hist(last)
+while (SCAV != first) {
+    if (marked(SCAV)) {
+        possibly_mark(car(SCAV));
+        possibly_mark(cdr(SCAV));
+        unmark(SCAV);
+        last = SCAV;
+        SCAV = hist(last);
+    } else {
+        tmp = SCAV;
+        SCAV = hist(SCAV);
+        set_history(last, SCAV);
+        free_cons(tmp);
+    }
+}
+\end{lstlisting}
+
+\todo{Recast in the array formalism. Include the allocator. Specify
+  the behaviour of all functions.}
+
+The \texttt{possibly\_mark} function follows and marks its argument if
+it is a pointer; \texttt{first} and \texttt{current} point to the
+first and last allocated \glspl{cell}; the \texttt{hist} function
+returns a \gls{pointer} to the \gls{cell} allocated before its
+argument. It is assumed that all cells pointed to by roots have been
+marked before calling the collector.
+
+This \gls{collector} works because the history fields form a linked
+list of allocated cells, going back to the beginning of time. As the
+language is immutable, pointers must always point back in time, and so
+if a cell is unmarked by the time it is reached (by following the
+history list), then it must be garbage.
+
+We can express this as a loop invariant: the portion of the heap which
+has been considered consists only of unmarked, reachable cells.
+
+\subsubsection{Partial Correctness}
+
+Let $\id~x$ be the ``allocation ID'' of a cell $x$. The first cell has
+an ID of 0, and the ID of every other cell is 1 + the ID of the
+previously allocated cell.
+
+We can then express the loop invariant as follows:
+
+\[\forall x,\ \id~x > \id~\mathtt{SCAV} \implies
+\lnot \mathrm{marked}~x \land x \in \reach{h}{roots}\]
+
+The astute reader will notice that this says nothing about the first
+cell. This is because the collector contains no machinery to alter
+which cell is considered the ``first'' cell, and so cannot free it.
+
+\todo{Proof}
+
+\subsubsection{Total Correctness}
+
+We can use allocation IDs to express that the history list forms an
+unbroken chain of cells, all the way back to the first cell, as
+follows:
+
+\[\forall x,\ \left(x = \mathrm{first} \implies x =
+  \mathrm{hist}(x)\right) \land \left(x \neq \mathrm{first} \implies
+  \exists n \in \mathbb N_{1},\ \id~x = n + \id~\mathrm{hist}(x)\right)\]
+
+The loop condition can be restated as $\id~\mathtt{SCAV} \neq 0$. As
+there are no IDs below 0 ($\mathrm{hist}(\mathrm{first}) =
+\mathrm{first}$), that can be further rewritten to $\id~\mathtt{SCAV}
+> 0$. \texttt{SCAV} starts out as the last-allocated cell, and so has
+an ID $\geq 0$. Now, in order to prove termination, we simply need to
+show that $\id~\mathtt{SCAV}$ decreases at every iteration of the
+loop.
+
+To simplify, let us throw away everything which does not relate to
+mutating \texttt{SCAV}, giving the following loop:
+
+\begin{lstlisting}
+while (SCAV != first) {
+    if (marked(SCAV)) {
+        last = SCAV;
+        SCAV = hist(last);
+    } else {
+        SCAV = hist(SCAV);
+    }
+}
+\end{lstlisting}
+
+Substituting variables, we get
+
+\begin{lstlisting}
+while (SCAV != first) {
+    if (marked(SCAV)) {
+        SCAV = hist(SCAV);
+    } else {
+        SCAV = hist(SCAV);
+    }
+}
+\end{lstlisting}
+
+And then we can eliminate the if statement:
+
+\begin{lstlisting}
+while (SCAV != first) {
+    SCAV = hist(SCAV);
+}
+\end{lstlisting}
+
+Trivially, we can now see that there are two cases:
+
+\begin{description}
+  \item[Case 1, $\mathtt{SCAV} = \mathrm{first}$] In this case,
+    $\mathrm{hist}(\mathtt{SCAV}) = \mathtt{SCAV}$, and so
+    $\id~\mathtt{SCAV}$ does not decrease, but this situation is
+    precisely the loop termination condition.
+
+  \item[Case 2, $\mathtt{SCAV} \neq \mathrm{first}$] In this case, we
+    know by the history list assumption that
+    $\id~\mathrm{hist}(\mathtt{SCAV}) < \id~\mathtt{SCAV}$, and so
+    $\id~\mathtt{SCAV}$ does decrease. Furthermore, we know that the
+    ID cannot decrease below zero, and so we get a strictly decreasing
+    sequence of positive natural numbers. Clearly, this sequence is
+    not infinite, and so the loop terminates.
+\end{description}
