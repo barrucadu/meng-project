@@ -16,24 +16,28 @@ simplifying the reasoning needed when dealing with potential
 side-effects. Furthermore, type data is needed for each word, as there
 must be some way of distinguishing \gls{pointer} data from non-pointer
 data, and establishing where the \gls{garbage collector} metadata
-lies.
+lies. It may seem that needing to tag every single word with a type is
+wasteful, but in the case where the \gls{collector} is able to
+determine this automatically, the type can be ``stored'' as a ghost
+variable.
 
 \begin{definition}[Cell]
-  A cell is a contiguous sequence of one or more contiguous words in
-  the heap, one of which is the garbage collection metadata
-  word. Metadata words precede data words, forming a header.
+  A cell is a contiguous sequence of one or more words in the heap,
+  one of which is the garbage collection metadata word. Metadata words
+  precede data words, forming a header.
 \end{definition}
 
 Next we move on to \glspl{cell}. I have ruled out the possibility of
 fragmented \glspl{cell}, as this can always be modelled by smaller
-\glspl{cell} which point to each other (and is really the only way
-that fragmentation could even be implemented). I have reserved an
+\glspl{cell} which point to each other (and this is really the only
+way that fragmentation could even be implemented). I have reserved an
 entire word for the use of the \gls{garbage collector}, but this is
 quite generous, and in practice would be reduced as much as
-possible. This reservation simplifies proofs, and can be worked-around
+possible. This reservation simplifies proofs, and can be worked around
 in practice by transforming a more efficient \gls{garbage collector}
 into a less efficient one, and then performing the proof: if the
-transformation is correct, the proof will hold for the original.
+transformation is correct, the proof will hold for the original,
+albeit with slightly different space characteristics.
 
 \begin{definition}[Pointer]
   A pointer is an index into the heap array, or a special value
