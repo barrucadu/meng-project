@@ -3,17 +3,38 @@
 \todo{Heap in terms of array formalism. Roots. Reachability. Keep
   set. Garbage set. Free list. Partitioning the allocated cells.}
 
+In this chapter, I shall talk about the necessary formalisms and proof
+obligations for mark-sweep collectors, building up to a proof of the
+Armstrong/Virding\cite{Armstrong95} collector.
+
 \section{Marking}
 
 \todo{Proof obligations for marking, and how they may be discharged}
+
+In this section I shall attack the problem of correct marking, firstly
+as a problem in fairly abstract graph theory, and then as a more
+concrete problem when dealing with an array of memory with pointers.
 
 \section{Sweeping}
 
 \todo{Proof obligations for sweeping, and how they may be discharged}
 
+In this section I shall consider sweeping, with an assumption that
+correct marking has already been performed. Specifically, I shall
+approach the problem by assuming that the goal of a sweeper is to
+partition the allocated cells into a ``live'' and a ``free'' list,
+where the live list is just what was reachable in memory
+before. Finally, I shall talk a little about interleaved marking and
+sweeping, such as happens in some incremental and other special-case
+collectors.
+
 \subsection{Interleaved Marking and Sweeping}
 
 \todo{Note on obligations arising from interleaving}
+
+In this subsection I shall talk about how sweeping and marking can be
+interleaved, having assumed in the prior sections that they are done
+one after the other.
 
 \section{Case Study: A Garbage Collector for Erlang}
 
@@ -149,3 +170,7 @@ Trivially, we can now see that there are two cases:
     sequence of positive natural numbers. Clearly, this sequence is
     not infinite, and so the loop terminates.
 \end{description}
+
+\section{Summary}
+
+\todo{Quick recap of formalism, proof obligations, and proof.}
