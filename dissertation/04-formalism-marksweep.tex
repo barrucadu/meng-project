@@ -39,6 +39,11 @@ into a less efficient one, and then performing the proof: if the
 transformation is correct, the proof will hold for the original,
 albeit with slightly different space characteristics.
 
+Now we'll define a couple of helper functions which will be of use
+later on: given a \gls{pointer}, $p$, let $\gchead{p}$ return a pointer to the
+\gls{garbage collection} metadata word in its header, and let
+$\alloc{p}$ be true if and only if the \gls{cell} has been allocated.
+
 \begin{definition}[Pointer]
   A pointer is an index into the heap array, or a special value
   ``null''. If non-null, a pointer points to the start of the data
@@ -56,26 +61,13 @@ be accessed by \gls{pointer} arithmetic.
 
 \section{Marking}
 
-\todo{Proof obligations for marking, and how they may be discharged}
-
 In this section I shall attack the problem of correct marking, firstly
-as a problem in fairly abstract graph theory, and then as a more
-concrete problem when dealing with an array of memory with pointers.
+as a problem in graph theory, and then as a more concrete problem when
+dealing with an array of memory with pointers.
 
-\todo{Everything pointed to gets marked}
-
-\section{Sweeping}
-
-\todo{Proof obligations for sweeping, and how they may be discharged}
-
-In this section I shall consider sweeping, with an assumption that
-correct marking has already been performed. Specifically, I shall
-approach the problem by assuming that the goal of a sweeper is to
-partition the allocated cells into a ``live'' and a ``free'' list,
-where the live list is just what was reachable in memory
-before. Finally, I shall talk a little about interleaved marking and
-sweeping, such as happens in some incremental and other special-case
-collectors.
+Let's start out by saying exactly what goes in that \gls{garbage
+  collection} metadata word. It is a mark flag, equal to 0 if the
+\gls{cell} has not been marked, and any other value if it has.
 
 \begin{definition}[Reachable]
   A cell is reachable if it is pointed to by a root, or pointed to by
@@ -99,6 +91,48 @@ collectors.
   The notation $a \pointsto b$ means that the cell $a$ contains a
   pointer to the cell $b$.
 \end{definition}
+
+If we abandon our array-based interpretation of memory for the moment,
+and instead consider the \gls{heap} to be a digraph of \glspl{cell}
+connected by \glspl{pointer}, then reachabilty can be defined
+inductively over the nodes of the graph very simply, and this lends
+itself to implementation with a recursive function. If we denote the
+set of all marked (and allocated) cells by $\markset{h}{roots}$, then
+what we want after marking is $\markset{h}{roots} = \reach{h}{roots}$.
+
+Returning to the array formalism, what we thus want from a marker is
+the following property:
+
+\begin{definition}[Correct Marking]
+  After marking, for all allocated \glspl{cell}, the mark flag is
+  unset if and only if the \gls{cell} is not reachable.
+
+  \[\forall c \in h,\ \alloc{c} \implies
+  \left(h\left[\gchead{c}\right] = 0 \iff c \notin
+    \reach{h}{roots}\right)\]
+\end{definition}
+
+Note that this does not say anything about unallocated
+\glspl{cell}. An unallocated \gls{cell} can contain any garbage, but
+then it is the job of the allocator to clean it up before handing it
+out to the \gls{mutator}.
+
+As we'll be referring to the property ``is marked'' multiple times,
+let's define a shorthand, $\marked{h, c} \iff h\left[\gchead{c}\right]
+\neq 0$.
+
+\section{Sweeping}
+
+\todo{Proof obligations for sweeping, and how they may be discharged}
+
+In this section I shall consider sweeping, with an assumption that
+correct marking has already been performed. Specifically, I shall
+approach the problem by assuming that the goal of a sweeper is to
+partition the allocated cells into a ``live'' and a ``free'' list,
+where the live list is just what was reachable in memory
+before. Finally, I shall talk a little about interleaved marking and
+sweeping, such as happens in some incremental and other special-case
+collectors.
 
 \todo{Keep set. (Implicit) Free list. Unmarking.}
 
