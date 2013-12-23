@@ -52,12 +52,11 @@ $\alloc{p}$ be true if and only if the \gls{cell} has been allocated.
 
 I have restricted \glspl{pointer} to only pointing at the start of the
 data portion of a \gls{cell}, as then going from an internal
-\gls{pointer} to a cell header does not need to be considered at
-all. Furthermore, I have specified that \glspl{pointer} point to the
-end of the header, as in practice the \gls{mutator} does not need to
-know about the metadata, and should not know: it should be for purely
-internal use. If the size of the header is known, any word in it can
-be accessed by \gls{pointer} arithmetic.
+\gls{pointer} to a cell header does not need to be considered at all,
+furthermore, in practice the \gls{mutator} does not need to know about
+the metadata, and should not know: it should be for purely internal
+use. If the size and layout of the header is known in advance, any
+word in it can be accessed by \gls{pointer} arithmetic.
 
 \section{Marking}
 
@@ -88,8 +87,7 @@ Let's start out by saying exactly what goes in that \gls{garbage
     \end{prooftree}
   \end{minipage}
 
-  The notation $a \pointsto b$ means that the cell $a$ contains a
-  pointer to the cell $b$.
+  The notation $a \pointsto b$ means that $a$ points to the cell $b$.
 \end{definition}
 
 If we abandon our array-based interpretation of memory for the moment,
@@ -115,7 +113,12 @@ the following property:
 Note that this does not say anything about unallocated
 \glspl{cell}. An unallocated \gls{cell} can contain any garbage, but
 then it is the job of the allocator to clean it up before handing it
-out to the \gls{mutator}.
+out to the \gls{mutator}. An alternative formulation would be
+$\alloc{c} \iff \left(\ldots\right)$, but this would then require the
+\gls{garbage collector} to unset the mark flag of any \gls{cell} it
+frees, and as \glspl{cell} need to be ``cleaned up'' before being
+given to the \gls{mutator} anyway, confining this to the allocator
+seems reasonable.
 
 As we'll be referring to the property ``is marked'' multiple times,
 let's define a shorthand, $\marked{h, c} \iff h\left[\gchead{c}\right]
