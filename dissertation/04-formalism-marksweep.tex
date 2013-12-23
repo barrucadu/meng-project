@@ -1,11 +1,54 @@
 \chapter{Correctness of Mark-Sweep Collectors}
 
-\todo{Heap in terms of array formalism. Roots. Reachability. Keep
-  set. Garbage set. Free list. Partitioning the allocated cells.}
-
 In this chapter, I shall talk about the necessary formalisms and proof
-obligations for mark-sweep collectors, building up to a proof of the
-Armstrong/Virding\cite{Armstrong95} collector.
+obligations for \gls{mark-sweep} \glspl{collector}, building up to a
+proof of the Armstrong/Virding\cite{Armstrong95} \gls{collector}.
+
+\begin{definition}[Heap]
+  The heap is an array of words in the form (type, data).
+\end{definition}
+
+Firstly, we need a \gls{heap}. I shall adopt the convention that the
+\gls{heap} is a flat array, and so \glspl{pointer} are just indexes
+into this array (or NULL). This allows me to use Gries' array
+formalism\cite{Gries87}, which models arrays as functions; thus
+simplifying the reasoning needed when dealing with potential
+side-effects. Furthermore, type data is needed for each word, as there
+must be some way of distinguishing \gls{pointer} data from non-pointer
+data, and establishing where the \gls{garbage collector} metadata
+lies.
+
+\begin{definition}[Cell]
+  A cell is a contiguous sequence of one or more contiguous words in
+  the heap, one of which is the garbage collection metadata
+  word. Metadata words precede data words, forming a header.
+\end{definition}
+
+Next we move on to \glspl{cell}. I have ruled out the possibility of
+fragmented \glspl{cell}, as this can always be modelled by smaller
+\glspl{cell} which point to each other (and is really the only way
+that fragmentation could even be implemented). I have reserved an
+entire word for the use of the \gls{garbage collector}, but this is
+quite generous, and in practice would be reduced as much as
+possible. This reservation simplifies proofs, and can be worked-around
+in practice by transforming a more efficient \gls{garbage collector}
+into a less efficient one, and then performing the proof: if the
+transformation is correct, the proof will hold for the original.
+
+\begin{definition}[Pointer]
+  A pointer is an index into the heap array, or a special value
+  ``null''. If non-null, a pointer points to the start of the data
+  section (end of the header) of a cell.
+\end{definition}
+
+I have restricted \glspl{pointer} to only pointing at the start of the
+data portion of a \gls{cell}, as then going from an internal
+\gls{pointer} to a cell header does not need to be considered at
+all. Furthermore, I have specified that \glspl{pointer} point to the
+end of the header, as in practice the \gls{mutator} does not need to
+know about the metadata, and should not know: it should be for purely
+internal use. If the size of the header is known, any word in it can
+be accessed by \gls{pointer} arithmetic.
 
 \section{Marking}
 
@@ -14,6 +57,8 @@ Armstrong/Virding\cite{Armstrong95} collector.
 In this section I shall attack the problem of correct marking, firstly
 as a problem in fairly abstract graph theory, and then as a more
 concrete problem when dealing with an array of memory with pointers.
+
+\todo{Everything pointed to gets marked}
 
 \section{Sweeping}
 
@@ -27,6 +72,31 @@ where the live list is just what was reachable in memory
 before. Finally, I shall talk a little about interleaved marking and
 sweeping, such as happens in some incremental and other special-case
 collectors.
+
+\begin{definition}[Reachable]
+  A cell is reachable if it is pointed to by a root, or pointed to by
+  a cell which is reachable.
+
+  \begin{minipage}{.5\textwidth}
+    \begin{prooftree}
+      \AxiomC{$r \in roots$}
+      \AxiomC{$r \pointsto a$}
+      \BinaryInfC{$a \in \reach{h}{roots}$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{.5\textwidth}
+    \begin{prooftree}
+      \AxiomC{$a \in \reach{h}{roots}$}
+      \AxiomC{$a \pointsto b$}
+      \BinaryInfC{$b \in \reach{h}{roots}$}
+    \end{prooftree}
+  \end{minipage}
+
+  The notation $a \pointsto b$ means that the cell $a$ contains a
+  pointer to the cell $b$.
+\end{definition}
+
+\todo{Keep set. (Implicit) Free list. Unmarking.}
 
 \subsection{Interleaved Marking and Sweeping}
 
