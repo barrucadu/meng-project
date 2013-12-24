@@ -10,29 +10,28 @@ proof of the Armstrong/Virding\cite{Armstrong95} \gls{collector}.
 
 Firstly, we need a \gls{heap}. I shall adopt the convention that the
 \gls{heap} is a flat array, and so \glspl{pointer} are just indexes
-into this array (or NULL). This allows me to use Gries' array
+into this array. This allows me to use Gries' array
 formalism\cite{Gries87}, which models arrays as functions; thus
 simplifying the reasoning needed when dealing with potential
 side-effects. Furthermore, type data is needed for each word, as there
 must be some way of distinguishing \gls{pointer} data from non-pointer
-data, and establishing where the \gls{garbage collector} metadata
-lies. It may seem that needing to tag every single word with a type is
+data. It may seem that needing to tag every single word with a type is
 wasteful, but in the case where the \gls{collector} is able to
 determine this automatically, the type can be ``stored'' as a ghost
 variable.
 
 \begin{definition}[Cell]
   A cell is a contiguous sequence of one or more words in the heap,
-  one of which is the garbage collection metadata word. Metadata words
-  precede data words, forming a header.
+  starting with a sequence of one or more metadata words used by the
+  garbage collector.
 \end{definition}
 
 Next we move on to \glspl{cell}. I have ruled out the possibility of
-fragmented \glspl{cell}, as this can always be modelled by smaller
+fragmented \glspl{cell}, as these can always be modelled by smaller
 \glspl{cell} which point to each other (and this is really the only
-way that fragmentation could even be implemented). I have reserved an
-entire word for the use of the \gls{garbage collector}, but this is
-quite generous, and in practice would be reduced as much as
+way that fragmentation could even be implemented). I have reserved at
+least an entire word for the use of the \gls{garbage collector}, but
+this is quite generous, and in practice would be reduced as much as
 possible. This reservation simplifies proofs, and can be worked around
 in practice by transforming a more efficient \gls{garbage collector}
 into a less efficient one, and then performing the proof: if the
@@ -40,14 +39,13 @@ transformation is correct, the proof will hold for the original,
 albeit with slightly different space characteristics.
 
 Now we'll define a couple of helper functions which will be of use
-later on: given a \gls{pointer}, $p$, let $\gchead{p}$ return a pointer to the
-\gls{garbage collection} metadata word in its header, and let
+later on: given a \gls{pointer}, $p$, let $\gchead{p}$ return a
+pointer to the start of the \gls{garbage collection} metadata, and let
 $\alloc{p}$ be true if and only if the \gls{cell} has been allocated.
 
 \begin{definition}[Pointer]
-  A pointer is an index into the heap array, or a special value
-  ``null''. If non-null, a pointer points to the start of the data
-  section (end of the header) of a cell.
+  A pointer is an index into the heap array, pointing to the start of
+  the data section (end of the header) of a cell.
 \end{definition}
 
 I have restricted \glspl{pointer} to only pointing at the start of the
@@ -58,6 +56,22 @@ the metadata, and should not know: it should be for purely internal
 use. If the size and layout of the header is known in advance, any
 word in it can be accessed by \gls{pointer} arithmetic.
 
+\begin{definition}[Word Preservation]
+  After garbage collection, no allocated cells have been mutated.
+
+   \[\forall c \in h,\ \forall w \in c,\ \alloc{c} \implies h[w] =
+   h'[w]\]
+
+   Here $h'$ refers to the state of $h$ before garbage collection
+   began, and $\forall w \in c$ ranges $w$ over the indices of the
+   non-header words in the cell.
+\end{definition}
+
+This is a necessary property of an entire mark-sweep collector, but
+may be broken by the marker or the sweeper, as long as it is restored
+at the end. As such, I have not included it in the definitions of
+correctness in the following two sections, but it is still essential.
+
 \section{Marking}
 
 In this section I shall attack the problem of correct marking, firstly
@@ -65,8 +79,8 @@ as a problem in graph theory, and then as a more concrete problem when
 dealing with an array of memory with pointers.
 
 Let's start out by saying exactly what goes in that \gls{garbage
-  collection} metadata word. It is a mark flag, equal to 0 if the
-\gls{cell} has not been marked, and any other value if it has.
+  collection} metadata. The first word is a mark flag, equal to 0 if
+the \gls{cell} has not been marked, and any other value if it has.
 
 \begin{definition}[Reachable]
   A cell is reachable if it is pointed to by a root, or pointed to by
@@ -121,31 +135,60 @@ given to the \gls{mutator} anyway, confining this to the allocator
 seems reasonable.
 
 As we'll be referring to the property ``is marked'' multiple times,
-let's define a shorthand, $\marked{h, c} \iff h\left[\gchead{c}\right]
+let's define a shorthand, $\marked{h}{c} \iff h\left[\gchead{c}\right]
 \neq 0$.
 
 \section{Sweeping}
 
-\todo{Proof obligations for sweeping, and how they may be discharged}
-
 In this section I shall consider sweeping, with an assumption that
-correct marking has already been performed. Specifically, I shall
-approach the problem by assuming that the goal of a sweeper is to
-partition the allocated cells into a ``live'' and a ``free'' list,
-where the live list is just what was reachable in memory
-before. Finally, I shall talk a little about interleaved marking and
-sweeping, such as happens in some incremental and other special-case
-collectors.
+correct marking has already been performed. Then, I shall talk a
+little about interleaved marking and sweeping, such as happens in some
+incremental and other special-case collectors.
 
-\todo{Keep set. (Implicit) Free list. Unmarking.}
+What do we mean when we say a sweeper is ``correct''? After a little
+thought, we will realise that we mean it doesn't deallocate any
+\glspl{cell} which were marked, and it unmarks all of the
+\glspl{cell}. In the case of a correct marker, this is equivalent to
+preserving and unmarking exactly the reachable \glspl{cell}, which
+(with the constraint of word preservation) is exactly what we want our
+\gls{collector} to do.
+
+\begin{definition}[Correct Sweeping]
+  All cells which are marked are preserved and unmarked, no garbage
+  cells are preserved, and nothing other than the garbage collector
+  metadata gets mutated.
+
+  \[\forall c \in h',\ \left(\alloc{c} \iff c \in
+    \markset{h'}{roots}\right) \land \left(\alloc{c} \implies
+    \lnot\marked{h}{c}\right)\]
+\end{definition}
+
+The essential component here is the $\iff$, the effect of which is to
+identify the set of allocated cells with the set of cells which were
+marked.
 
 \subsection{Interleaved Marking and Sweeping}
 
-\todo{Note on obligations arising from interleaving}
+I have hitherto assumed that marking happens in its entirety, and then
+sweeping happens in its entirety. However, sometimes marking and
+sweeping are interleaved, such that in each iteration of the collector
+a little more of each is done.
 
-In this subsection I shall talk about how sweeping and marking can be
-interleaved, having assumed in the prior sections that they are done
-one after the other.
+In order for correctness to hold here, we can conceptually separate it
+out into a marker and a sweeper, but rather than talking about the
+entire heap, we talk about the subheap considered so far. Thus, the
+correctness of each remains the same, but we have an additional proof
+obligation.
+
+\begin{definition}[Interleaved Marking/Sweeping Correctness]
+  When the ``sweeper'' considers a cell, the ``marker'' has already
+  marked it and everything it points to (if it was reachable).
+\end{definition}
+
+Thus, the ``marker'' always remains ahead of the ``sweeper'', and so
+no problems arise. In fact, we could consider normal \gls{mark-sweep}
+\glspl{collector} a special case of this, where this property
+trivially holds.
 
 \section{Case Study: A Garbage Collector for Erlang}
 
@@ -177,9 +220,6 @@ while (SCAV != first) {
 }
 \end{lstlisting}
 
-\todo{Recast in the array formalism. Include the allocator. Specify
-  the behaviour of all functions.}
-
 The \texttt{possibly\_mark} function follows and marks its argument if
 it is a pointer; \texttt{first} and \texttt{current} point to the
 first and last allocated \glspl{cell}; the \texttt{hist} function
@@ -188,13 +228,16 @@ argument. It is assumed that all cells pointed to by roots have been
 marked before calling the collector.
 
 This \gls{collector} works because the history fields form a linked
-list of allocated cells, going back to the beginning of time. As the
-language is immutable, pointers must always point back in time, and so
-if a cell is unmarked by the time it is reached (by following the
-history list), then it must be garbage.
+list of allocated \glspl{cell}, going back to the beginning of
+time. As the language is immutable, \glspl{pointer} must always point
+back in time, and so if a \gls{cell} is unmarked by the time it is
+reached (by following the history list), then it must be
+\gls{garbage}.
 
-We can express this as a loop invariant: the portion of the heap which
-has been considered consists only of unmarked, reachable cells.
+We can express this as a \gls{loop invariant}: the portion of the
+\gls{heap} which has been considered consists only of unmodified,
+reachable \glspl{cell}, and all \glspl{cell} which are directly
+reachable from a \gls{cell} in the considered region are marked.
 
 \subsubsection{Partial Correctness}
 
@@ -202,16 +245,256 @@ Let $\id~x$ be the ``allocation ID'' of a cell $x$. The first cell has
 an ID of 0, and the ID of every other cell is 1 + the ID of the
 previously allocated cell.
 
-We can then express the loop invariant as follows:
+We can then express the \gls{loop invariant} as follows:
 
-\[\forall x,\ \id~x > \id~\mathtt{SCAV} \implies
-\lnot \mathrm{marked}~x \land x \in \reach{h}{roots}\]
+\begin{align*}
+  \forall c \in h',\ \forall w \in c,\ &first \in \reach{h'}{c} \land
+  \id~c \geq \id~\mathtt{SCAV} \implies (\alloc{c} \iff c \in
+  \reach{h'}{roots})\\
+  &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
+  \marked{h}{c})\\
+  &\quad\land (\alloc{c} \land \id~c \geq \id~\mathtt{SCAV} \implies
+  (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV} \implies
+  \marked{h}{x}))
+\end{align*}
 
-The astute reader will notice that this says nothing about the first
-cell. This is because the collector contains no machinery to alter
-which cell is considered the ``first'' cell, and so cannot free it.
+As the \gls{collector} never touches the ``first'' \gls{cell}, in
+order for there to be no \gls{garbage} left over at the end, then it
+must necessarily be reachable. This is somewhat unusual, and arises
+purely because this \gls{collector} arguably has a bug, in that this
+one \gls{cell} of \gls{garbage} can survive a collection.
+
+Let's begin by rewriting the algorithm in terms of arrays, and expand
+out all of the functions within it. Furthermore, let's say that a cell
+in this scheme consists of two words of metadata and two of data,
+arranged in the order $\langle mark,\ history,\ car,\ cdr \rangle$.
+
+\begin{lstlisting}
+last = current
+SCAV = h[gchead(last) + 1]
+while (SCAV != first) {
+    if (marked(h, SCAV)) {
+        car = h[SCAV];
+        cdr = h[SCAV + 1];
+
+        if(type(car) == pointer) {
+            h[gchead(car)] = 1
+        } else {
+            skip
+        };
+
+        if(type(cdr) == pointer) {
+            h[gchead(cdr)] = 1
+        } else {
+            skip
+        };
+
+        h[gchead(SCAV)] = 0;
+
+        last = SCAV;
+        SCAV = h[gchead(last) + 1];
+    } else {
+        tmp = SCAV;
+        SCAV = h[gchead(SCAV) + 1];
+        h[gchead(last) + 1] = SCAV;
+        dealloc(tmp);
+    }
+}
+\end{lstlisting}
+
+I have replaced \texttt{free\_cons} with \texttt{dealloc}, as it more
+closely reflects what happens. The \gls{cell} in question is no longer
+considered to be allocated. Allocation is being tracked through an
+implicit ghost variable attached to each cell.
+
+Combining the correct marking, correct sweeping, and word preservation
+requirements, we arrive at the following postcondition for a correct
+\gls{garbage collector}: \[\forall c \in h',\ \forall w \in c,\
+(\alloc{c} \iff c \in \reach{h'}{roots}) \land (\alloc{c} \implies
+h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
 \todo{Proof}
+
+\begin{lemma}[Loop Invariant]
+  Firstly, let's show the sufficiency of the loop invariant:
+
+  \begin{align*}
+    \forall c \in h',\ \forall w \in c,\ 
+    &\mathtt{SCAV} = first \land first \in \reach{h'}{c} \land
+    \id~c \geq \id~\mathtt{SCAV} \implies (\alloc{c} \iff c \in
+    \reach{h'}{roots})\\
+    &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
+    \marked{h}{c})\\
+    &\quad\land (\alloc{c} \land \id~c \geq \id~\mathtt{SCAV} \implies
+    (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV} \implies
+    \marked{h}{x}))\\
+%
+    \forall c \in h',\ \forall w \in c,\ 
+    &\id~c \geq first \in \reach{h'}{c} \land \id~first
+    \implies (\alloc{c} \iff c \in \reach{h'}{roots})\\
+    &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
+    \marked{h}{c})\\
+    &\quad\land (\alloc{c} \land \id~c \geq \id~\mathtt{SCAV} \implies
+    (\forall c \pointsto x,\ \id~x < \id~first \implies
+    \marked{h}{x}))\\
+%
+    \forall c \in h',\ \forall w \in c,\ 
+    &(\alloc{c} \iff c \in \reach{h'}{roots}) \land (\alloc{c}
+    \implies h[w] = h'[w] \land \lnot \marked{h}{c})
+  \end{align*}
+
+  Now, we have to show it holds:
+
+  \begin{prooftree}
+    \AxiomC{$\htriple{I \land C \land M}{\ldots}{I}$}
+    \AxiomC{$\htriple{I \land C \land \lnot M}{\ldots}{I}$}
+    \BinaryInfC{$\htriple{I \land C}{if(marked(h, SCAV)) \ldots}{I}$}
+    \UnaryInfC{$\htriple{I}{while \ldots}{I \land \lnot C}$}
+  \end{prooftree}
+
+  where $C = \mathtt{SCAV} \neq first$ and $M =
+  \marked{h}{\mathtt{SCAV}}$.
+
+  This naturally separates into two cases, one for each branch of the
+  if statement. These are proven separately in lemmata \ref{lem:lia}
+  and \ref{lem:lib}.
+  \label{lem:li}
+\end{lemma}
+
+\begin{lemma}[Loop Invariant (first branch)]
+  Knowing that nothing in this branch deallocates cells, we can
+  immediately simplify the proof goals to these three conditions:
+
+  \begin{enumerate}
+    \item $\mathtt{SCAV} \in \reach{h'}{roots}$
+    \item $\forall w \in \mathtt{SCAV},\ h[w] = h'[w] \land
+      \lnot\marked{h}{\mathtt{SCAV}}$
+    \item $\forall \mathtt{SCAV} \pointsto x,\ \marked{h}{x}$
+  \end{enumerate}
+
+  Firstly, let's look at the two expansions of \texttt{possibly\_mark},
+  as they are almost identical. Let's refer to the variable holding
+  the possible pointer as $x$, and let $X \iff type(x) = pointer$.
+
+  \begin{prooftree}
+    \AxiomC{$\htriple{X \land P}{h[gchead(x)] = 1}{Q}$}
+
+    \AxiomC{$\lnot X \land P \implies Q$}
+    \UnaryInfC{$\htriple{\lnot X \land
+        P}{skip}{Q}$}
+    \BinaryInfC{$\htriple{P}{if(type(x) == pointer) \{ \ldots \} else \{
+          skip \}}{Q}$}
+  \end{prooftree}
+
+  The desired postcondition, of course, is \[(type(x) = pointer \land
+  \id~x < \id~SCAV) \implies \marked{h}{x}\]
+
+  Fortunately, we know that if $x$ is a pointer, then the allocation
+  ID of its \gls{cell} must be lower than that of the current
+  \gls{cell} because of the constraint over the entire system: data is
+  immutable. Thus, only backward pointers are possible, and so we can
+  simplify the postcondition to just \[type(x) = pointer \implies
+  \marked{h}{x}\]
+
+  If $x$ is a pointer, then it gets marked. If we fill in the gaps in
+  the proof tree as follows, then we can achieve this:
+
+  \begin{align*}
+    P &\iff type(x) = pointer \implies \marked{(h; \gchead{x}:1)}{x}\\
+    Q &\iff type(x) = pointer \implies \marked{h}{x}
+  \end{align*}
+
+  Now we must just show that the assignment works:
+
+  \begin{align*}
+    (X \land P)[h/(h; \gchead{x}:1)] &\iff (type(x) = pointer\\
+    &\quad\land (type(x) = pointer \implies \marked{(h;
+      \gchead{x}:1)}{x}))\\
+    &\quad[h/(h; \gchead{x}:1)]\\
+%
+    &\iff type(x) = pointer \land (type(x) = pointer \implies
+    \marked{h}{x})\\
+%
+    &\implies Q
+  \end{align*}
+
+  We can now see that by simply combining lines 5 to 18, we end up in
+  the state, \[(type(car) = pointer \implies \marked{h}{car}) \land
+  (type(cdr) = pointer \implies \marked{h}{cdr})\] which is exactly
+  what we want. We have just handled part (3) of the invariant.
+
+  We can now inductively apply this result, combined with the
+  precondition of this entire block, $\marked{h}{\mathtt{SCAV}}$ to
+  trivially see that part (1) holds.
+
+  Finally, we can see that we never assign to anything other than the
+  mark flags, and the mark flag of \texttt{SCAV} is unset on line 20,
+  and so part (2) holds.
+  \label{lem:lia}
+\end{lemma}
+
+\begin{lemma}[Loop Invariant (second branch)]
+  \todo{Symbolify this}
+
+  As we have assumed correct marking, we know that this cell is not
+  reachable from the roots. The invariant is broken on line 26, as an
+  unreachable cell is left in the list ahead of \texttt{SCAV}, but
+  then it is restored in lines 27 and 28, as the cell is removed and
+  deallocated. Thus, the invariant still holds.
+  \label{lem:lib}
+\end{lemma}
+
+\begin{proof}
+  Knowing that the loop invariant holds and is sufficient for
+  correctness, as established by lemma \ref{lem:li}, it only remains
+  to be shown that it holds at the start of the loop.
+
+  \begin{prooftree}
+    \AxiomC{$\htriple{I''}{last = current}{I'}$}
+    \AxiomC{$\htriple{I'}{\texttt{SCAV} = h[gchead(last) + 1]}{I}$}
+    \BinaryInfC{$\htriple{I''}{last = current; \texttt{SCAV} = h[gchead(last) + 1]}{I}$}
+  \end{prooftree}
+
+Furthermore, as $h$ refers to the current heap and $h'$ to the
+original heap (being a ghost variable), and as the heap has not been
+mutated yet, $h = h'$, which allows further simplifications to be made.
+
+  \begin{align*}
+    I' &= I[h[\gchead{last} + 1] / \mathtt{SCAV}]\\
+%
+    &= \forall c \in h,\ first \in \reach{h}{c}\\
+    &\quad\land \id~c \geq \id~h[\gchead{last} + 1] \implies
+    (\alloc{c} \iff c \in \reach{h}{roots})\\
+    &\quad\land (\alloc{c} \implies \lnot \marked{h}{c})\\
+    &\quad\land (\alloc{c} \land \id~c \geq \id~h[\gchead{last}+1] \implies\\
+    &\quad(\forall c \pointsto x,\ \id~x < \id~h[\gchead{last} + 1]
+    \implies \marked{h}{x}))\\\\
+%
+    I'' &= I'[current / last]\\
+    &= \forall c \in h,\ first \in \reach{h}{c}\\
+    &\quad\land \id~c \geq \id~h[\gchead{current} + 1] \implies
+    (\alloc{c} \iff c \in \reach{h}{roots})\\
+    &\quad\land (\alloc{c} \implies \lnot
+    \marked{h}{c})\\
+    &\quad\land (\alloc{c} \land \id~c \geq \id~h[\gchead{current}+1]
+    \implies\\
+    &\quad(\forall c \pointsto x,\ \id~x < \id~h[\gchead{current} + 1]
+    \implies \marked{h}{x}))\\
+%
+    &= \forall c \in h,\ first \in \reach{h}{c} \land (\alloc{c}
+    \implies \lnot \marked{h}{c})
+  \end{align*}
+
+  Thus, we can see that the algorithm is correct if, when it starts,
+  no \glspl{cell} are marked. As no \glspl{cell} are marked after it
+  completes, this becomes a constraint on the allocator, to unmark
+  recycled \glspl{cell} before giving them to the
+  \gls{mutator}. It can also be seen from the precondition that the
+  \gls{collector} has an overhead of one \gls{cell}: the ``first''
+  \gls{cell} is never collected, and so correctness does not strictly
+  hold if ``first'' is not reachable, but the \gls{collector} is close
+  enough such that it doesn't really matter.
+\end{proof}
 
 \subsubsection{Total Correctness}
 
@@ -221,7 +504,8 @@ follows:
 
 \[\forall x,\ \left(x = \mathrm{first} \implies x =
   \mathrm{hist}(x)\right) \land \left(x \neq \mathrm{first} \implies
-  \exists n \in \mathbb N_{1},\ \id~x = n + \id~\mathrm{hist}(x)\right)\]
+  \exists n \in \mathbb N_{1},\ \id~x = n +
+  \id~\mathrm{hist}(x)\right)\]
 
 The loop condition can be restated as $\id~\mathtt{SCAV} \neq 0$. As
 there are no IDs below 0 ($\mathrm{hist}(\mathrm{first}) =
