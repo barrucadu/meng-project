@@ -42,8 +42,30 @@ We can divide most garbage collection algorithms into four camps:
 choice of which to use is often determined by the behaviour of the
 particular system in which they will be used.
 
+Throughout this section, I shall be using a visual example to aid
+understanding. Figure \ref{fig:lit-gc-before} shows a \gls{heap}
+before \gls{garbage collection}, and for each \gls{collector}, I shall
+show the same \gls{heap} after collection. Green \glspl{cell} are
+those pointed to by the \glspl{root}, black are not garbage, red are
+garbage, and white are unallocated. A reference count is displayed in
+each \gls{cell}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{lit-gc-before}
+  \caption{Heap with garbage}
+  \label{fig:lit-gc-before}
+\end{figure}
+
 \subsubsection{Reference Counting}
 \label{sec:lit-gc-traditional-refcount}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{lit-gc-refcount}
+  \caption{Heap after reference counting}
+  \label{fig:lit-gc-refcount}
+\end{figure}
 
 Reference counting is a very simple scheme where each \gls{cell}
 contains a \textit{reference count}, some integer field which keeps
@@ -66,7 +88,7 @@ routinely processed to adjust the state of the entire
 system\cite{Deutsch76}.
 
 A fatal flaw, alas, with reference counting is that it cannot reclaim
-self-referential structures, even if they are
+self-referential structures, as shown in the example, even if they are
 garbage\cite{McBeth63}. Some systems make use of ``\glspl{weak
   reference}'', references which do not cause the count to be
 modified, to offset this. However, this places a burden on the
@@ -74,6 +96,13 @@ programmer and so loses some of the convenience of the system.
 
 \subsubsection{Mark-Sweep}
 \label{sec:lit-gc-traditional-marksweep}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{lit-gc-marksweep}
+  \caption{Heap after mark-sweep collection}
+  \label{fig:lit-gc-marksweep}
+\end{figure}
 
 The mark-sweep method was invented for the early Lisp
 systems\cite{McCarthy60}, and it functions by giving every \gls{cell}
@@ -100,10 +129,18 @@ marked.
 \subsubsection{Copying}
 \label{sec:lit-gc-traditional-copying}
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{lit-gc-copying}
+  \caption{Heap after copying collection}
+  \label{fig:lit-gc-copying}
+\end{figure}
+
 Copying collectors divide the heap into two \textit{semispaces}, where
 allocation is only done in one of them at a time. In garbage
-collection, all live \gls{cell} are copied to the other semispace, and
-the roles of the semispaces are swapped\cite{Fenichel69}. Unlike
+collection, all live \gls{cell} are copied to the other semispace (in
+the example this has been shown by shifting the addresses up by 8),
+and the roles of the semispaces are swapped\cite{Fenichel69}. Unlike
 mark-sweep collectors, the pause time of a copying collector is
 proportional only to the number of live \glspl{cell}.
 
@@ -113,6 +150,13 @@ of a half of the heap space\cite{GarbageCollection}.
 
 \subsubsection{Mark-Compact}
 \label{sec:lit-gc-traditional-markcompact}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{lit-gc-markcompact}
+  \caption{Heap after mark-compact collection}
+  \label{fig:lit-gc-markcompact}
+\end{figure}
 
 Heap \gls{fragmentation} can be a great problem: there may be more
 than enough space to allocate something, but not enough contiguous
