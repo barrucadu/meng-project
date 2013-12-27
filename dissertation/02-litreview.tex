@@ -33,9 +33,6 @@ deallocate it. Instead, some runtime system determines when
 reached by following pointers from the \glspl{root}---the set of
 variables in scope---or not.
 
-\subsection{The Traditional Algorithms}
-\label{sec:lit-gc-traditional}
-
 We can divide most garbage collection algorithms into four camps:
 \gls{reference counting}, \gls{mark-sweep}, \gls{copying}, and
 \gls{mark-compact}. Each is suited to different use-cases, and the
@@ -57,8 +54,8 @@ each \gls{cell}.
   \label{fig:lit-gc-before}
 \end{figure}
 
-\subsubsection{Reference Counting}
-\label{sec:lit-gc-traditional-refcount}
+\subsection{Reference Counting}
+\label{sec:lit-gc-refcount}
 
 \begin{figure}[h]
   \centering
@@ -94,8 +91,8 @@ garbage\cite{McBeth63}. Some systems make use of ``\glspl{weak
 modified, to offset this. However, this places a burden on the
 programmer and so loses some of the convenience of the system.
 
-\subsubsection{Mark-Sweep}
-\label{sec:lit-gc-traditional-marksweep}
+\subsection{Mark-Sweep}
+\label{sec:lit-gc-marksweep}
 
 \begin{figure}[h]
   \centering
@@ -126,8 +123,8 @@ performing a fixed amount of sweeping at each allocation, and so the
 only long garbage collection pause happens when the heap needs to be
 marked.
 
-\subsubsection{Copying}
-\label{sec:lit-gc-traditional-copying}
+\subsection{Copying}
+\label{sec:lit-gc-copying}
 
 \begin{figure}[h]
   \centering
@@ -148,8 +145,8 @@ Copying collectors have become fairly popular due to the low cost of
 allocation and reduction of fragmentation, however it has a space cost
 of a half of the heap space\cite{GarbageCollection}.
 
-\subsubsection{Mark-Compact}
-\label{sec:lit-gc-traditional-markcompact}
+\subsection{Mark-Compact}
+\label{sec:lit-gc-markcompact}
 
 \begin{figure}[h]
   \centering
@@ -180,7 +177,7 @@ collectors\cite{GarbageCollection}.
 \subsection{Hybrid Collectors}
 \label{sec:lit-gc-hybrid}
 
-Sometimes any one of the traditional algorithms is not quite good
+Sometimes any one of the ``standard'' algorithms is not quite good
 enough for a particular problem, and a better collector can be formed
 by combining them. For example, reference counting could be combined
 with periodic copying, in order to reclaim cyclic structures and
