@@ -401,7 +401,8 @@ B$, yields the result we want.
   \BinaryInfC{$\htriple{R(j) \land I}{if \ldots; j := j + 1}{I}$}
   \UnaryInfC{$\htriple{I}{while \ldots}{\lnot R(j) \land I}$}
 
-  \BinaryInfC{$\htriple{L}{P}{C}$}
+  \BinaryInfC{$\htriple{\len xs > 0}{i := 0; j := 0; while j < len xs do if
+      xs[j] < xs[i] then i := j else skip; j := j + 1}{xs[i] = \min xs}$}
 \end{prooftree}
 
 \begin{multicols}{3}
