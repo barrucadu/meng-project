@@ -1,4 +1,5 @@
 \chapter{Literature Review}
+\label{sec:lit}
 
 \todo{This is all very general: perhaps make more specific as more
   details of the project get worked out}
@@ -9,6 +10,7 @@ algorithm and software verification, and current work in the
 production of verified garbage collectors.
 
 \section{Garbage Collection}
+\label{sec:lit-gc}
 
 Garbage collection is the process of automatically reclaiming unneeded
 allocated memory from a program. In languages with manual memory
@@ -25,6 +27,7 @@ reached by following pointers from the \glspl{root}---the set of
 variables in scope---or not.
 
 \subsection{The Traditional Algorithms}
+\label{sec:lit-gc-traditional}
 
 We can divide most garbage collection algorithms into four camps:
 \gls{reference counting}, \gls{mark-sweep}, \gls{copying}, and
@@ -33,6 +36,7 @@ choice of which to use is often determined by the behaviour of the
 particular system in which they will be used.
 
 \subsubsection{Reference Counting}
+\label{sec:lit-gc-traditional-refcount}
 
 Reference counting is a very simple scheme where each \gls{cell}
 contains a \textit{reference count}, some integer field which keeps
@@ -62,6 +66,7 @@ modified, to offset this. However, this places a burden on the
 programmer and so loses some of the convenience of the system.
 
 \subsubsection{Mark-Sweep}
+\label{sec:lit-gc-traditional-marksweep}
 
 The mark-sweep method was invented for the early Lisp
 systems\cite{McCarthy60}, and it functions by giving every \gls{cell}
@@ -86,6 +91,7 @@ only long garbage collection pause happens when the heap needs to be
 marked.
 
 \subsubsection{Copying}
+\label{sec:lit-gc-traditional-copying}
 
 Copying collectors divide the heap into two \textit{semispaces}, where
 allocation is only done in one of them at a time. In garbage
@@ -99,6 +105,7 @@ allocation and reduction of fragmentation, however it has a space cost
 of a half of the heap space\cite{GarbageCollection}.
 
 \subsubsection{Mark-Compact}
+\label{sec:lit-gc-traditional-markcompact}
 
 Heap \gls{fragmentation} can be a great problem: there may be more
 than enough space to allocate something, but not enough contiguous
@@ -120,6 +127,7 @@ heap, and so are potentially even slower than mark-sweep
 collectors\cite{GarbageCollection}.
 
 \subsection{Hybrid Collectors}
+\label{sec:lit-gc-hybrid}
 
 Sometimes any one of the traditional algorithms is not quite good
 enough for a particular problem, and a better collector can be formed
@@ -130,6 +138,7 @@ a hybrid mark-region (memory is divided into large regions, inside
 which allocation occurs) and copying collector.
 
 \subsubsection{Generational Collectors}
+\label{sec:lit-gc-hybrid-generational}
 
 \Gls{generational garbage collection} is a type of \gls{hybrid
   collector}: the heap is divided into a number of
@@ -152,6 +161,7 @@ languages, and so has become fairly popular amongst implementers of
 such languages.
 
 \section{Algorithm Verification}
+\label{sec:lit-verification}
 
 \Gls{algorithm verification} (or software verification) is the process
 of constructing a mathematical proof that an algorithm behaves as we
@@ -170,6 +180,7 @@ then proving things about it, and constructing a proof and then
 extracting an algorithm out of it.
 
 \subsection{Verification by Embedding}
+\label{sec:lit-verification-embedding}
 
 This is arguably the more difficult method of verification, as it
 consists of taking a fairly low-level implementation (often at the
@@ -209,10 +220,10 @@ establish (using Hoare triples) $\htriple{\len xs > 0}{P}{xs[i] = \min
 assertion $P$ holds before executing a statement $S$, then the
 assertion $Q$ holds afterwards.
 
-A full proof tree is displayed on page \pageref{lit_hoare_proof}, you
-may wish to glance at that before reading the following sections,
-which explain the ideas used in the proof, and then examine it more
-closely.
+A full proof tree is displayed on page
+\pageref{sec:lit-verification-embedding-example}, you may wish to
+glance at that before reading the following sections, which explain
+the ideas used in the proof, and then examine it more closely.
 
 This approach is good to take if the property to be proven is more
 easily expressed by code than by proof. For example, a garbage
@@ -223,6 +234,7 @@ implementing the algorithm, and then showing that is satisfies a
 ``non-heap-clobbering'' invariant.
 
 \subsubsection{Preconditions and Postconditions}
+\label{sec:lit-verification-embedding-conditions}
 
 A precondition is some assertion which must hold before executing some
 code, and a postcondition is some assertion which must hold
@@ -253,6 +265,7 @@ This allows localised proofs to be used in a larger proof, and so
 facilitates modularity.
 
 \subsubsection{Axiomatic Semantics}
+\label{sec:lit-verification-embedding-axioms}
 
 Axiomatic semantics allow us to reason about programs by providing
 tools to reason about the effect of program statements on program
@@ -282,6 +295,7 @@ often a very good starting point for then constructing a specific
 proof for the property we wish to establish.
 
 \subsubsection{Loop Invariants}
+\label{sec:lit-verification-embedding-invariants}
 
 Proofs of programs involving loops rely on finding a \gls{loop
   invariant}: some property which does not change over time as the
@@ -311,7 +325,7 @@ B$, yields the result we want.
 \begin{lscape}
 
 \phantomsection
-\label{lit_hoare_proof}
+\label{sec:lit-verification-embedding-example}
 
 \begin{prooftree}
   \AxiomC{$\htriple{I[1/j][0/i]}{i := 0}{I[0/j]}$}
@@ -388,6 +402,7 @@ B$, yields the result we want.
 \end{lscape}
 
 \subsection{Verification by Extraction}
+\label{sec:lit-verification-extraction}
 
 The other approach is to gradually work downwards from the high-level
 specification to the low-level implementation. This is called
@@ -426,6 +441,7 @@ collection correctness, and then refine that until we produce an
 actual collector (as done by Myreen\cite{Myreen10}).
 
 \subsubsection{Constructive Proof}
+\label{sec:lit-verification-extraction-constructive}
 
 Often when proving that a problem is soluble, we do not care about how
 an answer can be found, only that one exists. This can lead to very
@@ -441,6 +457,7 @@ witness for $\exists x \in \mathbb N, x > 1$. If we have witnesses for
 everything we prove, then we know how to solve the problem.
 
 \subsubsection{Case Analysis}
+\label{sec:lit-verification-extraction-cases}
 
 Proofs often diverge into multiple cases to be shown. For example, an
 inductive proof (covered in more detail in the next section) has a
@@ -453,6 +470,7 @@ the witnesses for each case to construct the solution to the entire
 switch.
 
 \subsubsection{Induction, Recursion, and Iteration}
+\label{sec:lit-verification-extraction-induction}
 
 Proofs by induction require proving a base case, and then proving an
 inductive case given the inductive hypothesis (being able to solve a
@@ -483,6 +501,7 @@ directly illustrates the splitting up of the problem into a slightly
 smaller one.
 
 \subsubsection{Types}
+\label{sec:lit-verification-extraction-types}
 
 We must be careful to honour any ``hidden'' assumptions in the
 proof. For example, if a proof requires a value to be a natural
@@ -495,6 +514,7 @@ types used in proofs, and we must be careful not to invalidate the
 proof by getting the implementation types incorrect.
 
 \subsubsection{Program Transformations}
+\label{sec:lit-verification-extraction-transformation}
 
 When we extract a program from a proof, the structure of the program
 very closely mirrors that of the proof, as would be expected. However,
@@ -503,6 +523,7 @@ transformations to the code of the extracted program, as long as these
 transformations preserve the semantics.
 
 \subsubsection{Worked Example}
+\label{sec:lit-verification-extraction-example}
 
 \phantomsection
 \label{lit_extraction}
@@ -574,11 +595,13 @@ f _ = 1
 \end{lstlisting}
 
 \section{Verified Garbage Collection}
+\label{sec:lit-verifiedgc}
 
 Finally, we look at two examples of \glspl{garbage collector} which
 have been verified in different ways.
 
 \subsection{Reusable verification of a copying collector}
+\label{sec:lit-verifiedgc-myreen}
 
 Myreen\cite{Myreen10} has constructed a verified \gls{garbage
   collector} using the extraction method: correctness was formalised
@@ -604,6 +627,7 @@ As is shown in chapter 4, his L1 collector can be generalised to
 non-copying collectors, with minor changes to the formalism.
 
 \subsection{Local Reasoning about a Copying Garbage Collector}
+\label{sec:lit-verifiedgc-birkedal}
 
 Birkedal, Torp-Smith, and Reynolds\cite{Birkedal04} take a very
 different approach to Myreen, they take an existing \gls{garbage

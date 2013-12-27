@@ -1,4 +1,5 @@
 \chapter{Introduction}
+\label{sec:intro}
 
 As programs become more complicated, we have a greater need for
 high-level languages which abstract away from much of the underlying
@@ -7,6 +8,7 @@ machine. A key part of such a language is a run-time \gls{memory
 unneeded allocated memory: that is, \gls{garbage collection}.
 
 \section{Motivation}
+\label{sec:intro-motivation}
 
 Garbage collection is an important part of many modern programming
 languages, however there is an implicit assumption that it never goes
@@ -25,6 +27,7 @@ translation of the algorithm to machine code, however merely having a
 verified algorithm is a good stepping-stone towards this.
 
 \section{Goals and Contributions}
+\label{sec:intro-goals}
 
 In this project, I intend to develop a flexible formalism that can be
 applied to determine the correctness of a variety of types of
@@ -36,21 +39,23 @@ deriving a more abstract and widely-applicable formalism.
 \todo{Contributions}
 
 \section{Outline}
+\label{sec:intro-outline}
 
-Chapter 2 summarises the historical context and recent developments in
-the field of the project are presented, and is built upon in Chapter 3
-where the literature-motivated aims of the project are presented.
+Chapter \ref{sec:lit} summarises the historical context and recent
+developments in the field of the project are presented, and is built
+upon in Chapter 3 where the literature-motivated aims of the project
+are presented.
 
-Chapters 4 to 6 proceed to formalise partial correctness for
-garbage collection, by considering independently mark-sweep and
-copying collectors, and then abstracting from the specifics of both to
-produce a general formalism.
+Chapters \ref{sec:marksweep} to \ref{sec:gc} proceed to formalise
+partial correctness for garbage collection, by considering
+independently mark-sweep and copying collectors, and then abstracting
+from the specifics of both to produce a general formalism.
 
-Chapter 7 develops a garbage collection algorithm, proves it
-correct using the formalism, and then shows an implementation of the
-algorithm in a language runtime. The relation between algorithm and
-code is then discussed.
+Chapter \ref{sec:algorithm} develops a garbage collection algorithm,
+proves it correct using the formalism, and then shows an
+implementation of the algorithm in a language runtime. The relation
+between algorithm and code is then discussed.
 
-Finally, Chapters 8 and 9 summarise the contributions of the project
-and what remains to be done, as well as discussing limitations of the
-work.
+Finally, Chapters \ref{sec:results} and \ref{sec:conclusion} summarise
+the contributions of the project and what remains to be done, as well
+as discussing limitations of the work.

@@ -1,4 +1,5 @@
 \chapter{Correctness of Mark-Sweep Collectors}
+\label{sec:marksweep}
 
 In this chapter, I shall talk about the necessary formalisms and proof
 obligations for \gls{mark-sweep} \glspl{collector}, building up to a
@@ -73,6 +74,7 @@ at the end. As such, I have not included it in the definitions of
 correctness in the following two sections, but it is still essential.
 
 \section{Marking}
+\label{sec:marksweep-marking}
 
 In this section I shall attack the problem of correct marking, firstly
 as a problem in graph theory, and then as a more concrete problem when
@@ -139,6 +141,7 @@ let's define a shorthand, $\marked{h}{c} \iff h\left[\gchead{c}\right]
 \neq 0$.
 
 \section{Sweeping}
+\label{sec:marksweep-sweeping}
 
 In this section I shall consider sweeping, with an assumption that
 correct marking has already been performed. Then, I shall talk a
@@ -168,6 +171,7 @@ identify the set of allocated cells with the set of cells which were
 marked.
 
 \subsection{Interleaved Marking and Sweeping}
+\label{sec:marksweep-sweeping-interleaved}
 
 I have hitherto assumed that marking happens in its entirety, and then
 sweeping happens in its entirety. However, sometimes marking and
@@ -191,6 +195,7 @@ no problems arise. In fact, we could consider normal \gls{mark-sweep}
 trivially holds.
 
 \section{Case Study: A Garbage Collector for Erlang}
+\label{sec:marksweep-example}
 
 Armstrong and Virding\cite{Armstrong95} introduce a simple
 \gls{mark-sweep} \gls{collector} for Erlang, making use of the
@@ -240,6 +245,7 @@ reachable \glspl{cell}, and all \glspl{cell} which are directly
 reachable from a \gls{cell} in the considered region are marked.
 
 \subsubsection{Partial Correctness}
+\label{sec:marksweep-example-partial}
 
 Let $\id~x$ be the ``allocation ID'' of a cell $x$. The first cell has
 an ID of 0, and the ID of every other cell is 1 + the ID of the
@@ -497,6 +503,7 @@ mutated yet, $h = h'$, which allows further simplifications to be made.
 \end{proof}
 
 \subsubsection{Total Correctness}
+\label{sec:marksweep-example-total}
 
 We can use allocation IDs to express that the history list forms an
 unbroken chain of cells, all the way back to the first cell, as
@@ -567,5 +574,6 @@ Trivially, we can now see that there are two cases:
 \end{description}
 
 \section{Summary}
+\label{sec:marksweep-summary}
 
 \todo{Quick recap of formalism, proof obligations, and proof.}

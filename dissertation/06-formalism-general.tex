@@ -1,34 +1,42 @@
 \chapter{Partial Correctness for Garbage Collection}
+\label{sec:gc}
 
 \todo{Outline of partial correctness}
 
 \section{Comparison of Mark-Sweep and Copying Correctness}
+\label{sec:gc-comparison}
 
 \todo{Comparison of approaches}
 
 \subsection{Stages of Garbage Collection}
+\label{sec:gc-comparison-stages}
 
 \todo{Stages all garbage collectors do (perhaps implicitly)}
 
 \section{A Framework for Proof}
+\label{sec:gc-framework}
 
 \todo{Somewhat more concrete proof obligations which, together, imply
   partial correctness.}
 
 \subsection{Sufficiency of the Framework}
+\label{sec:gc-framework-sufficiency}
 
 \todo{Proof that the framework works}
 
 \section{Less Strict Collectors}
+\label{sec:gc-lessstrict}
 
 \todo{Discussion of assumptions (stop-the-world)}
 
 \subsection{Incremental Garbage Collection}
+\label{sec:gc-lessstrict-incremental}
 
 \todo{Transformation to stop-the-world and proof. Remaining out of
   scope proof obligation (all valid interleavings work)}
 
 \subsection{Generational Garbage Collection}
+\label{sec:gc-lessstrict-generational}
 
 \todo{Generations are subheaps for minor-collection
   correctness. Normal proof for major-collection correctness.}
