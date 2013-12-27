@@ -1,13 +1,20 @@
 \chapter{Literature Review}
 \label{sec:lit}
 
-\todo{This is all very general: perhaps make more specific as more
-  details of the project get worked out}
-
-This chapter reviews the background of the project: the traditional
-methods of garbage collection, more complicated collectors, methods of
-algorithm and software verification, and current work in the
-production of verified garbage collectors.
+In this chapter, I shall review the work that has already been done in
+both the fields of \gls{garbage collection} in section
+\ref{sec:lit-gc}, and \gls{algorithm verification} in section
+\ref{sec:lit-verification}, and then consider in more detail two
+different verified \glspl{collector} in section
+\ref{sec:lit-verifiedgc}. I shall restrict the review largely to
+stop-the-world, non-concurrent, ``non-hybrid'' \glspl{collector}, by
+which I mean a \gls{collector} which uses just one method to garbage
+collect the \gls{heap}, rather than combining multiple methods. This
+is because I shall only be reasoning about such simple
+\glspl{collector}, as considering more complex situations would
+significantly complicate the work. I shall briefly mention
+generational \glspl{collector}, which are arguably hybrid, but shall
+not be rigorously proving things about them.
 
 \section{Garbage Collection}
 \label{sec:lit-gc}
@@ -17,7 +24,7 @@ allocated memory from a program. In languages with manual memory
 management, such as C, a programmer can allocate new memory with
 \texttt{malloc}, but then must remember to release it with
 \texttt{free}. If this is not done, a memory leak occurs, and the
-program may gradually consume more and more memory.
+program may gradually consume more and more memory\cite{KandR}.
 
 In a garbage collected language, however, the programmer can allocate
 new memory, but typically cannot (and does not need to) explicitly
