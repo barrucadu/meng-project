@@ -458,8 +458,11 @@ B$, yields the result we want.
 \label{sec:lit-verification-extraction}
 
 The other approach is to gradually work downwards from the high-level
-specification to the low-level implementation. This is called
-\gls{verification by extraction}, or refinement.
+specification to a constructive proof, which can then be turned into
+an implementation. This is called refinement. A special case of
+refinement is when the specification is already in the form of a
+constructive proof, in which case we can extract the implicit program
+from it, this is called \glc{verification by extraction}.
 
 We start out by formalising the specification in some logic, such as Z
 or HOL, and then construct a slightly lower-level specification and
@@ -475,13 +478,6 @@ appropriate invariant to relate the two steps.
 Furthermore, there are often multiple choices of refinement step
 available, and so first few steps can be reused to construct different
 algorithms, simply by making different choices at the lower levels.
-
-Another method of extraction is to write a constructive proof that the
-problem in question is soluble, and then to translate that into a
-program. If the problem is simple enough to admit a constructive
-proof, then this is a much simpler approach than refining all the way
-down from a specification. However, for nontrivial problems,
-constructing such a proof (easily) may not be possible.
 
 \begin{example}[Finding the index of the minimal element of a nonempty
   sequence of integers]
