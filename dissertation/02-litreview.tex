@@ -462,7 +462,7 @@ specification to a constructive proof, which can then be turned into
 an implementation. This is called refinement. A special case of
 refinement is when the specification is already in the form of a
 constructive proof, in which case we can extract the implicit program
-from it, this is called \glc{verification by extraction}.
+from it, this is called \gls{verification by extraction}.
 
 We start out by formalising the specification in some logic, such as Z
 or HOL, and then construct a slightly lower-level specification and
@@ -657,6 +657,15 @@ memory semantics; L4, which uses actual implementation types; and L5,
 which is verified machine code. L5 is constructed by earlier work of
 Myreen, on constructing a certifying compiler.
 
+The initial \gls{collector} is defined as a relation which restricts
+the heap to live cells, and performs consistent renaming, \[x \gc y =
+(\mathrm{filter}~x) \translate y\] and this specification is connected
+to the lower-level L2 collector with an invariant, $\mathrm{inv}$
+(where $x$ is a heap and $s$ and $t$ are root sets), \[\forall
+x,~s,~t.\ \mathrm{inv}~x~s \land s \xrightarrow{step} t \implies
+\mathrm{inv}~x~t\] which is presented as an 11-line HOL specification
+in the paper.
+
 Other than the obvious, the main contribution of Myreen is that his
 proof is quite generic, as only the lowest level of refinement (L5)
 makes use of a specific programming logic, and could be applied to many
@@ -672,7 +681,9 @@ non-copying collectors, with minor changes to the formalism.
 Birkedal, Torp-Smith, and Reynolds\cite{Birkedal04} take a very
 different approach to Myreen, they take an existing \gls{garbage
   collector} (Cheney's copying collector) and prove it correct, using
-a variant of separation logic.
+a variant of separation logic, in a Hoare-style
+proof, \[\htriple{(\exists y.\ e \mapsto y \land A) \land x = e'}{x :=
+[e]}{e[e'/x] \mapsto x \land A[x/y]}\]
 
 Similarly to Myreen, they define correctness in terms of a heap
 isomorphism modulo garbage cells, and in particular, that the
