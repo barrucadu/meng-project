@@ -246,9 +246,12 @@ propositions about the implementation. This can be, to some extent,
 automated using \glspl{proof assistant}, but in general this is
 undecidable.
 
-As an example of \gls{verification by embedding}, consider the
-following short program, to find the index of the minimal element in a
-sequence of integers:
+\begin{example}[Finding the index of the minimal element of a nonempty
+  sequence of integers]
+  \label{exmpl:lit-embedding}
+  As an example of \gls{verification by embedding}, consider the
+  following short program, to find the index of the minimal element in
+  a sequence of integers:
 
 \begin{verbatim}
 i := 0;
@@ -261,17 +264,18 @@ while j < len xs do
     j := j + 1
 \end{verbatim}
 
-We shall call this program $P$, and $xs$ is some sequence of
-integers. For (partial) correctness of this program, we want to
-establish (using Hoare triples) $\htriple{\len xs > 0}{P}{xs[i] = \min
-  xs}$. A Hoare triple $\htriple{P}{S}{Q}$ states that if the
-assertion $P$ holds before executing a statement $S$, then the
-assertion $Q$ holds afterwards.
+  We shall call this program $P$, and $xs$ is some sequence of
+  integers. For (partial) correctness of this program, we want to
+  establish (using Hoare triples) $\htriple{\len xs > 0}{P}{xs[i] =
+    \min xs}$. A Hoare triple $\htriple{P}{S}{Q}$ states that if the
+  assertion $P$ holds before executing a statement $S$, then the
+  assertion $Q$ holds afterwards.
 
-A full proof tree is displayed on page
-\pageref{sec:lit-verification-embedding-example}, you may wish to
-glance at that before reading the following sections, which explain
-the ideas used in the proof, and then examine it more closely.
+  A full proof tree is displayed on page
+  \pageref{sec:lit-verification-embedding-example}, you may wish to
+  glance at that before reading the following sections, which explain
+  the ideas used in the proof, and then examine it more closely.
+\end{example}
 
 This approach is good to take if the property to be proven is more
 easily expressed by code than by proof. For example, a garbage
@@ -478,8 +482,71 @@ proof, then this is a much simpler approach than refining all the way
 down from a specification. However, for nontrivial problems,
 constructing such a proof (easily) may not be possible.
 
-A worked example is presented on page \pageref{lit_extraction}, and
-some of the ideas used are discussed in the following sections.
+\begin{example}[Finding the index of the minimal element of a nonempty
+  sequence of integers]
+\label{exmpl:lit-extraction}
+For all nonempty sequences of integers, there exists an index of a
+minimum element.
+
+\[\forall n \in \mathbb N,\
+\forall x_{1}, x_{2}, \ldots x_{n} \in \mathbb Z,\ 
+\exists 1 \leq m \leq n,\ 
+\forall 1 \leq i \leq n,\ 
+x_{m} \leq x_{i}\]
+
+Proof is by induction.
+
+\begin{description}
+  \item[Base case (n=1)] $m = 1$ is a witness, by reflexivity of
+    $\leq$.
+
+  \item[Inductive case (n=k+1)] Divide the sequence into its head
+    and tail (the latter being of length $k$). Call the head $x$ and
+    the tail $xs$, for simplicity. Solve the case for $xs$, and call
+    the witness $m_{k}$.
+    \begin{description}
+      \item[If $x \leq xs_{m_k}$] Then $m = 1$ is a witness, by
+        transitivity of $\leq$.
+
+      \item[If $xs_{m_k} < x$] Then $m = m_{k} + 1$ is a witness, as
+        $xs_{1}$ is actually as position 2 in the original sequence
+        (it is all shifted right by one place).
+    \end{description}
+\end{description}
+
+We can now, fairly directly, translate this proof into the following
+Haskell program:
+
+\begin{lstlisting}[language=haskell]
+import Data.List (genericIndex)
+
+f :: [Integer] -> Integer
+f sequence = case sequence of
+               [_] -> 1
+               (x:xs) -> let mk = f xs
+                        in if x <= genericIndex xs (mk - 1)
+                           then 1
+                           else 1 + mk
+\end{lstlisting}
+
+Even in such a short program, there are a couple of language-imposed
+complications, due to the mismatch of types. Firstly, the
+\texttt{genericIndex} function has to be used, as the list-indexing
+operator \texttt{(!!)} takes the index as a machine word; and
+secondly, the \texttt{mk} value has to be decremented when indexing,
+as list indices in Haskell start from 0, not 1.
+
+We can now apply semantics-preserving transformations to produce more
+idiomatic code:
+
+\begin{lstlisting}[language=haskell]
+f :: [Integer] -> Integer
+f (x:xs) | x <= genericIndex xs (mk - 1) = 1
+         | otherwise = 1 + mk
+         where mk = f xs
+f _ = 1
+\end{lstlisting}
+\end{example}
 
 This approach is good to take if the algorithm to be proven is quite
 complex, and would be difficult to prove correct by itself, but where
@@ -569,78 +636,6 @@ very closely mirrors that of the proof, as would be expected. However,
 this may not be considered good style. We can apply arbitrary
 transformations to the code of the extracted program, as long as these
 transformations preserve the semantics.
-
-\subsubsection{Worked Example}
-\label{sec:lit-verification-extraction-example}
-
-\phantomsection
-\label{lit_extraction}
-
-\begin{theorem}[Minimum Index]
-  For all nonempty sequences of integers, there exists an index of a
-  minimum element.
-
-  \[\forall n \in \mathbb N,\ 
-  \forall x_{1}, x_{2}, \ldots x_{n} \in \mathbb Z,\ 
-  \exists 1 \leq m \leq n,\ 
-  \forall 1 \leq i \leq n,\ 
-  x_{m} \leq x_{i}\]
-\end{theorem}
-
-\begin{proof}
-  By induction.
-
-  \begin{description}
-    \item[Base case (n=1)] $m = 1$ is a witness, by reflexivity of
-      $\leq$.
-
-    \item[Inductive case (n=k+1)] Divide the sequence into its head
-      and tail (the latter being of length $k$). Call the head $x$ and
-      the tail $xs$, for simplicity. Solve the case for $xs$, and call
-      the witness $m_{k}$.
-      \begin{description}
-        \item[If $x \leq xs_{m_k}$] Then $m = 1$ is a witness, by
-          transitivity of $\leq$.
-
-        \item[If $xs_{m_k} < x$] Then $m = m_{k} + 1$ is a witness, as
-          $xs_{1}$ is actually as position 2 in the original sequence
-          (it is all shifted right by one place).
-      \end{description}
-  \end{description}
-\end{proof}
-
-We can now, fairly directly, translate this proof into the following
-Haskell program:
-
-\begin{lstlisting}[language=haskell]
-import Data.List (genericIndex)
-
-f :: [Integer] -> Integer
-f sequence = case sequence of
-               [_] -> 1
-               (x:xs) -> let mk = f xs
-                        in if x <= genericIndex xs (mk - 1)
-                           then 1
-                           else 1 + mk
-\end{lstlisting}
-
-Even in such a short program, there are a couple of language-imposed
-complications, due to the mismatch of types. Firstly, the
-\texttt{genericIndex} function has to be used, as the list-indexing
-operator \texttt{(!!)} takes the index as a machine word; and
-secondly, the \texttt{mk} value has to be decremented when indexing,
-as list indices in Haskell start from 0, not 1.
-
-We can now apply semantics-preserving transformations to produce more
-idiomatic code:
-
-\begin{lstlisting}[language=haskell]
-f :: [Integer] -> Integer
-f (x:xs) | x <= genericIndex xs (mk - 1) = 1
-         | otherwise = 1 + mk
-         where mk = f xs
-f _ = 1
-\end{lstlisting}
 
 \section{Verified Garbage Collection}
 \label{sec:lit-verifiedgc}
