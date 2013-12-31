@@ -1,7 +1,30 @@
 \chapter{Correctness of Copying Collectors}
 \label{sec:copying}
 
-\todo{Outline of proof.}
+We shall use the same definitions of the \gls{heap}
+(defn. \ref{def:ms-heap}), \gls{cell} (defn. \ref{def:ms-cell}),
+\gls{pointer} (defn. \ref{def:ms-pointer}), and reachability
+(defn. \ref{def:ms-reachable}) as in the prior chapter. Unfortunately,
+the definition of word preservation
+(defn. \ref{def:ms-word-preservation}) will have to change, because a
+\gls{copying} \gls{collector} renames addresses.
+
+\begin{definition}[Word Preservation]
+  \label{def:c-word-preservation}
+  After garbage collection, no allocated cells have been mutated,
+  except in the pointer fields, in which case we apply an address
+  translation function $f$.
+
+  \begin{align*}
+    \forall c \in h,\ \forall w \in c,\ \alloc{c} & \implies
+    \mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[w])\\
+    &\quad\land \mathrm{type}(w) \neq \mathrm{pointer} \iff h[w] = h'[w]
+  \end{align*}
+\end{definition}
+
+Finally, because we are renaming addresses, we shall have to apply $f$
+to the root set, in order for the mutator to still work after
+collection, \[roots = \left\{f(r)~|~r \in roots'\right\}\]
 
 \section{Copying}
 \label{sec:copying-copying}
