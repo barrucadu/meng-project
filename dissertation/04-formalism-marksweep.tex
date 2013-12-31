@@ -584,4 +584,23 @@ Trivially, we can now see that there are two cases:
 \section{Summary}
 \label{sec:marksweep-summary}
 
-\todo{Quick recap of formalism, proof obligations, and proof.}
+In this chapter I have defined the \gls{heap}, \glspl{cell},
+\glspl{pointer}, word preservation, and reachability (defns.
+\ref{def:ms-heap}, \ref{def:ms-cell}, \ref{def:ms-pointer},
+\ref{def:ms-word-preservation}, and \ref{def:ms-reachable}), and used
+these to then define correct marking and sweeping (defns.
+\ref{def:ms-correct-marking} and \ref{def:ms-correct-sweeping}),
+giving some thought to the correctness of interleaved marking and
+sweeping (defn. \ref{def:ms-interleaved}).
+
+I argued that correctness for a \gls{mark-sweep} \gls{collector} comes
+down to marking all (and only) of the reachable \glspl{cell}, freeing
+all others, and then unmarking. And, furthermore, that no words should
+be modified in non-\gls{garbage} \glspl{cell} after \gls{garbage
+  collection}.
+
+I then talked about the Armstrong/Virding\cite{Armstrong95}
+\gls{collector}, and provided proofs of its partial and total
+correctness. This proof shall not be referenced in future chapters,
+and merely serves as an illustration of the utility of the definition
+of correctness presented here. Definitions, however, will be reused.
