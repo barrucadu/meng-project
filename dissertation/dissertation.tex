@@ -41,9 +41,9 @@
 % Definitions and theorems
 \usepackage{amsthm}
 \usepackage{etoolbox}
-\newtheorem{definition}{Definition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
 
 \makeatletter
 \newtheoremstyle{example}% name
@@ -62,7 +62,7 @@
 \AtEndEnvironment{example}{\hfill\ensuremath{\square}}
 
 \theoremstyle{example}
-\newtheorem{example}{Example}
+\newtheorem{example}{Example}[section]
 
 % Drawings
 \usepackage[usenames,dvipsnames]{color}
