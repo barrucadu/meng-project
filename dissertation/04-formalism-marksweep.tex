@@ -6,6 +6,7 @@ obligations for \gls{mark-sweep} \glspl{collector}, building up to a
 proof of the Armstrong/Virding\cite{Armstrong95} \gls{collector}.
 
 \begin{definition}[Heap]
+  \label{def:ms-heap}
   The heap is an array of words in the form (type, data).
 \end{definition}
 
@@ -22,6 +23,7 @@ determine this automatically, the type can be ``stored'' as a ghost
 variable.
 
 \begin{definition}[Cell]
+  \label{def:ms-cell}
   A cell is a contiguous sequence of one or more words in the heap,
   starting with a sequence of one or more metadata words used by the
   garbage collector.
@@ -45,6 +47,7 @@ pointer to the start of the \gls{garbage collection} metadata, and let
 $\alloc{p}$ be true if and only if the \gls{cell} has been allocated.
 
 \begin{definition}[Pointer]
+  \label{def:ms-pointer}
   A pointer is an index into the heap array, pointing to the start of
   the data section (end of the header) of a cell.
 \end{definition}
@@ -58,6 +61,7 @@ use. If the size and layout of the header is known in advance, any
 word in it can be accessed by \gls{pointer} arithmetic.
 
 \begin{definition}[Word Preservation]
+  \label{def:ms-word-preservation}
   After garbage collection, no allocated cells have been mutated.
 
    \[\forall c \in h,\ \forall w \in c,\ \alloc{c} \implies h[w] =
@@ -85,6 +89,7 @@ Let's start out by saying exactly what goes in that \gls{garbage
 the \gls{cell} has not been marked, and any other value if it has.
 
 \begin{definition}[Reachable]
+  \label{def:ms-reachable}
   A cell is reachable if it is pointed to by a root, or pointed to by
   a cell which is reachable.
 
@@ -118,6 +123,7 @@ Returning to the array formalism, what we thus want from a marker is
 the following property:
 
 \begin{definition}[Correct Marking]
+  \label{def:ms-correct-marking}
   After marking, for all allocated \glspl{cell}, the mark flag is
   unset if and only if the \gls{cell} is not reachable.
 
@@ -157,6 +163,7 @@ preserving and unmarking exactly the reachable \glspl{cell}, which
 \gls{collector} to do.
 
 \begin{definition}[Correct Sweeping]
+  \label{def:ms-correct-sweeping}
   All cells which are marked are preserved and unmarked, no garbage
   cells are preserved, and nothing other than the garbage collector
   metadata gets mutated.
@@ -185,6 +192,7 @@ correctness of each remains the same, but we have an additional proof
 obligation.
 
 \begin{definition}[Interleaved Marking/Sweeping Correctness]
+  \label{def:ms-interleaved}
   When the ``sweeper'' considers a cell, the ``marker'' has already
   marked it and everything it points to (if it was reachable).
 \end{definition}
