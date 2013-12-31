@@ -9,27 +9,37 @@ the definition of word preservation
 (defn. \ref{def:ms-word-preservation}) will have to change, because a
 \gls{copying} \gls{collector} renames addresses.
 
-\begin{definition}[Word Preservation]
-  \label{def:c-word-preservation}
+\section{Copying}
+\label{sec:copying-copying}
+
+Before presenting a definition of correct copying, I have to highlight
+the inadequacies of the \gls{mark-sweep} word preservation. Firstly,
+it does not allow for mutation of \glspl{pointer}, which is essential
+for a \gls{copying} \gls{collector}, but more subtly, it does not
+allow for \glspl{cell} to be relocated. This arises in the $h[w] =
+h'[w]$ part of the formalism. If \glspl{cell} can be relocated, then
+this makes no sense, as $w$ is a \gls{pointer}, and so $w$ in the new
+\gls{heap} is not necessarily the same as $w$ in the old
+\gls{heap}. Thus, we also need to be able to find old $w$ values.
+
+\begin{definition}[Correct Copying]
+  \label{def:c-correct-copying}
   After garbage collection, no allocated cells have been mutated,
   except in the pointer fields, in which case we apply an address
   translation function $f$.
 
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ \alloc{c} & \implies
-    \mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[w])\\
-    &\quad\land \mathrm{type}(w) \neq \mathrm{pointer} \iff h[w] = h'[w]
+    \mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\land \mathrm{type}(w) \neq \mathrm{pointer} \iff h[w] =
+    h'[f^{-1}(w)]
   \end{align*}
 \end{definition}
 
-Finally, because we are renaming addresses, we shall have to apply $f$
-to the root set, in order for the mutator to still work after
-collection, \[roots = \left\{f(r)~|~r \in roots'\right\}\]
-
-\section{Copying}
-\label{sec:copying-copying}
-
-\todo{Proof obligations for copying}
+I have decided to define correct copying as a word preservation-like
+property, rather than define it separately, as what is ``correct
+copying'' but a way of correctly transforming the contents and
+locations of cells, according to some rule?
 
 \section{Address Translation}
 \label{sec:copying-address}
