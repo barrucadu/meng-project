@@ -52,3 +52,23 @@ locations of cells, according to some rule?
 \todo{Slightly informal proof for Fenichel/Yochelson 
 collector. Informality is ok, because this is only to show the ideas
 are in the right direction.}
+
+\section{Summary}
+\label{sec:copying-summary}
+
+In this chapter I highlighted the differences between the formalisms
+suitable for \gls{mark-sweep} and \gls{copying} \glspl{collector}:
+``correct copying'' replacing word preservation, and the introduction
+of ``correct translation'' for \gls{pointer} mutation during
+\gls{garbage collection}.
+
+I argued that correctness for a \gls{copying} \gls{collector} comes
+down to copying exactly the \glspl{live cell} and updating all
+\glspl{pointer} consistently.
+
+I then talked about the Fenichel/Yochelson\cite{Fenichel69} collector,
+and provided proofs of its partial and total correctness. These proofs
+shall not be referenced in future chapters, and merely serve as an
+illustration of the utility of the definition of correctness presented
+here. Definitions will be reused, however, in producing an abstract
+formalism of garbage collection.
