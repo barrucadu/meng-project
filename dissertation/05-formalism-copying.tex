@@ -39,12 +39,48 @@ this makes no sense, as $w$ is a \gls{pointer}, and so $w$ in the new
 I have decided to define correct copying as a word preservation-like
 property, rather than define it separately, as what is ``correct
 copying'' but a way of correctly transforming the contents and
-locations of cells, according to some rule?
+locations of \glspl{cell}, according to some rule?
 
 \section{Address Translation}
 \label{sec:copying-address}
 
-\todo{Proof obligations for address translation}
+In the definition of correct \gls{copying}, I referenced a function
+$f$, to update addresses. Unfortunately, not every function will do
+here. Trivially, we can see that the constant function won't work, as
+then everything would be moved to the same place, resulting in data
+corruption. The function needs to preserve uniqueness of
+addresses. Furthermore, in order to reason about words in the original
+\gls{heap}, $h'$, we need to be able to go backwards: the function
+must be invertible.
+
+I shall borrow from Myreen\cite{Myreen10} here in his formalism of $f$
+as an involution,
+
+\begin{definition}[Address Translation Function]
+  \label{def:c-address-translation-function}
+  The address translation function, $f$, is defined across the entire
+  heap (total), preserves uniqueness (injective), and is invertible
+  (surjective). Thus, $f$ is a bijection on addresses.
+
+  In order to ease reasoning, we shall be slightly stricter than this,
+  and mandate $f$ is an involution, \[f \of f = \id\]
+\end{definition}
+
+I decided to use an involution here because showing that $\forall x,\
+(f \of f)~x = x$ may be easier than proving the more abstract
+properties of injectivity and surjectivity. Furthermore, the function
+doesn't strictly need to be total: it only needs to be defined for
+words which are still allocated after collection. However, the
+totality requirement enables us to use the array reasoning to build up
+the function, which is useful.
+
+If we start with $f = \id$, then we simply need to show that, for
+every allocated word $w$, the \gls{garbage collector} performs $f[w] =
+w'; f[w'] = w$. Furthermore, we need to show that contiguous words
+within the same \gls{cell} remain in the same relative place after
+copying. This could have been avoided by defining $f$ as a cell
+translation function, which moves entire cells at a time, but then
+this would have complicated reasoning about individual words.
 
 \section{Case Study: A Garbage Collector for Lisp}
 \label{sec:copying-example}
