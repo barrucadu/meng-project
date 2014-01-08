@@ -327,8 +327,6 @@ requirements, we arrive at the following postcondition for a correct
 (\alloc{c} \iff c \in \reach{h'}{roots}) \land (\alloc{c} \implies
 h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
-\todo{Proof}
-
 \begin{lemma}[Loop Invariant]
   Firstly, let's show the sufficiency of the loop invariant:
 
@@ -448,13 +446,11 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
 \end{lemma}
 
 \begin{lemma}[Loop Invariant (second branch)]
-  \todo{Symbolify this}
-
-  As we have assumed correct marking, we know that this cell is not
-  reachable from the roots. The invariant is broken on line 26, as an
-  unreachable cell is left in the list ahead of \texttt{SCAV}, but
-  then it is restored in lines 27 and 28, as the cell is removed and
-  deallocated. Thus, the invariant still holds.
+  Informally, as we have assumed correct marking, we know that this
+  cell is not reachable from the roots. The invariant is broken on
+  line 26, as an unreachable cell is left in the list ahead of
+  \texttt{SCAV}, but then it is restored in lines 27 and 28, as the
+  cell is removed and deallocated. Thus, the invariant still holds.
   \label{lem:lib}
 \end{lemma}
 
