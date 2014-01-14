@@ -138,6 +138,18 @@ mutator uses the new space.
 
 \todo{Partial correctness: only focus on collect}
 
+Firstly, we need to define what an ``address'' for this rather strange
+system is. As pointers are interpreted relative to a semispace, each
+pointer has two related memory addresses, which means we can't just
+talk about $h[p]$. Let's define an address as a pair, consisting of a
+semispace to interpret it in, and a pointer, $(s, p)$. Assuming the
+two semispaces are contiguous, are numbered 0 and 1, and pointers
+range from 0 to the size of the semispace, turning this into a numeric
+address is done by the operation $s \times \mathrm{semispace\_size} +
+p$. We shall proceed to use $s'$ to refer to the semispace before
+garbage collection was initiated, and $s$ to refer to the current
+(different) semispace.
+
 \subsection{Total Correctness}
 \label{sec:copying-example-total}
 
