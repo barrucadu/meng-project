@@ -141,7 +141,39 @@ mutator uses the new space.
 \subsection{Total Correctness}
 \label{sec:copying-example-total}
 
-\todo{Total correctness: show collect loops can't happen}
+A quick read of the code will reveal that the only place in which
+nontermination could possibly occur is in the recursive call in the
+else clause of \texttt{collect}. However, equally obviously, we can
+see that this will never happen, because the base case of the
+termination is that the car of a cell is \texttt{ALREADYCOPIED}, and
+as soon as we hit the else case we do that. Thus, even if we were to
+encounter a cyclic structure, reaching again the point at which we
+entered it would end the recursion.
+
+\begin{proof}
+  By induction on the number of uncopied and non-atomic cells in the
+  semispace we are copying from.
+
+  \begin{description}
+  \item[Base case, $n = 0$] In this case, every cell is either an atom
+    or is marked as having being copied, in which case there is no
+    recursive call, and so \texttt{collect} terminates.
+
+  \item[Inductive case, $n = k + 1$] We have three cases, depending on
+    what the cell currently being examined is,
+
+    \begin{description}
+    \item[atom] No recursive call: terminates.
+    \item[copied] No recursive call: terminates.
+    \item[else] We mark the cell as copied, and \texttt{collect} makes
+      the recursive call. We now have a heap where $n = k$, which by
+      assumption terminates.
+    \end{description}
+  \end{description}
+
+  We do not need to worry about \texttt{gc}, as the only loop in there
+  is over a fixed-size list, which must necessarily terminate.
+\end{proof}
 
 \section{Summary}
 \label{sec:copying-summary}
