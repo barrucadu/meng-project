@@ -82,6 +82,16 @@ copying. This could have been avoided by defining $f$ as a cell
 translation function, which moves entire cells at a time, but then
 this would have complicated reasoning about individual words.
 
+Finally, we must show that the roots are correctly translated, as they
+may not be correct after things have been moved,
+
+\begin{definition}[Root Translation]
+  \label{def:c-root-translation}
+  \[roots = \map{f}{roots'}\]
+
+  Where $\map{f}{xs} = \langle f(x)~|~x \in xs \rangle$.
+\end{definition}
+
 \section{Case Study: A Garbage Collector for Lisp}
 \label{sec:copying-example}
 
