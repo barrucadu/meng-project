@@ -85,9 +85,63 @@ this would have complicated reasoning about individual words.
 \section{Case Study: A Garbage Collector for Lisp}
 \label{sec:copying-example}
 
-\todo{Slightly informal proof for Fenichel/Yochelson 
-collector. Informality is ok, because this is only to show the ideas
-are in the right direction.}
+Fenichel and Yochelson\cite{Fenichel69} introduced a simple semispace
+copying garbage collector for lists in Lisp systems, and assume the
+existence of a correct collector for atoms. The collector works by
+storing in the car of each cell a flag indicating that it has been
+copied, and a forwarding pointer in the cdr. This permits a very
+simple algorithm, which has been recast in a Hoare-like form below:
+
+\begin{lstlisting}
+gc():
+    flipconsspace()
+    for each p in roots:
+        p = collect(p)
+    flipsemispace()
+
+collect(p):
+    if p is atomic:
+        return collectatom(p)
+    else if car(p) = ALREADYCOPIED:
+        return cdr(p)
+    else:
+        a = car(p)
+        b = cdr(p)
+        q = cons(NIL, NIL)
+
+        rplaca(p, ALREADYCOPIED)
+        rplacd(p, q)
+
+        nrplaca(q, collect(a))
+        nrplacd(q, collect(b))
+
+        return q
+\end{lstlisting}
+
+Firstly, it must be noted that pointers are interpreted relative to
+the semispaces. A pointer $p$ refers to the location $p$ in the
+current semispace. Then, there are some functions which must be
+defined: \texttt{flipconsspace} causes cons allocation to happen in
+the other semispace; \texttt{flipsemispace} flips the roles of the
+semispaces; \texttt{collectatom} is a garbage collection function for
+atoms, which we assume to be correct; \texttt{nrplaca} and
+\texttt{nrplacd} are like \texttt{rplaca} and \texttt{rplacd} except
+they interpret the pointer in the other semispace.
+
+We can thus see that the collector allocates cons cells for every
+reachable cons cell in the other semispace, copying over car and cdrs
+as it goes, and then flips the roles of the semispaces, so that the
+mutator uses the new space.
+
+\subsection{Partial Correctness}
+\label{sec:copying-example-partial}
+
+\todo{Partial correctness: only focus on collect}
+
+\subsection{Total Correctness}
+\label{sec:copying-example-total}
+
+\todo{Total correctness: show collect loops can't happen}
 
 \section{Summary}
 \label{sec:copying-summary}
