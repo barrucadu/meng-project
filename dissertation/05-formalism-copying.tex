@@ -29,10 +29,11 @@ this makes no sense, as $w$ is a \gls{pointer}, and so $w$ in the new
   translation function $f$.
 
   \begin{align*}
-    \forall c \in h,\ \forall w \in c,\ \alloc{c} & \implies
-    \mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-    &\quad\land \mathrm{type}(w) \neq \mathrm{pointer} \iff h[w] =
-    h'[f^{-1}(w)]
+    \forall c \in h,\ \forall w \in c,\ &\alloc{c} \implies
+    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    \iff h[w] = h'[f^{-1}(w)])\\
+    &\land \alloc{c} \iff \reach{h'}{c}
   \end{align*}
 \end{definition}
 
@@ -146,8 +147,6 @@ mutator uses the new space.
 \subsection{Partial Correctness}
 \label{sec:copying-example-partial}
 
-\todo{Partial correctness: only focus on collect}
-
 Firstly, we need to define what an ``address'' for this rather strange
 system is. As pointers are interpreted relative to a semispace, each
 pointer has two related memory addresses, which means we can't just
@@ -159,6 +158,98 @@ address is done by the operation $s \times \mathrm{semispace\_size} +
 p$. We shall proceed to use $s'$ to refer to the semispace before
 garbage collection was initiated, and $s$ to refer to the current
 (different) semispace.
+
+\begin{proof}
+  Showing the correctness of \texttt{collect} consists of showing the
+  following:
+
+  \begin{enumerate}
+  \item after \texttt{collect}($p$) terminates, both $p$ and all cells
+    reachable from $p$ have been collected
+
+  \item if a cell has been collected, then collecting it again returns
+    a pointer to the previously copied version
+
+  \item \texttt{collect}($p$) returns a pointer to a copied version of
+    $p$
+
+  \item \texttt{collect}($p$) updates the car and cdr of $p$ to
+    \texttt{collect}(car($p$)) and \texttt{collect}(cdr($p$))
+    respectively
+
+  \item \texttt{collect} does not copy any unreachable cells
+  \end{enumerate}
+
+  By (1) and (5), we have $\forall c \in h,\ \alloc{c} \iff
+  \reach{h'}{c}$. By (2), (3), and (4) we have $\forall c \in h,\
+  \forall w \in c,\ \mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
+  f(h'[f^{-1}(w)])$
+
+  As the collector does not deal with non-pointer values (atoms), we
+  can ignore the lack of mutation of non-pointers entirely, and assume
+  that is handled correctly by \texttt{collectatom}. This is
+  justifiable as the collector explicitly sets aside atoms, and hands
+  them over to another collector. And so, by assumption, we have
+  $\forall c \in h,\ \forall w \in c,\ \mathrm{type}(w) \neq
+  \mathrm{pointer} \iff h'[f^{-1}(w)]$
+\end{proof}
+
+\begin{lemma}[After \texttt{collect}($p$) terminates, both $p$ and all
+  cells reachable from $p$ have been collected]
+  \label{lem:c-example-reach}
+  There are three cases to consider for $p$,
+
+  \begin{description}
+  \item[$p$ is atomic] we assume the correctness of
+    \texttt{collectatom}
+
+  \item[car($p$) = \texttt{ALREADYCOPIED}] we assume the correctness
+    of the else clause of \texttt{collect}
+
+  \item[otherwise] a new cell is allocated for $p$ in the new
+    semispace, and $p$ updated to point to this, then the car and cdr
+    of $p$ are recursively \texttt{collect}ed
+  \end{description}
+\end{lemma}
+
+\begin{lemma}[If a cell has been collected, then collecting it again
+  returns a pointer to the previously copied version]
+  \label{lem:c-example-duplication}
+  By corollary of lemma \ref{lem:c-example-ret}.
+\end{lemma}
+
+\begin{lemma}[\texttt{collect}($p$) returns a pointer to a copied
+  version of $p$]
+  \label{lem:c-example-ret}
+  There are three cases:
+
+  \begin{description}
+  \item[$p$ is atomic] we assume the correctness of
+    \texttt{collectatom}
+
+  \item[car($p$) = \texttt{ALREADYCOPIED}] we return cdr($p$), and
+    assume correctness of the code which updated the cell
+
+  \item[otherwise] The car is set to \texttt{ALREADYCOPIED}, the old
+    cell is copied, and the cdr set to its new address.
+  \end{description}
+\end{lemma}
+
+\begin{lemma}[\texttt{collect}($p$) updates the car and cdr of $p$ to
+  \texttt{collect}(car($p$)) and \texttt{collect}(cdr($p$))
+  respectively]
+  \label{lem:c-example-update}
+  Trivially by inspection.
+\end{lemma}
+
+\begin{lemma}[\texttt{collect} does not copy any unreachable cells]
+  \label{lem:c-example-unreach}
+  Trivial: we can see that \texttt{gc} only calls \texttt{collect} on
+  cells pointed to by roots, which are reachable by definition;
+  furthermore we can see that \texttt{collect} only calls
+  \texttt{collect} on cells which are either the car or cdr of a cell
+  it is currently examining.
+\end{lemma}
 
 \subsection{Total Correctness}
 \label{sec:copying-example-total}
