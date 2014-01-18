@@ -389,12 +389,23 @@ and so a more realistic model of the heap was desirable.
   Myreen Correctness.
 
   \begin{proof}
-    
+    As shown in the prior proof, the roots after collection in Myreen
+    are exactly what is required by Root Translation, thus we only
+    need to worry about the heap.
+
+    After collection, the heap contains only allocated cells, which
+    have been moved in memory by applying $f$, and all pointers have
+    been updated by $f$. This is exactly the combination of filter and
+    translate as used by Myreen.
+
+    Thus, Correct Copying and Root Translation, if and only if we also
+    mandate that $f$ is an involution, imply Myreen Correctness.
   \end{proof}
 \end{theorem}
 
 Having shown both of these, we can conclude that my formalism is
-strictly weaker than Myreen's.
+strictly weaker than Myreen's, but with the additional requirement
+that $f$ be an involution, they are equivalent.
 
 \section{Summary}
 \label{sec:copying-summary}
