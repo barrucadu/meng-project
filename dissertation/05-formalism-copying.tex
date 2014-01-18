@@ -330,13 +330,27 @@ Nothing is explicitly stated about non-pointer words, but the
 strictness of the definition doesn't require this to be stated: by not
 saying anything about them, it requires that they be preserved.
 
+The greatest difference between the two formalisms is arguably the use
+of cell addresses compared with the use of word addresses, and I think
+the choice comes down to the different approaches of myself and
+Myreen. Myreen's formalism was intended to be used to produce a
+collector by refinement, and so a higher-level and simpler
+specification was a desirable starting point; whereas my formalism was
+more motivated by a desire to prove existing collectors correct, in
+which case a necessity to easily reason about individual words arose,
+and so a more realistic model of the heap was desirable.
+
 \begin{theorem}[Myreen Correctness is just as strong]
   We would like to show that Myreen Correctness implies both Correct
   Copying and Root Translation, in which case we know that Myreen
   Correctness is at least as strong as my formalism.
 
   \begin{proof}
-    Firstly, let's rearrange to get $h$ and $r$ from Myreen,
+    Myreen's $f$ is only defined for cell start addresses, as his heap
+    is a partial function from addresses to cells, but the function
+    can be trivially expanded to what we need by ``filling in the
+    blanks''. Having done that, let's rearrange to get $h$ and $r$
+    from his definition,
     \begin{align*}
       (h', r') \gc (h, r) &= (\filter{h'}{r'}) \translate (h, r)\\
       &= (\filter{h'}{r'}) \translate (\rename{f}{\filter{h'}{r'}}, \map{f}{r'})\\
@@ -349,9 +363,9 @@ saying anything about them, it requires that they be preserved.
     We can expand the definition of $h$ and filter to check that only
     reachable cells are in $h$,
     \begin{align*}
-      \forall c \in h,\ &\alloc{c} \iff c \in \filter{h'}{r'}\\
+      \forall c \in h,\ \alloc{c} &\iff c \in \filter{h'}{r'}\\
       \reach{h'}{r'} &\iff \filter{h'}{r'}\\
-      \therefore \forall c \in h,\ &\alloc{c} \iff c \in \reach{h'}{r'}
+      \therefore \forall c \in h,\ \alloc{c} &\iff c \in \reach{h'}{r'}
     \end{align*}
 
     Myreen's definition requires that non-pointer words are
