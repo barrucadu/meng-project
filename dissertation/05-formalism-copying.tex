@@ -33,7 +33,7 @@ this makes no sense, as $w$ is a \gls{pointer}, and so $w$ in the new
     (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
     &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
     \iff h[w] = h'[f^{-1}(w)])\\
-    &\land \alloc{c} \iff \reach{h'}{c}
+    &\land \alloc{c} \iff c \in \reach{h'}{r'}
   \end{align*}
 \end{definition}
 
@@ -178,8 +178,8 @@ garbage collection was initiated, and $s$ to refer to the current
   \item \texttt{collect} does not copy any unreachable cells
   \end{enumerate}
 
-  By (1) and (5), we have $\forall c \in h,\ \alloc{c} \iff
-  \reach{h'}{c}$. By (2), (3), and (4) we have $\forall c \in h,\
+  By (1) and (5), we have $\forall c \in h,\ \alloc{c} c \in \iff
+  \reach{h'}{r'}$. By (2), (3), and (4) we have $\forall c \in h,\
   \forall w \in c,\ \mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
   f(h'[f^{-1}(w)])$
 
@@ -286,6 +286,102 @@ entered it would end the recursion.
   is over a fixed-size list, which must necessarily terminate.
 \end{proof}
 
+\section{Comparison with Myreen's Formalism}
+\label{sec:copying-myreen}
+
+Myreen's\cite{Myreen10} notion of copying correctness is somewhat more
+abstract than mine, and is defined in terms of cells, rather than
+words,
+
+\begin{definition}[Myreen Correctness]
+  \label{def:c-myreen-correctness}
+  Garbage collection is a relation which filters out unreachable heap
+  elements and renames the addresses, \[x \gc y = (\mathrm{filter}~x)
+  \translate y\]
+
+  Where filter and translate are defined as follows,
+
+  \begin{prooftree}
+    \AxiomC{$f \of f = \id$}
+    \UnaryInfC{$(h, roots) \translate (\rename{f}{h}, \map{f}{roots}$}
+  \end{prooftree}
+
+  \begin{align*}
+    \filter{h}{roots} &= (h \restrict \reach{h}{roots}, roots)\\
+    \dom~(\rename{f}{h}) &= \mathrm{image}~f~(\dom~h)\\
+    (\rename{f}{h})(f(x)) &= (\map{f}{as}, d) & \mbox{ wherever } h(x)
+    = (as, d)\\
+  \end{align*}
+\end{definition}
+
+That is, a relation is a garbage collection relation if it renames all
+addresses in the heap by applying an involution $f$, and removes all
+non-reachable cells from the heap.
+
+This sounds rather similar to my formalism, but with a few key
+differences:
+
+\begin{itemize}
+\item $f$ is defined on cell addresses, rather than word addresses
+\item $f$ is required to be an involution
+\end{itemize}
+
+Nothing is explicitly stated about non-pointer words, but the
+strictness of the definition doesn't require this to be stated: by not
+saying anything about them, it requires that they be preserved.
+
+\begin{theorem}[Myreen Correctness is just as strong]
+  We would like to show that Myreen Correctness implies both Correct
+  Copying and Root Translation, in which case we know that Myreen
+  Correctness is at least as strong as my formalism.
+
+  \begin{proof}
+    Firstly, let's rearrange to get $h$ and $r$ from Myreen,
+    \begin{align*}
+      (h', r') \gc (h, r) &= (\filter{h'}{r'}) \translate (h, r)\\
+      &= (\filter{h'}{r'}) \translate (\rename{f}{\filter{h'}{r'}}, \map{f}{r'})\\
+      \therefore h &= \rename{f}{\filter{h'}{r'}}\\
+      \therefore r &= \map{f}{r'}
+    \end{align*}
+
+    $r = \map{f}{r'}$ is exactly the definition of Root Translation.
+
+    We can expand the definition of $h$ and filter to check that only
+    reachable cells are in $h$,
+    \begin{align*}
+      \forall c \in h,\ &\alloc{c} \iff c \in \filter{h'}{r'}\\
+      \reach{h'}{r'} &\iff \filter{h'}{r'}\\
+      \therefore \forall c \in h,\ &\alloc{c} \iff c \in \reach{h'}{r'}
+    \end{align*}
+
+    Myreen's definition requires that non-pointer words are
+    untouched, \[\forall c \in h,\ \forall w \in c,\ \mathrm{type}(w)
+    \neq \mathrm{pointer} \iff h[w] = h'[f^{-1}(w)]\]
+
+    And we can expand the definition of rename to ensure that pointers
+    are appropriately modified, \[\rename{f}{h} \implies \forall c \in
+    w, \forall w \in h,\ \mathrm{type}(w) = \mathrm{pointer} \iff h[w]
+    = f(h'[f^{-1}(w)])\]
+
+    Thus, Myreen Correctness implies both Correct Copying and Root
+    Translation.
+  \end{proof}
+\end{theorem}
+
+\begin{theorem}[Correct Copying and Root Translation is weaker]
+  We would like to show that Correct Copying and Root Translation, if
+  and only if $f$ is an involution, imply Myreen Correctness, in which
+  case Correct Copying and Root Translation alone are weaker than
+  Myreen Correctness.
+
+  \begin{proof}
+    
+  \end{proof}
+\end{theorem}
+
+Having shown both of these, we can conclude that my formalism is
+strictly weaker than Myreen's.
+
 \section{Summary}
 \label{sec:copying-summary}
 
@@ -305,3 +401,7 @@ shall not be referenced in future chapters, and merely serve as an
 illustration of the utility of the definition of correctness presented
 here. Definitions will be reused, however, in producing an abstract
 formalism of garbage collection.
+
+Finally, I compared this formalism of copying correctness with that of
+Myreen\cite{Myreen10}, discussed the differences, and then showed
+their equivalence, given an additional lemma.
