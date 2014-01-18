@@ -54,34 +54,32 @@ addresses. Furthermore, in order to reason about words in the original
 \gls{heap}, $h'$, we need to be able to go backwards: the function
 must be invertible.
 
-I shall borrow from Myreen\cite{Myreen10} here in his formalism of $f$
-as an involution,
-
 \begin{definition}[Address Translation Function]
   \label{def:c-address-translation-function}
   The address translation function, $f$, is defined across the entire
   heap (total), preserves uniqueness (injective), and is invertible
   (surjective). Thus, $f$ is a bijective endofunction on addresses.
 
-  In order to ease reasoning, we shall be slightly stricter than this,
-  and mandate $f$ is an involution, \[f \of f = \id\]
+  Furthermore, $f$ preserves relative placement of words within the
+  same cell.
 \end{definition}
 
-I decided to use an involution here because showing that $\forall x,\
-(f \of f)~x = x$ may be easier than proving the more abstract
-properties of injectivity and surjectivity. Furthermore, the function
-doesn't strictly need to be total: it only needs to be defined for
-words which are still allocated after collection. However, the
-totality requirement enables us to use the array reasoning to build up
-the function, which is useful.
+In order to ease reasoning, it may be simpler to mandate that $f$ is
+an involution, because showing that $\forall x,\ (f \of f)~x = x$ may
+be easier than proving the more abstract properties of injectivity and
+surjectivity. Furthermore, the function doesn't strictly need to be
+total: it only needs to be defined for words which are still allocated
+after collection. However, the totality requirement enables us to use
+the array reasoning to build up the function, which is useful.
 
-If we start with $f = \id$, then we simply need to show that, for
-every allocated word $w$, the \gls{garbage collector} performs $f[w] =
-w'; f[w'] = w$. Furthermore, we need to show that contiguous words
-within the same \gls{cell} remain in the same relative place after
-copying. This could have been avoided by defining $f$ as a cell
-translation function, which moves entire cells at a time, but then
-this would have complicated reasoning about individual words.
+If we start with $f = \id$, then (for an involution) we simply need to
+show that, for every allocated word $w$, the \gls{garbage collector}
+performs $f[w] = w'; f[w'] = w$. Furthermore, we need to show that
+contiguous words within the same \gls{cell} remain in the same
+relative place after copying. This could have been avoided by defining
+$f$ as a cell translation function, which moves entire cells at a
+time, but then this would have complicated reasoning about individual
+words.
 
 Finally, we must show that the roots are correctly translated, as they
 may not be correct after things have been moved,
