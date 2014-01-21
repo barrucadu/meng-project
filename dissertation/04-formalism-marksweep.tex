@@ -63,7 +63,6 @@ word in it can be accessed by \gls{pointer} arithmetic.
 \begin{definition}[Word Preservation]
   \label{def:ms-word-preservation}
   After garbage collection, no allocated cells have been mutated.
-
    \[\forall c \in h,\ \forall w \in c,\ \alloc{c} \implies h[w] =
    h'[w]\]
 
@@ -141,7 +140,6 @@ the following property:
   \label{def:ms-correct-marking}
   After marking, for all allocated \glspl{cell}, the mark flag is
   unset if and only if the \gls{cell} is not reachable.
-
   \[\forall c \in h,\ \alloc{c} \implies
   \left(h\left[\gchead{c}\right] = 0 \iff c \notin
     \reach{h}{roots}\right)\]
@@ -182,7 +180,6 @@ preserving and unmarking exactly the reachable \glspl{cell}, which
   All cells which are marked are preserved and unmarked, no garbage
   cells are preserved, and nothing other than the garbage collector
   metadata gets mutated.
-
   \[\forall c \in h',\ \left(\alloc{c} \iff c \in
     \markset{h'}{roots}\right) \land \left(\alloc{c} \implies
     \lnot\marked{h}{c}\right)\]
@@ -332,9 +329,8 @@ while (SCAV != first) {
 \end{lstlisting}
 
 I have replaced \texttt{free\_cons} with \texttt{dealloc}, as it more
-closely reflects what happens. The \gls{cell} in question is no longer
-considered to be allocated. Allocation is being tracked through an
-implicit ghost variable attached to each cell.
+closely reflects what happens: the \gls{cell} in question is no longer
+considered to be allocated.
 
 Combining the correct marking, correct sweeping, and word preservation
 requirements, we arrive at the following postcondition for a correct
@@ -347,7 +343,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
   \begin{align*}
     \forall c \in h',\ \forall w \in c,\ 
-    &\mathtt{SCAV} = first \land first \in \reach{h'}{c} \land
+    &\mathtt{SCAV} = first \land first \in \reach{h'}{r'} \land
     \id~c \geq \id~\mathtt{SCAV} \implies\\
     &\quad(\alloc{c} \iff c \in \reach{h'}{roots})\\
     &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
@@ -357,7 +353,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
     \marked{h}{x}))\\
 %
     \forall c \in h',\ \forall w \in c,\ 
-    &\id~c \geq first \in \reach{h'}{c} \land \id~first
+    &\id~c \geq first \in \reach{h'}{r'} \land \id~first
     \implies (\alloc{c} \iff c \in \reach{h'}{roots})\\
     &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
     \marked{h}{c})\\
@@ -487,7 +483,7 @@ mutated yet, $h = h'$, which allows further simplifications to be made.
   \begin{align*}
     I' &= I[h[\gchead{last} + 1] / \mathtt{SCAV}]\\
 %
-    &= \forall c \in h,\ first \in \reach{h}{c}\\
+    &= \forall c \in h,\ first \in \reach{h}{r}\\
     &\quad\land \id~c \geq \id~h[\gchead{last} + 1] \implies
     (\alloc{c} \iff c \in \reach{h}{roots})\\
     &\quad\land (\alloc{c} \implies \lnot \marked{h}{c})\\
@@ -496,7 +492,7 @@ mutated yet, $h = h'$, which allows further simplifications to be made.
     \implies \marked{h}{x}))\\\\
 %
     I'' &= I'[current / last]\\
-    &= \forall c \in h,\ first \in \reach{h}{c}\\
+    &= \forall c \in h,\ first \in \reach{h}{r}\\
     &\quad\land \id~c \geq \id~h[\gchead{current} + 1] \implies
     (\alloc{c} \iff c \in \reach{h}{roots})\\
     &\quad\land (\alloc{c} \implies \lnot
@@ -506,7 +502,7 @@ mutated yet, $h = h'$, which allows further simplifications to be made.
     &\quad(\forall c \pointsto x,\ \id~x < \id~h[\gchead{current} + 1]
     \implies \marked{h}{x}))\\
 %
-    &= \forall c \in h,\ first \in \reach{h}{c} \land (\alloc{c}
+    &= \forall c \in h,\ first \in \reach{h}{r} \land (\alloc{c}
     \implies \lnot \marked{h}{c})
   \end{align*}
 
