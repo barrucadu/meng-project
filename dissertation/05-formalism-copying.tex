@@ -159,6 +159,10 @@ reachable cons cell in the other semispace, copying over car and cdrs
 as it goes, and then flips the roles of the semispaces, so that the
 mutator uses the new space.
 
+The ``copying'' of the cell ID can be said to happen after line 15 of
+the collector. This allowable, as by the end of the \texttt{collect}
+call, the cell contents will be correct.
+
 \subsection{Partial Correctness}
 \label{sec:copying-example-partial}
 
