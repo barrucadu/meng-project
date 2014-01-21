@@ -348,8 +348,8 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   \begin{align*}
     \forall c \in h',\ \forall w \in c,\ 
     &\mathtt{SCAV} = first \land first \in \reach{h'}{c} \land
-    \id~c \geq \id~\mathtt{SCAV} \implies (\alloc{c} \iff c \in
-    \reach{h'}{roots})\\
+    \id~c \geq \id~\mathtt{SCAV} \implies\\
+    &\quad(\alloc{c} \iff c \in \reach{h'}{roots})\\
     &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
     \marked{h}{c})\\
     &\quad\land (\alloc{c} \land \id~c \geq \id~\mathtt{SCAV} \implies
