@@ -40,27 +40,23 @@ gccell* heap[NUM_CELLS * sizeof(gccell)];
  * The address of the previously allocated cell is used to construct
  * the history list.
  */
-cell* history;
+cell* history = NULL;
 
 /**
  * We keep a pointer to the head of the free list.
  */
-cell* current;
+cell* current = NULL;
 
 /**
  * The first allocated cell.
  */
-cell* first;
+cell* first = NULL;
 
 /**
  * Initialise: construct the freelist.
  */
 void initialise()
 {
-  history = NULL;
-  current = NULL;
-  first = NULL;
-
   for(gccell* thecell = heap[0]; thecell < heap[NUM_CELLS]; thecell++)
     free_cons(&(thecell->cell));
 }
