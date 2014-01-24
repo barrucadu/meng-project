@@ -76,11 +76,11 @@ may be broken by the marker or the sweeper, as long as it is restored
 at the end. As such, I have not included it in the definitions of
 correctness in the following two sections, but it is still essential.
 
-Finally, a short word needs to be said on what ``allocation''
-is. Conceptually, cells are either allocated (in which case they may
-or may not be garbage), or deallocated (in which case the allocator
-can hand them out to the mutator). We shall consider this allocation
-status of a cell to be an attribute of it that we can access for proof
+A short word needs to be said on what ``allocation'' is. Conceptually,
+cells are either allocated (in which case they may or may not be
+garbage), or deallocated (in which case the allocator can hand them
+out to the mutator). We shall consider this allocation status of a
+cell to be an attribute of it that we can access for proof
 purposes. In an actual implementation of a mark-sweep collector, the
 unallocated cells would be those on the free list, and the allocated
 cells would be the others.
@@ -90,6 +90,19 @@ cells would be the others.
   A cell has a ghost boolean attribute, its ``allocation'', which is
   true if and only if the cell is ``allocated''.
 \end{definition}
+
+Finally, in order to ensure that pointers only point to sane
+locations, we require that the live cells and the unallocated cells
+are disjoint,
+
+\begin{definition}[Live Cell Invariant]
+  \label{def:ms-live-cell-invariant}
+  \[\forall c \in \reach{h}{r},\ \alloc{c}\]
+\end{definition}
+
+This ensures that no live cells contain a pointer to a cell on the
+free list, or whatever structure is used to store the unallocated
+cells.
 
 \section{Marking}
 \label{sec:marksweep-marking}

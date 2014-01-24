@@ -3,9 +3,10 @@
 
 We shall use the same definitions of the \gls{heap}
 (defn. \ref{def:ms-heap}), \gls{cell} (defn. \ref{def:ms-cell}),
-\gls{pointer} (defn. \ref{def:ms-pointer}), and reachability
-(defn. \ref{def:ms-reachable}) as in the prior chapter. Unfortunately,
-the definitions of word preservation
+\gls{pointer} (defn. \ref{def:ms-pointer}), reachability
+(defn. \ref{def:ms-reachable}), and the live cell invariant
+(defn. \ref{def:ms-live-cell-invariant}) as in the prior
+chapter. Unfortunately, the definitions of word preservation
 (defn. \ref{def:ms-word-preservation}) will have to change, because a
 \gls{copying} \gls{collector} renames addresses, and allocation
 (defn. \ref{def:ms-allocation}) because we need the allocation status
