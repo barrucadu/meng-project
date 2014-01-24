@@ -1,23 +1,7 @@
 #ifndef _ARMSTRONG_VIRDING_H
 #define _ARMSTRONG_VIRDING_H
 
-/*
- * Cells are implemented as a pair of tagged unions, as either the car
- * or the cdr may contain data or a reference to another cell.
- */
-typedef enum { ATOM, REFERENCE } ctag;
-struct cell;
-typedef struct component {
-  ctag tag;
-  union {
-    struct cell *ptr;
-    unsigned int data;
-  } val;
-} component;
-typedef struct cell {
-  component car;
-  component cdr;
-} cell;
+#include "shared.h"
 
 /**
  * Initialise the memory management system. After calling this,
@@ -34,9 +18,6 @@ void initialise(void);
  * time, and so the car and cdr must be specified at allocation
  * time. For simplicity, immutability is not enforced in this
  * implementation, but would be in a "proper" implementation.
- *
- * Furthemore, we'll assume there is only one root, and it is the most
- * recently allocated cell.
  */
 cell* alloc(component car, component cdr);
 

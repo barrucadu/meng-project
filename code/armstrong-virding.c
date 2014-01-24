@@ -1,6 +1,12 @@
 #include <stddef.h>
 
+#include "shared.h"
 #include "armstrong-virding.h"
+
+/**
+ * The list of roots
+ */
+extern cell* roots[NUM_ROOTS];
 
 /* 0 = unmarked, anything else = marked */
 #define UNMARKED 0
@@ -42,14 +48,6 @@ cell* history;
 cell* current;
 
 /**
- * For simplicity of implementation, we just have one root. In a
- * "proper" implementation as part of some larger system (such as a
- * programming language runtime) there would be an easy way to get all
- * the roots, but, well, this is C.
- */
-cell* root;
-
-/**
  * The first allocated cell.
  */
 cell* first;
@@ -61,7 +59,6 @@ void initialise()
 {
   history = NULL;
   current = NULL;
-  root = NULL;
   first = NULL;
 
   for(gccell* thecell = heap[0]; thecell < heap[NUM_CELLS]; thecell++)
@@ -74,7 +71,15 @@ void initialise()
 cell* alloc(component car, component cdr)
 {
   if(current->car.val.ptr == NULL)
-    gc();
+    {
+      // When the collector is called, it assumes the roots have been
+      // marked
+      for(unsigned int i = 0; i < NUM_ROOTS; i++)
+        if(roots[i] != NULL)
+          gchead(roots[i])->mark = MARKED;
+
+      gc();
+    }
 
   if(current->car.val.ptr == NULL)
     return NULL;
@@ -94,8 +99,7 @@ cell* alloc(component car, component cdr)
   thecell->car = car;
   thecell->cdr = cdr;
 
-  // Update root and first
-  root = thecell;
+  // Update first
   if(first == NULL)
     first = thecell;
 
