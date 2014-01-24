@@ -129,6 +129,9 @@
 \newcommand{\marked}[2]{\mathrm{marked}\left(#1, #2\right)}
 
 % Listings
+\usepackage{chngcntr} % Renumbering done further down because the
+                      % counter is only available after the document
+                      % begins, for some reason.
 \usepackage{listings}
 
 \definecolor{LightGray}{rgb}{0.9,0.9,0.9}
@@ -142,6 +145,15 @@
 \lstset{stringstyle=\color{Red}}
 \lstset{backgroundcolor=\color{LightGray}}
 \lstset{breaklines=true}
+
+\lstdefinestyle{makefile}
+{
+    numberblanklines=false,
+    language=make,
+    tabsize=4,
+    keywordstyle=\color{red},
+    identifierstyle= %plain identifiers for make
+}
 
 \title{%
 {\normalsize\scshape University of York}\\
@@ -168,6 +180,8 @@ Supervisor: Colin Runciman
 \date{}
 
 \begin{document}
+
+\counterwithin{lstlisting}{section}
 
 \pagestyle{empty}
 
@@ -211,7 +225,7 @@ such there are no specific ethical implications.
 
 %\listoffigures
 %\listoftables
-%\lstlistoflistings
+\lstlistoflistings
 
 % Reset page numbering for content
 \newpage
@@ -239,6 +253,8 @@ such there are no specific ethical implications.
   \addcontentsline{toc}{subsection}{Bibliography}
   \bibliographystyle{plain}
   \bibliography{references}
+
+  \include{A0-gc-impl}
 \end{appendices}
 
 \end{document}
