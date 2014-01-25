@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdio.h>
 
 #include "shared.h"
 #include "fenichel-yochelson.h"
@@ -33,8 +34,8 @@ semispace pointer_space = FIRST;
  * The heap consists of two semispaces able to hold the given number
  * of cells.
  */
-cell* semispace1[NUM_CELLS];
-cell* semispace2[NUM_CELLS];
+cell semispace1[NUM_CELLS];
+cell semispace2[NUM_CELLS];
 
 /**
  * The ID of the next cell to allocate
@@ -51,7 +52,10 @@ static cell* collect(cell* p);
 cell* alloc()
 {
   if(next == NUM_CELLS)
-    gc();
+    {
+      fprintf(stderr, "Initiating garbage collection\n");
+      gc();
+    }
 
   if(next == NUM_CELLS)
     return NULL;
@@ -59,9 +63,9 @@ cell* alloc()
   // Get the cell 
   cell* thecell;
   if(cons_space == FIRST)
-    thecell = semispace1[next];
+    thecell = &semispace1[next];
   else
-    thecell = semispace2[next];
+    thecell = &semispace2[next];
 
   // Initialise its car and cdr to sensible values
   thecell->car.tag = REFERENCE;
@@ -82,9 +86,11 @@ cell* alloc()
 static void gc()
 {
   flip(cons_space);
+  next = 0;
 
-  for(unsigned int i; i < NUM_ROOTS; i ++)
-    roots[i] = collect(roots[i]);
+  for(unsigned int i = 0; i < NUM_ROOTS; i ++)
+    if(roots[i] != NULL)
+      roots[i] = collect(roots[i]);
 
   flip(pointer_space);
 }
@@ -119,12 +125,12 @@ static cell* collect(cell* p)
 
       // nrplaca(q, collect(a))
       q->car = a;
-      if(a.tag == REFERENCE)
+      if(a.tag == REFERENCE && a.val.ptr != NULL)
         q->car.val.ptr = collect(q->car.val.ptr);
 
       // nrplacd(q, collect(b))
       q->cdr = b;
-      if(b.tag == REFERENCE)
+      if(b.tag == REFERENCE && b.val.ptr != NULL)
         q->cdr.val.ptr = collect(q->cdr.val.ptr);
 
       return q;

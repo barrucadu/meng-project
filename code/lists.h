@@ -22,6 +22,11 @@ list* reverse(list* xs);
 list* append(list* xs, list* ys);
 
 /**
+ * Special-case of append for appending data to a list.
+ */
+list* append_data(unsigned int data, list* xs);
+
+/**
  * Get the head of a list, as a singleton list
  */
 list* head(list* xs);

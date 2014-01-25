@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdio.h>
 
 #include "shared.h"
 #include "armstrong-virding.h"
@@ -34,7 +35,7 @@ typedef struct {
 /**
  * The heap is modelled as an array of gc cells
  */
-gccell* heap[NUM_CELLS * sizeof(gccell)];
+gccell heap[NUM_CELLS * sizeof(gccell)];
 
 /**
  * The address of the previously allocated cell is used to construct
@@ -57,8 +58,8 @@ cell* first = NULL;
  */
 void initialise()
 {
-  for(gccell* thecell = heap[0]; thecell < heap[NUM_CELLS]; thecell++)
-    free_cons(&(thecell->cell));
+  for(unsigned int i = 0; i < NUM_CELLS; i++)
+    free_cons(&(heap[i].cell));
 }
 
 /**
@@ -66,8 +67,10 @@ void initialise()
  */
 cell* alloc(component car, component cdr)
 {
-  if(current->car.val.ptr == NULL)
+  if(current->cdr.val.ptr == NULL)
     {
+      fprintf(stderr, "Initiating garbage collection\n");
+
       // When the collector is called, it assumes the roots have been
       // marked
       for(unsigned int i = 0; i < NUM_ROOTS; i++)
@@ -77,7 +80,7 @@ cell* alloc(component car, component cdr)
       gc();
     }
 
-  if(current->car.val.ptr == NULL)
+  if(current->cdr.val.ptr == NULL)
     return NULL;
 
   // Update the "current" cell.
@@ -115,10 +118,10 @@ static void gc()
     {
       if(marked(SCAV))
         {
-          if(SCAV->car.tag == REFERENCE)
+          if(SCAV->car.tag == REFERENCE && SCAV->car.val.ptr != NULL)
             gchead(SCAV->car.val.ptr)->mark = MARKED;
 
-          if(SCAV->cdr.tag == REFERENCE)
+          if(SCAV->cdr.tag == REFERENCE && SCAV->cdr.val.ptr != NULL)
             gchead(SCAV->cdr.val.ptr)->mark = MARKED;
 
           gchead(SCAV)->mark = UNMARKED;
@@ -143,7 +146,9 @@ static void free_cons(cell* cell)
   cell->cdr.tag = REFERENCE;
   cell->cdr.val.ptr = current;
 
-  hist(current) = cell;
+  if(current != NULL)
+    hist(current) = cell;
+
   hist(cell) = history;
 
   current = cell;

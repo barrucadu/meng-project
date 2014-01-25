@@ -1,8 +1,6 @@
 #ifndef _SHARED_H
 #define _SHARED_H
 
-#include <stdbool.h>
-
 /*
  * Cells are implemented as a pair of tagged unions, as either the car
  * or the cdr may contain data or a reference to another cell.
@@ -24,11 +22,12 @@ typedef struct cell {
 /**
  * Add a root to the list of roots. To avoid the need to build a
  * linked list (and so need to allocate memory), a fixed-size list is
- * used. This function returns true if the root was added, and false
- * if the list is full. In a "proper" implementation, there would be a
- * better way to get the roots than this.
+ * used. This function returns a pointer to the root - giving a layer
+ * of indirection which allows the GC to move stuff around in the
+ * background. In a "proper" implementation, there would be a better
+ * way to get the roots than this.
  */
-bool add_root(cell* root);
+cell** add_root(cell* root);
 
 /**
  * Remove a root from the list of roots. This always succeeds: if the
