@@ -82,6 +82,8 @@ list* append(list* xs, list* ys)
         remove_root(out);
       out = out2;
     }
+
+  remove_root(rxs);
     
   return out;
 }

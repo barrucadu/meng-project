@@ -290,9 +290,9 @@ We can then express the \gls{loop invariant} as follows:
   \forall c \in h',\ \forall w \in c,\ &first \in \reach{h'}{c} \land
   \id~c \geq \id~\mathtt{SCAV} \implies (\alloc{c} \iff c \in
   \reach{h'}{roots})\\
-  &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
-  \marked{h}{c})\\
-  &\quad\land (\alloc{c} \land \id~c \geq \id~\mathtt{SCAV} \implies
+  &\quad\land (\id~c > \id~\mathtt{SCAV} \land \alloc{c} \implies h[w]
+  = h'[w] \land \lnot \marked{h}{c})\\
+  &\quad\land (\alloc{c} \land \id~c > \id~\mathtt{SCAV} \implies
   (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV} \implies
   \marked{h}{x}))
 \end{align*}
@@ -355,23 +355,23 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   Firstly, let's show the sufficiency of the loop invariant:
 
   \begin{align*}
-    \forall c \in h',\ \forall w \in c,\ 
-    &\mathtt{SCAV} = first \land first \in \reach{h'}{r'} \land
+    \forall c \in h',\ \forall w \in c,\ &\mathtt{SCAV} = first \land
+    first \in \reach{h'}{r'} \land
     \id~c \geq \id~\mathtt{SCAV} \implies\\
     &\quad(\alloc{c} \iff c \in \reach{h'}{roots})\\
-    &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
-    \marked{h}{c})\\
-    &\quad\land (\alloc{c} \land \id~c \geq \id~\mathtt{SCAV} \implies
+    &\quad\land (\id~c > \id~\mathtt{SCAV} \land \alloc{c} \implies
+    h[w] = h'[w] \land \lnot \marked{h}{c})\\
+    &\quad\land (\alloc{c} \land \id~c > \id~\mathtt{SCAV} \implies
     (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV} \implies
     \marked{h}{x}))\\
 %
-    \forall c \in h',\ \forall w \in c,\ 
-    &\id~c \geq first \in \reach{h'}{r'} \land \id~first
+    \forall c \in h',\ \forall w \in c,\ &\id~c \geq first \in
+    \reach{h'}{r'} \land \id~first
     \implies (\alloc{c} \iff c \in \reach{h'}{roots})\\
-    &\quad\land (\alloc{c} \implies h[w] = h'[w] \land \lnot
-    \marked{h}{c})\\
-    &\quad\land (\alloc{c} \land \id~c \geq \id~\mathtt{SCAV} \implies
-    (\forall c \pointsto x,\ \id~x < \id~first \implies
+    &\quad\land (\id~c > \id~first \land \alloc{c} \implies
+    h[w] = h'[w] \land \lnot \marked{h}{c})\\
+    &\quad\land (\alloc{c} \land \id~c > \id~first \implies (\forall c
+    \pointsto x,\ \id~x < \id~first \implies
     \marked{h}{x}))\\
 %
     \forall c \in h',\ \forall w \in c,\ 
