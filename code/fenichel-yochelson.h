@@ -10,4 +10,13 @@
  */
 cell* alloc(void);
 
+/**
+ * Some helper functions for allocation
+ */
+cell* alloc_components(component car, component cdr);
+cell* alloc_ptr_ptr(cell* car, cell* cdr);
+cell* alloc_ptr_atom(cell* car, unsigned int cdr);
+cell* alloc_atom_ptr(unsigned int car, cell* cdr);
+cell* alloc_atom_atom(unsigned int car, unsigned int cdr);
+
 #endif

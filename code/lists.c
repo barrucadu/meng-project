@@ -5,6 +5,7 @@
 
 #if GC == 0
 #include "armstrong-virding.h"
+#define alloc_components(car,cdr) alloc(car,cdr)
 #elif GC == 1
 #include "fenichel-yochelson.h"
 #else
@@ -13,18 +14,7 @@
 
 list* singleton(unsigned int data)
 {
-#if GC == 0
   cell* out = alloc_atom_ptr(data, NULL);
-#else
-  cell* out = alloc();
-  if(out != NULL)
-    {
-      out->car.tag = ATOM;
-      out->car.val.data = data;
-      out->cdr.tag = REFERENCE;
-      out->cdr.val.ptr = NULL;
-    }
-#endif
 
   return out;
 }
@@ -40,16 +30,7 @@ list* reverse(list* xs)
       if(out != NULL)
         add_root(out);
       component cdr = { .tag = REFERENCE, .val.ptr = out };
-#if GC == 0
-      cell* out2 = alloc(cur->car, cdr);
-#else
-      cell* out2 = alloc();
-      if(out2 != NULL)
-        {
-          out2->car = xs->car;
-          out2->cdr = cdr;
-        }
-#endif
+      cell* out2 = alloc_components(cur->car, cdr);
       if(out != NULL)
         remove_root(out);
       out = out2;
@@ -57,28 +38,19 @@ list* reverse(list* xs)
   return out;
 }
 
-list* append(list* xs, list* ys)
+list* append(list* xs, list** ys)
 {
   cell* rxs = reverse(xs);
   add_root(rxs);
-  cell* out = ys;
+  cell* out = (ys == NULL) ? NULL : *ys;
 
   for(cell* cur = rxs; cur != NULL; cur = cur->cdr.val.ptr)
     {
-      if(out != ys)
+      if(out != *ys)
         add_root(out);
       component cdr = { .tag = REFERENCE, .val.ptr = out };
-#if GC == 0
-      cell* out2 = alloc(cur->car, cdr);
-#else
-      cell* out2 = alloc();
-      if(out2 != NULL)
-        {
-          out2->car = xs->car;
-          out2->cdr = cdr;
-        }
-#endif
-      if(out != ys)
+      cell* out2 = alloc_components(cur->car, cdr);
+      if(out != *ys)
         remove_root(out);
       out = out2;
     }
@@ -88,37 +60,16 @@ list* append(list* xs, list* ys)
   return out;
 }
 
-list* append_data(unsigned int data, list* xs)
+list* append_data(unsigned int data, list** xs)
 {
-#if GC == 0
-  cell* out = alloc_atom_ptr(data, xs);
-#else
-  cell* out = alloc();
-  if(out != NULL)
-    {
-      out->car.tag = ATOM;
-      out->car.val.data = data;
-      out->cdr.tag = REFERENCE;
-      out->cdr.val.ptr = xs;
-    }
-#endif
+  cell* out = alloc_atom_ptr(data, (xs == NULL) ? NULL : *xs);
 
   return out;
 }
 
 list* head(list* xs)
 {
-#if GC == 0
   cell* out = (xs->car.tag == ATOM) ? alloc_atom_ptr(xs->car.val.data, NULL) : alloc_ptr_ptr(xs->car.val.ptr, NULL);
-#else
-  cell* out = alloc();
-  if(out != NULL)
-    {
-      out->car = xs->car;
-      out->cdr.tag = REFERENCE;
-      out->cdr.val.ptr = NULL;
-    }
-#endif
 
   return out;
 }

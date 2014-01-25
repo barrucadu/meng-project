@@ -19,12 +19,12 @@ list* reverse(list* xs);
  * Create a new list by appending ys to xs. This allocates a totally
  * new xs, to avoid mutating cdrs.
  */
-list* append(list* xs, list* ys);
+list* append(list* xs, list** ys);
 
 /**
  * Special-case of append for appending data to a list.
  */
-list* append_data(unsigned int data, list* xs);
+list* append_data(unsigned int data, list** xs);
 
 /**
  * Get the head of a list, as a singleton list

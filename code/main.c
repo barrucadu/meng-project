@@ -27,7 +27,7 @@ int main(void)
   list** xs = NULL;
   for(unsigned int i = 0; i < NUM_CELLS - 2; i++)
     {
-      list** newxs = add_root(append_data(i, (xs == NULL) ? NULL : *xs));
+      list** newxs = add_root(append_data(i, (xs == NULL) ? NULL : xs));
 
       assert(*newxs != NULL);
 
@@ -72,7 +72,7 @@ int main(void)
           list** y = add_root(singleton(j + 1));
           assert(*y != NULL);
 
-          list** tmp = add_root(append(*y, *xs));
+          list** tmp = add_root(append(*y, xs));
           assert(*tmp != NULL);
 
           remove_root(*ys);
