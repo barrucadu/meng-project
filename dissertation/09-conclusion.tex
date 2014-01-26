@@ -1,20 +1,55 @@
 \chapter{Conclusion}
 \label{sec:conclusion}
 
-\todo{Summary of contribution of project}
+In this chapter I shall discuss further work suggested to me by
+undertaking this project, and close with some final thoughts on the
+matter.
 
 \section{Further Work}
 \label{sec:conclusion-further}
 
-\subsection{Specific Improvements}
-\label{sec:conclusion-further-specific}
+\subsection{Machine Verification}
+\label{sec:conclusion-further-machineverification}
 
-\todo{Named, specific, things which could be made better}
+Whilst it would have been desirable to produce machine-verified
+proofs, I did not do so for two reasons: firstly, learning to use a
+proof assistant would have been a significant amount of work to add to
+the project, and secondly I believe the proofs are good enough in
+their current form. Parts of the proofs may be amenable to automation,
+however, which would have simplified the work whilst simultaneously
+making it more rigorous.
 
-\subsection{Research}
-\label{sec:conclusion-further-research}
+Given the two proofs in the current forms, however, it would not be
+infeasible to translate them into a form suitable for machine
+verification, and to ``fill in the blanks'', resulting in completely
+machine-verified proofs. This endeavour would also highlight any
+assumptions I have unknowingly made in this project, and bring to
+light any further obligations, particularly those on the mutator or
+allocator.
 
-\todo{Possible research directions suggested by the project}
+\subsection{Run-time Invariant Checking}
+\label{sec:conclusion-further-invariants}
+
+The garbage collector is only a part of a larger system, consisting of
+the allocator, mutator, and a possible intermediary memory-management
+subsystem. Proving the garbage collector correct is all well and good,
+but if the other components break the invariants or preconditions upon
+which the garbage collector relies, it may fail, no matter how
+rigorous the proof of correctness.
+
+Unfortunately, the task of verifying a nontrivial system is very
+difficult, and this is the reason why formal verification is so rare
+in practice. Thus, it may be worthwhile to implement run-time checking
+of invariants into the system, and to either halt or emit an error
+when such an invariant is broken.
+
+If this could be implemented efficiently, it would only be a small
+overhead for increased reliability, as garbage collection bugs can not
+arise in a verified collector where all of the expectations
+hold. Furthermore, if this could be implemented such that invariants
+are checked after every operation which could break them, it would
+produce a powerful debugging tool, as a programmer would know exactly
+where errors were introduced into the system.
 
 \section{Final Thoughts}
 \label{sec:conclusion-thoughts}
