@@ -1,19 +1,251 @@
 \chapter{Results \& Evaluation}
 \label{sec:results}
 
-\section{Theoretical Results}
-\label{sec:results-theoretical}
+Previously, I have attempted to provide proofs of correctness for two
+extant garbage collection algorithms, and from this extract a more
+generalised notion of correctness. In this chapter, I shall discuss
+and evaluate the results of the two facets of my work, and how
+successful I have been in achieving the goal of this project. I shall
+also discuss an experimental validation of my proofs involving an
+implementation of the two collectors discussed.
 
-\todo{Theoretical contributions of the project}
+\section{Proofs of Collectors}
+\label{sec:results-collectors}
 
-\section{Implementation}
-\label{sec:results-implementation}
+In the process of producing a generalised notion of correctness for
+garbage collectors, I first provided proofs of the Armstrong/Virding
+and Fenichel/Yochelson collectors: two very different approaches, but
+both for systems based on fixed-size cons cells. The proofs for
+neither collector I considered could be machine verified in their
+current form, however I believe that they remain convincing despite
+this.
 
-\todo{Benchmarks(?) of the implemented algorithm, and notes about how
-  it is similar/different to typical non-verified algorithms in use.}
+\section{Collector Implementation}
+\label{sec:results-impl}
 
-\section{Evaluation}
-\label{sec:results-evaluation}
+As evidence of the correctness of the proofs, I
+implemented\footnote{All of the code produced can be found in Appendix
+  \ref{sec:gc-impl}, and online at
+  \url{https://github.com/barrucadu/meng-project}.} both of the
+collectors in C, and wrote a small test program with a very
+constrained heap which constructs a variety of linked lists, and
+results in over 200 garbage collections occurring. I then attached
+assertions to points in the programs to verify the preconditions,
+postconditions, and invariants of the collectors.
 
-\todo{Things I did badly, or which were really contrived, such as not
-  being incremental/concurrent/real-time/whatever.}
+The implementations are written in C99, and have been tested with both
+clang 3.4 and gcc 4.8.2. They should work under any
+standards-compliant compiler, but I have not verified this.
+
+The implementation does have some limitations imposed upon it for
+simplicity: there is a fixed-size array of roots, which the programmer
+must ensure contains all roots, and the requirement of immutable cells
+in the Armstrong/Virding collector is not implemented. Resolving both
+of these would have been significantly more work, and are not
+necessary in order to demonstrate that the garbage collection works.
+
+Both collectors manage a heap of \texttt{NUM\_CELLS} cells (in the
+case of Fenichel/Yochelson, both semispaces are this big), in order to
+have identical characteristics. This then allows identical assertions
+to be used in the test program. As neither collector comes with an
+allocator, I have had to produce allocators, \texttt{alloc()}, which
+work with them. The way I have done so is not necessarily the only, or
+best, way, it is just what occurred to me and appears to work. In both
+cases, the collector is invoked by the allocator upon not having
+enough memory left for an allocation. The preconditions are checked
+before calling the \texttt{gc()} function, and the postconditions
+checked after. In each of the garbage collector loops, the invariants
+are checked after each iteration.
+
+Due to using a low level language, the implementations of the
+collectors look somewhat more complex than what is specified in their
+respective papers, but is as close as I could reasonably obtain.
+
+The assertions, and their implementation are discussed below.
+
+\subsection{Armstrong/Virding}
+\label{sec:results-impl-ms}
+
+\subsubsection{Preconditions}
+\label{sec:results-impl-ms-pre}
+
+The Armstrong/Virding collector, as I discussed, has a precondition
+that the $first$ cell is always reachable, as otherwise it would be
+garbage, and due to it never being freed, garbage would survive a
+collection. Furthermore, it is assumed that when the collector is
+called, all cells pointed to by roots have been marked.
+
+\begin{lstlisting}[language=C,caption={Armstrong/Virding Preconditions}]
+assert(reachable(gchead(first)));
+
+for(unsigned int i = 0; i < NUM_ROOTS; i++)
+  if(roots[i] != NULL)
+    gchead(roots[i])->mark = MARKED;
+\end{lstlisting}
+
+\subsubsection{Postconditions}
+\label{sec:results-impl-ms-post}
+
+The postcondition express simply the correct mark-sweep postcondition:
+after collection, all cells which are allocated (not on the free list)
+are reachable from the roots. Furthermore, the live cell invariant is
+checked here as a postcondition, although arguably it should be
+checked with the rest of the invariants, in the garbage collection
+loop.
+
+\begin{lstlisting}[language=C,caption={Armstrong/Virding Postconditions}]
+for(unsigned int i = 0; i < NUM_CELLS; i++)
+  if(reachable(&heap[i]))
+    assert(!on_free_list(&heap[i]));
+
+for(unsigned int i = 0; i < NUM_CELLS; i++)
+  if(!on_free_list(&heap[i]))
+    assert(reachable(&heap[i]));
+\end{lstlisting}
+
+\subsubsection{Invariants}
+\label{sec:results-impl-ms-invariants}
+
+The invariants appear somewhat more complex. The first loop expresses
+$\forall c \in h,\ \alloc{c} \land \id~c > \id~\mathtt{SCAV} \implies
+(\forall c \pointsto x, \id~x < \id~\mathtt{SCAV} \implies
+\marked{h}{c})$: all cells outside of the region that has been
+collected, but which are pointed to by a cell in that region, have
+been marked. The latter two express the simpler properties that all
+allocated cells in the collected region are live, and all allocated
+cells in the collected region are unmarked.
+
+\begin{lstlisting}[language=C,caption={Armstrong/Virding Invariants}]
+for(unsigned int i = 0; i < NUM_CELLS; i++)
+  if(reachable(&heap[i]) && cell_id(&heap[i]) > cell_id(gchead(SCAV)))
+    {
+      if(heap[i].cell.car.tag == REFERENCE &&
+         heap[i].cell.car.val.ptr != NULL &&
+         cell_id(gchead(heap[i].cell.car.val.ptr)) < cell_id(gchead(SCAV)))
+        assert(gchead(heap[i].cell.car.val.ptr)->mark == MARKED);
+
+      if(heap[i].cell.cdr.tag == REFERENCE &&
+         heap[i].cell.cdr.val.ptr != NULL &&
+         cell_id(gchead(heap[i].cell.cdr.val.ptr)) < cell_id(gchead(SCAV)))
+        assert(gchead(heap[i].cell.cdr.val.ptr)->mark == MARKED);
+    }
+
+for(unsigned int i = 0; i < NUM_CELLS; i++)
+  if(reachable(&heap[i]) && cell_id(&heap[i]) >= cell_id(gchead(SCAV)))
+    assert(reachable(&heap[i]));
+
+for(unsigned int i = 0; i < NUM_CELLS; i++)
+  if(reachable(&heap[i]) && cell_id(&heap[i]) > cell_id(gchead(SCAV)))
+    assert(heap[i].mark == UNMARKED);
+\end{lstlisting}
+
+\subsection{Fenichel/Yochelson}
+\label{sec:results-impl-c}
+
+\subsubsection{Preconditions}
+\label{sec:results-impl-c-pre}
+
+An invariant which I did not mention whilst discussing my proof, but
+which the garbage collector, mutator, and allocator must obey, is that
+there are no inter-semispace pointers. Due to a bug in my linked list
+code (which has since been remedied), a garbage collection occuring
+whilst appending a value to a list would result in this invariant
+being broken, and resulted in my being stuck for some time before I
+realised what the issue was. I then decided to enforce this as a
+precondition of the collector.
+
+\begin{lstlisting}[language=C,caption={Fenichel/Yochelson Preconditions}]
+cell *sspace = (cons_space == FIRST) ? semispace1 : semispace2;
+
+for(unsigned int i = 0; i < NUM_CELLS; i++)
+  if(reachable(&sspace[i]))
+    {
+      if(sspace[i].car.tag == REFERENCE &&
+         sspace[i].car.val.ptr != NULL)
+        assert(sspace[i].car.val.ptr >= sspace &&
+               sspace[i].car.val.ptr <= &sspace[NUM_CELLS]);
+
+      if(sspace[i].cdr.tag == REFERENCE &&
+         sspace[i].cdr.val.ptr != NULL)
+        assert(sspace[i].cdr.val.ptr >= sspace &&
+               sspace[i].cdr.val.ptr <= &sspace[NUM_CELLS]);
+    }
+\end{lstlisting}
+
+\subsubsection{Postconditions}
+\label{sec:results-impl-c-post}
+
+As a postcondition I again checked the live cell invariant, and also
+asserted that all allocated cells are reachable.
+
+\begin{lstlisting}[language=C,caption={Fenichel/Yochelson Postconditions}]
+cell* sspace = (cons_space == FIRST) ? semispace1 : semispace2;
+
+for(unsigned int i = 0; i < NUM_CELLS; i++)
+  if(reachable(&sspace[i]))
+    assert(!on_free_list(&sspace[i]));
+
+for(unsigned int i = 0; i < NUM_CELLS; i++)
+  if(!on_free_list(&sspace[i]))
+    assert(reachable(&sspace[i]));
+\end{lstlisting}
+
+\subsubsection{Invariants}
+\label{sec:results-impl-c-invariants}
+
+The invariant I decided to check is that, after collecting every root,
+all pointers in cells reachable from that root have been
+updated. Actually, I went for the weaker property that pointers
+pointed into the correct semispace. Unfortunately, proving the
+stronger property would require having access to the pre-state of the
+heap, which would require copying it before initiating a garbage
+collection.
+
+\begin{lstlisting}[language=C,caption={Fenichel/Yochelson GC Loop}]
+for(unsigned int i = 0; i < NUM_ROOTS; i ++)
+  if(roots[i] != NULL)
+    {
+      roots[i] = collect(roots[i]);
+      check_pointers_updated(roots[i], NULL);
+    }
+\end{lstlisting}
+
+\begin{lstlisting}[language=C,caption={Fenichel/Yochelson Pointer Checking}]
+static void check_pointers_updated(const cell* root, const cell* cur)
+{
+  if(root == cur)
+    return;
+
+  if(cur == NULL)
+    cur = root;
+
+  cell *sspace = (cons_space == FIRST) ? semispace1 : semispace2;
+
+  if(cur->car.tag == REFERENCE &&
+     cur->car.val.ptr != ALREADYCOPIED &&
+     cur->car.val.ptr != NULL)
+    {
+      assert(cur->car.val.ptr >= sspace &&
+             cur->car.val.ptr <= &sspace[NUM_CELLS]);
+      check_pointers_updated(root, cur->car.val.ptr);
+    }
+
+  if(cur->cdr.tag == REFERENCE &&
+     cur->cdr.val.ptr != NULL)
+    {
+      assert(cur->cdr.val.ptr >= sspace &&
+             cur->cdr.val.ptr <= &sspace[NUM_CELLS]);
+      check_pointers_updated(root, cur->cdr.val.ptr);
+    }
+}
+\end{lstlisting}
+
+\section{Generalised Garbage Collection Correctness}
+\label{sec:results-correctness}
+
+\todo{Evaluation 2}
+
+\section{Summary}
+\label{sec:results-summary}
+
+\todo{Key strengths and weaknesses of work}
