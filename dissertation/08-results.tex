@@ -20,6 +20,27 @@ neither collector I considered could be machine verified in their
 current form, however I believe that they remain convincing despite
 this.
 
+I hold this to be the case because the collectors were chosen for
+their simplicity: they are both old, established, collectors which
+have stood the test of time, and they are sufficiently simple that one
+can `see' their correctness at a glance. They do not attempt to
+perform any nontrivial cleverness to improve the performance of the
+mutator or memory system, as more modern hybrid collectors are wont to
+do, and they fall strictly within the bounds of mark-sweep and copying
+collectors, without borrowing anything from other areas. Thus, the
+proofs simply make explicit the intuition we feel when we read them,
+and the implementation of the collectors provides an experimental
+validation of this intuition.
+
+The proofs may appear quite different on the surface, however many of
+the definitions used in the mark-sweep proof were reused in the
+copying proof, and those that were changed were made more
+general. The proofs may not be so different after all,
+then. Naturally, there are some parts which are collector-specific
+(such as correct marking, sweeping, and copying), but these arose from
+trying to convert the very abstract postcondition into something more
+amenable to proof.
+
 \section{Collector Implementation}
 \label{sec:results-impl}
 
