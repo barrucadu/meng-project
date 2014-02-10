@@ -55,7 +55,36 @@ identity.
 \subsection{Stages of Garbage Collection}
 \label{sec:gc-comparison-stages}
 
-\todo{Stages all garbage collectors do (perhaps implicitly)}
+By combining the mark-sweep and copying collectors, we can see that
+a garbage collector performs the following operations, although some
+may only be implicit,
+
+\begin{description}
+  \item[Identify all roots] strictly speaking, this isn't a part of
+    the garbage collector, but it is a precondition of all collectors,
+    and so I have included it here.
+
+  \item[Identify preserved cells] specifically, the collector
+    identifies a subset of all the allocated cells to preserve, and
+    for correctness, this should be the same as the set of live
+    cells. In the mark-sweep collector, this is the marking phase, in
+    the copying collector this is done implicitly whilst copying.
+
+  \item[Preserve identified cells] cells are moved to their new
+    locations, and pointers updated. In a non-moving collector,
+    nothing happens here.
+
+  \item[Free non-preserved cells] this in practice would consist of
+    building a free list.
+
+  \item[Clean up] Any housekeeping data used by the collector, such as
+    mark flags, is now reset to a state which will meet the
+    preconditions of the collector when it is next called.
+\end{description}
+
+I believe that this outline is general enough to apply to any
+stop-the-world collector, and it is what I shall be basing the
+framework for proof, section \ref{sec:gc-framework} on.
 
 \section{Correct Garbage Collection}
 \label{sec:gc-correct}
