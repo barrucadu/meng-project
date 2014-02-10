@@ -1,7 +1,18 @@
 \chapter{Partial Correctness for Garbage Collection}
 \label{sec:gc}
 
-\todo{Outline of partial correctness}
+In this chapter, I shall produce a general correctness criteria for
+garbage collection, and show how it can be applied. I shall do this by
+first comparing the mark-sweep and copying formalisms, and abstracting
+the commonalities from both. Definitions shall be reused, but the
+proofs shall not be.
+
+As proving a very abstract correctness criteria holds for a concrete
+implementation may be difficult, I shall provide a ``framework'' for
+proof: a collection of simpler obligations which, together, are
+sufficient for correctness. I shall then conclude by briefly
+discussing how the formalism could possibly be extended to apply to
+collectors other than the stop-the-world type.
 
 \section{Comparison of Mark-Sweep and Copying Correctness}
 \label{sec:gc-comparison}
@@ -12,6 +23,11 @@
 \label{sec:gc-comparison-stages}
 
 \todo{Stages all garbage collectors do (perhaps implicitly)}
+
+\section{Correct Garbage Collection}
+\label{sec:gc-correct}
+
+\todo{Statement of correctness criteria}
 
 \section{A Framework for Proof}
 \label{sec:gc-framework}
