@@ -4,8 +4,8 @@
 In this chapter, I shall produce a general correctness criteria for
 garbage collection, and show how it can be applied. I shall do this by
 first comparing the mark-sweep and copying formalisms, and abstracting
-the commonalities from both. Definitions shall be reused, but the
-proofs shall not be.
+the commonalities from both. Definitions shall be reused, but
+specifics of the proofs shall not be.
 
 As proving a very abstract correctness criteria holds for a concrete
 implementation may be difficult, I shall provide a ``framework'' for
@@ -17,7 +17,40 @@ collectors other than the stop-the-world type.
 \section{Comparison of Mark-Sweep and Copying Correctness}
 \label{sec:gc-comparison}
 
-\todo{Comparison of approaches}
+Many of the definitions created for the mark-sweep correctness were
+re-used by the copying correctness. The changes were strict
+generalisations, and were required because the copying collector moves
+cells around, whereas the mark-sweep collector does not. Despite these
+changes, the core idea behind correct garbage collection: that it is
+a transformation on the heap which produces an output heap of the same
+`shape' and data, but with no garbage, remained the same. All that
+changed is how this was achieved.
+
+However, the mark-sweep correctness very naturally decomposes into
+correct marking and correct sweeping, whereas there was no such
+similar decomposition for the copying correctness. This showed in the
+proofs, where the loop invariant for the mark-sweep collector dealt
+with both cases, but the invariant for the copying collector had to
+consider the entire state at once.
+
+Despite this apparent difference, as the decomposition arises from
+combining the domain-specific knowledge of how a mark-sweep collector
+works with the notion of what correct garbage collection entails, I
+don't think that this difference is relevant at this more abstract
+level.
+
+Setting aside the decomposition, I believe that the mark-sweep
+correctness can apply to any non-moving collector, and the copying
+correctness to any moving collector. This is because the only
+mark-sweep-specific part of the mark-sweep correctness is the mark
+flag, but this is unset before and after collection, and so other
+non-moving collectors can be used by disregarding it, and then not
+making use of the decomposition. Furthermore, the copying correctness
+makes no reference to semispaces, and only requires that addresses get
+updated consistently, and so it can be applied to any moving
+collector. Clearly, non-moving collectors can be considered as a
+special case of moving collectors, where the moving function is the
+identity.
 
 \subsection{Stages of Garbage Collection}
 \label{sec:gc-comparison-stages}
