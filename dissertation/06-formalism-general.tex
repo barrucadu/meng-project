@@ -89,7 +89,7 @@ possibility of mutated metadata words
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\alloc{c} \implies
     \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\right.\\
-    &\quad\quad\quad\quad \land \mathrm{type}(w) = \mathrm{data}
+    &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
     \iff h[w] = h'[f^{-1}(w)]\\
     &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) = \mathrm{gc}\right)\\
     &\land \alloc{c} \iff c \in \reach{h'}{r'}
@@ -123,18 +123,18 @@ may only be implicit,
     the garbage collector, but it is a precondition of all collectors,
     and so I have included it here.
 
-  \item[Identify preserved cells] specifically, the collector
-    identifies a subset of all the allocated cells to preserve, and
-    for correctness, this should be the same as the set of live
-    cells. In the mark-sweep collector, this is the marking phase, in
-    the copying collector this is done implicitly whilst copying.
+  \item[Partition cells] specifically, the collector identifies a
+    subset of all the allocated cells to preserve, and for
+    correctness, this should be the same as the set of live cells. In
+    the mark-sweep collector, this is the marking phase, in the
+    copying collector this is done implicitly whilst copying.
 
-  \item[Preserve identified cells] cells are moved to their new
-    locations, and pointers updated. In a non-moving collector,
-    nothing happens here.
+  \item[Preserve live cells] cells are moved to their new locations,
+    and pointers updated. In a non-moving collector, nothing happens
+    here.
 
-  \item[Free non-preserved cells] this in practice would consist of
-    building a free list.
+  \item[Free garbage cells] this in practice would consist of building
+    a free list.
 
   \item[Clean up] Any housekeeping data used by the collector, such as
     mark flags, is now reset to a state which will meet the
@@ -147,7 +147,83 @@ stop-the-world collector.
 \subsection{Proof Obligations}
 \label{sec:gc-framework-obligations}
 
-\todo{Proof obligations for each stage}
+I shall now produce a series of proof obligations for each step, each
+building upon the last. This allows proofs to decompose into smaller
+units, and perhaps gives some indication that some parts are `more
+important' to get right than others.
+
+\subsubsection{Identify all roots}
+\label{sec:gc-framework-obligations-roots}
+
+A garbage collector determines what is live and what is garbage by
+traversing the heap from the roots, and so these must necessarily be
+the correct roots,
+
+\begin{align*}
+  \mathrm{gcroots}(h) &= \mathrm{roots}(h)
+\end{align*}
+
+For cases where the root set is known in advance (such as the run-time
+of a programming language), then this can be easily achieved. However,
+for cases where the roots have to be guessed at (such as by traversing
+the run-time stack), it may not be possible to unambiguously determine
+what the roots are, and so a slightly more relaxed notion of
+correctness which allows some garbage to remain may be necessary.
+
+\subsubsection{Partition cells}
+\label{sec:gc-framework-obligations-partition}
+
+Next, the garbage collector must partition all allocated cells into
+either live or garbage. For correctness, these must be the same as the
+reachable and non-reachable allocated cells,
+
+\begin{align*}
+  \mathrm{gclive}(h) &= \reach{h}{\mathrm{gcroots}(h)}\\
+  \mathrm{gcgarbage}(h) &= \left\{c~|~c \in h \land \alloc{c} \land c
+    \notin \mathrm{gclive}(h)\right\}
+\end{align*}
+
+This stage, as all others, may be implemented implicitly in a
+collector. The building of $\mathrm{gcgarbage}(h)$ is implicit in a
+mark-sweep collector, and the building of both is in a copying
+collector.
+
+\subsubsection{Preserve live cells and free garbage cells}
+\label{sec:gc-framework-obligations-collect}
+
+These two may be done in any order, or interleaved, as if the
+partitioning is correct, there is no overlap between the two
+classes. The obligation here is no less than preservation
+(defn. \ref{def:g-preservation}), but as we know all of the live and
+garbage cells, and can think about them one at a time in the form of a
+loop invariant, it should be simpler to prove.
+
+Thus, it needs to be shown,
+
+\begin{align*}
+  \forall c \in \mathrm{gclive}(h),\ \forall w \in c\ & \alloc{c} \land 
+  \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
+    f(h'[f^{-1}(w)])\right.\\
+  &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+  \iff h[w] = h'[f^{-1}(w)]\\
+  &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
+    \mathrm{gc}\right)\\
+  \forall c \in \mathrm{gcgarbage(h)}\ & \lnot \alloc{c}
+\end{align*}
+
+If the collector performs no explicit partitioning step, instead doing
+so implicitly as cells are collected, it must be shown that the
+implicit step is correct, which may require proving the more general
+form of preservation.
+
+\subsubsection{Clean up}
+\label{sec:gc-framework-obligations-clean}
+
+Finally, any mutated metadata must be reset to some state which is
+acceptable to the invariants of the particular collector being
+used. For instance, for mark-sweep collectors, mark flags must be
+unset. As this is heavily dependent on the individual collector, no
+simple symbolic obligation can be provided.
 
 \subsection{Sufficiency of the Framework}
 \label{sec:gc-framework-sufficiency}
