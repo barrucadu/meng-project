@@ -52,8 +52,18 @@ collector. Clearly, non-moving collectors can be considered as a
 special case of moving collectors, where the moving function is the
 identity.
 
+\section{Correct Garbage Collection}
+\label{sec:gc-correct}
+
+\todo{Statement of correctness criteria}
+
+\section{A Framework for Proof}
+\label{sec:gc-framework}
+
+\todo{Section intro}
+
 \subsection{Stages of Garbage Collection}
-\label{sec:gc-comparison-stages}
+\label{sec:gc-framework-stages}
 
 By combining the mark-sweep and copying collectors, we can see that
 a garbage collector performs the following operations, although some
@@ -86,16 +96,10 @@ I believe that this outline is general enough to apply to any
 stop-the-world collector, and it is what I shall be basing the
 framework for proof, section \ref{sec:gc-framework} on.
 
-\section{Correct Garbage Collection}
-\label{sec:gc-correct}
+\subsection{Proof Obligations}
+\label{sec:gc-framework-obligations}
 
-\todo{Statement of correctness criteria}
-
-\section{A Framework for Proof}
-\label{sec:gc-framework}
-
-\todo{Somewhat more concrete proof obligations which, together, imply
-  partial correctness.}
+\todo{Proof obligations for each stage}
 
 \subsection{Sufficiency of the Framework}
 \label{sec:gc-framework-sufficiency}
