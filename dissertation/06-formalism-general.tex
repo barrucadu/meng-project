@@ -136,6 +136,9 @@ may only be implicit,
   \item[Free garbage cells] this in practice would consist of building
     a free list.
 
+  \item[Update roots] remap all roots according to the same function
+    which was used for the cells.
+
   \item[Clean up] Any housekeeping data used by the collector, such as
     mark flags, is now reset to a state which will meet the
     preconditions of the collector when it is next called.
@@ -160,7 +163,7 @@ traversing the heap from the roots, and so these must necessarily be
 the correct roots,
 
 \begin{align*}
-  \mathrm{gcroots}(h) &= \mathrm{roots}(h)
+  \mathrm{gcroots} &= roots
 \end{align*}
 
 For cases where the root set is known in advance (such as the run-time
@@ -179,9 +182,9 @@ either live or garbage. For correctness, these must be the same as the
 reachable and non-reachable allocated cells,
 
 \begin{align*}
-  \mathrm{gclive}(h) &= \reach{h}{\mathrm{gcroots}(h)}\\
-  \mathrm{gcgarbage}(h) &= \left\{c~|~c \in h \land \alloc{c} \land c
-    \notin \mathrm{gclive}(h)\right\}
+  \mathrm{gclive}(h) &= \reach{h}{\mathrm{gcroots}}\\
+  \mathrm{gcgarbage}(h) &= \left\{c~|~c \in h \land c \notin
+    \mathrm{gclive}(h)\right\}
 \end{align*}
 
 This stage, as all others, may be implemented implicitly in a
@@ -202,20 +205,31 @@ loop invariant, it should be simpler to prove.
 Thus, it needs to be shown,
 
 \begin{align*}
-  \forall c \in \mathrm{gclive}(h),\ \forall w \in c\ & \alloc{c} \land 
+  \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \alloc{c} \land 
   \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
     f(h'[f^{-1}(w)])\right.\\
   &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
   \iff h[w] = h'[f^{-1}(w)]\\
   &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
     \mathrm{gc}\right)\\
-  \forall c \in \mathrm{gcgarbage(h)}\ & \lnot \alloc{c}
+  \forall c \in \mathrm{gcgarbage(h)},\ & \lnot \alloc{c}
 \end{align*}
 
 If the collector performs no explicit partitioning step, instead doing
 so implicitly as cells are collected, it must be shown that the
 implicit step is correct, which may require proving the more general
 form of preservation.
+
+\subsubsection{Update roots}
+\label{sec:gc-framework-obligations-roots}
+
+Now, the roots must be updated by the same function which was applied
+to the cells, if any. In a non-moving collector, this is imply the
+identity.
+
+\begin{align*}
+  \mathrm{gcroots} &= \map{f}{\mathrm{gcroots'}}
+\end{align*}
 
 \subsubsection{Clean up}
 \label{sec:gc-framework-obligations-clean}
@@ -229,7 +243,73 @@ simple symbolic obligation can be provided.
 \subsection{Sufficiency of the Framework}
 \label{sec:gc-framework-sufficiency}
 
-\todo{Proof that the framework works}
+The framework can be trivially shown correct by substituting values
+in.
+
+\begin{lemma}[Reachable cells]
+  The framework is sufficient for reachable (live) cells.
+\end{lemma}
+
+\begin{proof}
+  \begin{align*}
+    \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \alloc{c}
+      \land \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
+      f(h'[f^{-1}(w)])\right.\\
+    &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+    \iff h[w] = h'[f^{-1}(w)]\\
+    &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
+      \mathrm{gc}\right)\\
+%
+    \forall c \in \reach{h}{\mathrm{gcroots}},\ \forall w \in c,\ &
+      \alloc{c} \land \left(\mathrm{type}(w) = \mathrm{pointer} \iff
+      h[w] = f(h'[f^{-1}(w)])\right.\\
+    &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+      \iff h[w] = h'[f^{-1}(w)]\\
+    &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
+      \mathrm{gc}\right)\\
+%
+    \forall c \in \reach{h}{r},\ \forall w \in c,\ & \alloc{c} \land
+      \left(\mathrm{type}(w) = \mathrm{pointer} \iff
+      h[w] = f(h'[f^{-1}(w)])\right.\\
+    &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+      \iff h[w] = h'[f^{-1}(w)]\\
+    &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
+      \mathrm{gc}\right)
+\end{align*}
+\end{proof}
+
+\begin{lemma}[Unreachable cells]
+  The framework is sufficient for unreachable (garbage) cells.
+\end{lemma}
+
+\begin{proof}
+  \begin{align*}
+    \forall c \in \mathrm{gcgarbage(h')},\ & \lnot \alloc{c}\\
+    \forall c \in \left\{c~|~c \in h' \land c \notin
+      \mathrm{gclive}(h')\right\},\ & \lnot \alloc{c}\\
+    \forall c \in \left\{c~|~c \in h' \land c \notin
+      \reach{h'}{r}\right\},\ & \lnot \alloc{c}\\
+    \forall c \in \left\{c~|~c \in h \land c \notin
+      \reach{h'}{r}\right\},\ & \lnot \alloc{c}\\
+    \forall c \in h,\ & c \notin \reach{h'}{r'} \iff \lnot \alloc{c}\\
+    \forall c \in h,\ & \alloc{c} \iff c \in \reach{h'}{r'}
+  \end{align*}
+
+  The jump from $c \in h'$ to $c \in h$ is allowable, as all cells are
+  in both heaps, it's just that some may have changed state between
+  them.
+\end{proof}
+
+\begin{lemma}[Roots]
+  The framework is sufficient for roots.
+\end{lemma}
+
+\begin{proof}
+  \begin{align*}
+    \mathrm{gcroots} &= \map{f}{\mathrm{gcroots'}}\\
+    roots &= \map{f}{roots'}
+  \end{align*}
+\end{proof}
 
 \section{Less Strict Collectors}
 \label{sec:gc-lessstrict}
