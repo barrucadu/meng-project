@@ -167,8 +167,9 @@ For cases where the root set is known in advance (such as the run-time
 of a programming language), then this can be easily achieved. However,
 for cases where the roots have to be guessed at (such as by traversing
 the run-time stack), it may not be possible to unambiguously determine
-what the roots are, and so a slightly more relaxed notion of
-correctness which allows some garbage to remain may be necessary.
+what the roots are, and so a slightly more conservative notion of
+correctness which merely requires nothing live be freed may be
+necessary.
 
 \subsubsection{Partition cells}
 \label{sec:gc-framework-obligations-partition}
