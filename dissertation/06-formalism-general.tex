@@ -48,14 +48,61 @@ non-moving collectors can be used by disregarding it, and then not
 making use of the decomposition. Furthermore, the copying correctness
 makes no reference to semispaces, and only requires that addresses get
 updated consistently, and so it can be applied to any moving
-collector. Clearly, non-moving collectors can be considered as a
-special case of moving collectors, where the moving function is the
-identity.
+collector.
 
 \section{Correct Garbage Collection}
 \label{sec:gc-correct}
 
-\todo{Statement of correctness criteria}
+As we have notions of correctness for both moving and non-moving
+correctness, and given that a non-moving collector can be seen as a
+special case of a moving collector where the translation function is
+the identity, I believe that the copying correctness, with a slight
+extension to allow garbage collection metadata, expresses a notion of
+correct garbage collection in general, at least for stop-the-world
+collectors. I shall reiterate all of the definitions used, and
+highlight the changes that must be made.
+
+From the mark-sweep collector, we re-use the definitions of the heap,
+cells, pointers, the live cell invariant, and reachability
+(defns. \ref{def:ms-heap}, \ref{def:ms-cell}, \ref{def:ms-pointer},
+\ref{def:ms-live-cell-invariant}, and \ref{def:ms-reachable}).
+
+From the copying collector, we re-use the definitions of cell IDs,
+allocation, the address translation function, and root translation
+(defns. \ref{def:c-cell-id}, \ref{def:c-allocation},
+\ref{def:c-address-translation-function}, and
+\ref{def:c-root-translation}).
+
+Word preservation (correct copying)
+(defns. \ref{def:ms-word-preservation} and
+\ref{def:c-correct-copying}) are redefined to allow for the
+possibility of mutated metadata words
+(defn. \ref{def:g-preservation}).
+
+\begin{definition}[Preservation]
+  \label{def:g-preservation}
+  After garbage collection, data words have not been mutated, pointers
+  have been remapped consistently, and garbage collection metadata may
+  have been mutated (but in a way which still obeys any other
+  invariants or postconditions, of course).
+
+  \begin{align*}
+    \forall c \in h,\ \forall w \in c,\ &\alloc{c} \implies
+    \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\right.\\
+    &\quad\quad\quad\quad \land \mathrm{type}(w) = \mathrm{data}
+    \iff h[w] = h'[f^{-1}(w)]\\
+    &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) = \mathrm{gc}\right)\\
+    &\land \alloc{c} \iff c \in \reach{h'}{r'}
+  \end{align*}
+\end{definition}
+
+To apply this to the mark-sweep collector, we simply take $f = \id$,
+let there be one metadata word, and have a pre- and post-condition
+that it be set to ``unmarked''. The collector may break this condition
+in the middle, and does so: this allows the separation of reasoning
+about the marking and sweeping phases. To apply this to the copying
+collector, we see that this is identical to what we already had if
+there are no metadata words.
 
 \section{A Framework for Proof}
 \label{sec:gc-framework}
