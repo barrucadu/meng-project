@@ -107,7 +107,9 @@ there are no metadata words.
 \section{A Framework for Proof}
 \label{sec:gc-framework}
 
-\todo{Section intro}
+In this section, I shall outline the stages that all garbage
+collectors follow, and then provide proof obligations for each which,
+taken together, show correctness.
 
 \subsection{Stages of Garbage Collection}
 \label{sec:gc-framework-stages}
@@ -140,8 +142,7 @@ may only be implicit,
 \end{description}
 
 I believe that this outline is general enough to apply to any
-stop-the-world collector, and it is what I shall be basing the
-framework for proof, section \ref{sec:gc-framework} on.
+stop-the-world collector.
 
 \subsection{Proof Obligations}
 \label{sec:gc-framework-obligations}
