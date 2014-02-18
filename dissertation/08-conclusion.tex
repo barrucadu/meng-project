@@ -51,6 +51,31 @@ are checked after every operation which could break them, it would
 produce a powerful debugging tool, as a programmer would know exactly
 where errors were introduced into the system.
 
+\subsection{Incremental Garbage Collectors}
+\label{sec:conclusion-further-incremental}
+
+I have assumed that all garbage collectors are of the stop-the-world
+type, but this is often not the case in practice. Incremental garbage
+collectors are very common, especially in systems with need for rapid
+response to input, and my formalism cannot reason about them at
+all.
+
+It would be desirably to extend the formalism to be able to cope with
+incremental collectors, perhaps by modelling the system as a
+mutate/collect loop, and determining what invariants are needed for
+the collector to not interfere with the mutator and vice versa, whilst
+still removing all garbage from the system.
+
+Furthermore, as an incremental collector does not remove all garbage
+from the system every time it completes a cycle (as the mutator may
+have produced some more in the intervening time), a more flexible
+notion of removing all garbage would be required. Possibly something
+around the idea that, were the mutator to cease producing any garbage
+for some period of time, the collector would remove it all. If this
+time could be bounded, then this would also allow more accurate
+reasoning about the space characteristics of programs with incremental
+garbage collectors.
+
 \section{Final Thoughts}
 \label{sec:conclusion-thoughts}
 
