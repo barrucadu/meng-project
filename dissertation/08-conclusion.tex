@@ -76,6 +76,30 @@ time could be bounded, then this would also allow more accurate
 reasoning about the space characteristics of programs with incremental
 garbage collectors.
 
+\subsection{Concurrent Garbage Collectors}
+\label{sec:conclusion-further-concurrent}
+
+It is increasingly the case that the garbage collector and mutator run
+in separate threads, giving very low delays on removing garbage from
+memory. It may even be the case that the collector and mutator run on
+separate processor cores continuously, which results in this not just
+being a special case of incremental collection.
+
+As I have assumed that collectors are of the stop-the-world type,
+there is no scope for reasoning about this in the current
+formalism. In order to show correctness, it would be necessary to show
+that, for all possible interleavings, the collector and mutator could
+not interfere with each other. Whilst with incremental collection we
+simply need to show this holds for a fixed mutate/collect cycle, here
+it is much more difficult, as mutation can occur simultaneously with
+garbage collection.
+
+However, this would be a very difficult problem to approach in
+general, and could possibly be attacked by making the problem more
+similar to incremental collection by constraining where collection and
+mutation occurs, allowing a large class of ``dangerous'' states to be
+avoided at the cost of some concurrency.
+
 \section{Final Thoughts}
 \label{sec:conclusion-thoughts}
 
