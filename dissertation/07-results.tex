@@ -264,7 +264,42 @@ static void check_pointers_updated(const cell* root, const cell* cur)
 \section{Generalised Garbage Collection Correctness}
 \label{sec:results-correctness}
 
-\todo{Evaluation 2}
+Having produced two proofs of correctness, I then attempted to extract
+a more general formalism from them, however, I discovered that my
+formalism for copying collectors was general enough to cover both of
+the cases already. Rather than conclude that I was done, I generalised
+in a different direction, by allowing the garbage collector to mutate
+metadata in cells.
+
+Whilst initially appearing to only be a small change, this actually
+allows a much larger class of garbage collectors to be reasoned
+about, and an example is provided below. I then split up a general
+garbage collector into a series of abstract stages, which can be
+reasoned about separately, and which I think aids proof. I also showed
+how these could be specialised to the cases of the mark-sweep and
+copying collectors already considered.
+
+\begin{example}
+  Consider a simple generational garbage collector, which tracks what
+  generation a cell belongs to by giving it an integer tag, numbered 0
+  for the younger generation, 1 for the next youngest, and so on, up
+  to some oldest generation $n$.
+
+  If we can mutate the metadata, we can promote a cell to the next
+  generation by incrementing this tag in the collector, whereas in the
+  copying formalism we would be unable to do this, as only pointers
+  can be mutated. This would have to happen outside of the garbage
+  collector, in some separate ``generation incrementer'', but
+  separating these two things does not appear to make much sense, and
+  is just an inconvenience imposed by an overly-strict formalism.
+\end{example}
+
+I believe that, whilst I had hoped to produce a general formalism by
+showing that the mark-sweep and copying collectors were rather
+different (but still sharing a common theme), this generalisation is
+still worthwhile and interesting, as it allows more collectors to be
+reasoned about than perhaps would have been possible if I had stuck to
+my initial goal.
 
 \section{Summary}
 \label{sec:results-summary}
