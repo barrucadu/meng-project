@@ -186,24 +186,20 @@ Supervisor: Colin Runciman
 
 \cleardoublepage
 \begin{abstract}
-\todo{Not a mini introduction. Write better abstract after having done
-  more work}
+Programming languages with automatic garbage collection free a
+programmer from worrying about how exactly to manage memory and
+prevent leaks and accidental frees. However, there is little formal
+verification done currently.
 
-Programming languages with managed runtimes abstract away from much,
-sometimes even all, of the need for manual memory management. Whilst
-a lot of work has gone into how to make these critical systems
-performant, there has not been so much work on formal verification,
-and developers often rely on traditional testing and bug
-reporting. This is far from ideal, as source-level verification of
-software is pointless if the runtime may have arbitrary bugs lurking
-within.
+In this project, I provide proofs of correctness for two extant
+garbage collectors, implement the collectors with key assertions
+checked as they execute, and then extract a more general formalism
+from these. Finally, I discuss how this formalism could be applied to
+collectors other than those that I considered, and give some
+indication of the further work remaining to be done to formalise
+garbage collection.
 
-In this project, I propose a formalism of partial correctness for
-garbage collection, and then show how some common algorithms are
-correct under this formalism. Finally, I propose a new garbage
-collection algorithm based on a review of the literature, prove that
-it is correct, and then measure the performance of a (non-verified)
-Java implementation in Jikes RVM.  \vfill
+\vfill
 
 \paragraph{Statement of Ethics}
 
