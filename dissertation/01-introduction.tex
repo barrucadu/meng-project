@@ -29,7 +29,25 @@ is a good stepping-stone towards this.
 \section{Aims}
 \label{sec:intro-goals}
 
+In this project, I intend to accomplish the following,
 
+\begin{enumerate}
+  \item Formalise a notion of partial correctness for mark-sweep
+    collectors, making as few assumptions as possible; and then to prove
+    an established collector correct with respect to the formalism.
+
+  \item Formalise a notion of partial correctness for copying
+    collectors, reusing as much as possible from the mark-sweep
+    formalism, but diverging where necessary; and then to prove an
+    established collector correct with respect to the formalism.
+
+  \item From these two formalisms, extract a common formalism
+    applicable to both mark-sweep, copying, and some other types of
+    collectors, and to provide a ``framework'' to aid proof.
+\end{enumerate}
+
+Furthermore, at the end of the dissertation, I shall discuss how well
+I succeeded in meeting these goals.
 
 \section{Current Work}
 \label{sec:intro-current}
