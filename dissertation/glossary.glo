@@ -92,7 +92,7 @@
     is divided into multiple spaces, of which one is ``active''. The
     live \gls{heap} is traversed from the \glspl{root}, \glspl{cell}
     encountered are copied to the other space, the roles of the spaces
-    are then flipped.}
+    are then flipped}
 }
 
 \newglossaryentry{mark-compact}
@@ -100,7 +100,7 @@
   name=mark-compact,
   description={\gls{garbage collection} strategy where the entire \gls{heap}
     is traversed, and encountered \glspl{cell} are moved towards one
-    end of the \gls{heap}, overwriting \gls{garbage} \glspl{cell}.}
+    end of the \gls{heap}, overwriting \gls{garbage} \glspl{cell}}
 }
 
 \newglossaryentry{garbage}
@@ -180,7 +180,7 @@
 {
   name=old-to-young pointer,
   plural=old-to-young pointers,
-  description={a \glspl{pointer} from an old \gls{cell} to a younger
+  description={a \gls{pointer} from an old \gls{cell} to a younger
     \gls{cell}}
 }
 
