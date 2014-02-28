@@ -41,10 +41,9 @@ into a less efficient one, and then performing the proof: if the
 transformation is correct, the proof will hold for the original,
 albeit with slightly different space characteristics.
 
-Now we'll define a couple of helper functions which will be of use
-later on: given a \gls{pointer}, $p$, let $\gchead{p}$ return a
-pointer to the start of the \gls{garbage collection} metadata, and let
-$\alloc{p}$ be true if and only if the \gls{cell} has been allocated.
+Now we'll define a helper function which will be of use later on:
+given a \gls{pointer}, $p$, let $\gchead{p}$ return a pointer to the
+start of the \gls{garbage collection} metadata.
 
 \begin{definition}[Pointer]
   \label{def:ms-pointer}
@@ -63,7 +62,7 @@ word in it can be accessed by \gls{pointer} arithmetic.
 \begin{definition}[Word Preservation]
   \label{def:ms-word-preservation}
   After garbage collection, no allocated cells have been mutated.
-   \[\forall c \in h,\ \forall w \in c,\ \alloc{c} \implies h[w] =
+   \[\forall c \in h,\ \forall w \in c,\ \lnot\free{c} \implies h[w] =
    h'[w]\]
 
    Here $h'$ refers to the state of $h$ before garbage collection
@@ -79,17 +78,10 @@ correctness in the following two sections, but it is still essential.
 A short word needs to be said on what ``allocation'' is. Conceptually,
 cells are either allocated (in which case they may or may not be
 garbage), or deallocated (in which case the allocator can hand them
-out to the mutator). We shall consider this allocation status of a
-cell to be an attribute of it that we can access for proof
-purposes. In an actual implementation of a mark-sweep collector, the
-unallocated cells would be those on the free list, and the allocated
-cells would be the others.
-
-\begin{definition}[Allocation]
-  \label{def:ms-allocation}
-  A cell has a ghost boolean attribute, its ``allocation'', which is
-  true if and only if the cell is ``allocated''.
-\end{definition}
+out to the mutator). However, this is a temporal property, and
+difficult to define as a predicate. Thus, rather than talk about a
+cell being allocated or not, we shall talk about it being on the free
+list or not. This is what the predicate $\free{c}$ expresses.
 
 Finally, in order to ensure that pointers only point to sane
 locations, we require that the live cells and the unallocated cells
@@ -97,7 +89,7 @@ are disjoint,
 
 \begin{definition}[Live Cell Invariant]
   \label{def:ms-live-cell-invariant}
-  \[\forall c \in \reach{h}{r},\ \alloc{c}\]
+  \[\forall c \in \reach{h}{r},\ \lnot\free{c}\]
 \end{definition}
 
 This ensures that no live cells contain a pointer to a cell on the
@@ -153,7 +145,7 @@ the following property:
   \label{def:ms-correct-marking}
   After marking, for all allocated \glspl{cell}, the mark flag is
   unset if and only if the \gls{cell} is not reachable.
-  \[\forall c \in h,\ \alloc{c} \implies
+  \[\forall c \in h,\ \lnot\free{c} \implies
   \left(h\left[\gchead{c}\right] = 0 \iff c \notin
     \reach{h}{roots}\right)\]
 \end{definition}
@@ -162,7 +154,7 @@ Note that this does not say anything about unallocated
 \glspl{cell}. An unallocated \gls{cell} can contain any garbage, but
 then it is the job of the allocator to clean it up before handing it
 out to the \gls{mutator}. An alternative formulation would be
-$\alloc{c} \iff \left(\ldots\right)$, but this would then require the
+$\lnot\free{c} \iff \left(\ldots\right)$, but this would then require the
 \gls{garbage collector} to unset the mark flag of any \gls{cell} it
 frees, and as \glspl{cell} need to be ``cleaned up'' before being
 given to the \gls{mutator} anyway, confining this to the allocator
@@ -193,8 +185,8 @@ preserving and unmarking exactly the reachable \glspl{cell}, which
   All cells which are marked are preserved and unmarked, no garbage
   cells are preserved, and nothing other than the garbage collector
   metadata gets mutated.
-  \[\forall c \in h',\ \left(\alloc{c} \iff c \in
-    \markset{h'}{roots}\right) \land \left(\alloc{c} \implies
+  \[\forall c \in h',\ \left(\lnot\free{c} \iff c \in
+    \markset{h'}{roots}\right) \land \left(\lnot\free{c} \implies
     \lnot\marked{h}{c}\right)\]
 \end{definition}
 
