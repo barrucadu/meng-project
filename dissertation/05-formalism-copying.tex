@@ -479,15 +479,12 @@ obvious statement of correctness.
 \label{sec:copying-summary}
 
 In this chapter I highlighted the differences between the formalisms
-suitable for mark-sweep and copying collectors:
-cell IDs and a slightly more flexible way of determining if cells are
-allocated (defns. \ref{def:c-cell-id} and \ref{def:c-allocation})
-replacing the more strict equivalent mark-sweep definition; ``correct
-copying'' (defn. \ref{def:c-correct-copying}) replacing word
-preservation, and the introduction of ``correct translation''
+suitable for mark-sweep and copying collectors: ``correct copying''
+(defn. \ref{def:c-correct-copying}) replacing word preservation, and
+the introduction of ``correct translation''
 (defns. \ref{def:c-address-translation-function} and
-\ref{def:c-root-translation}) for pointer mutation during
-garbage collection.
+\ref{def:c-root-translation}) for pointer mutation during garbage
+collection.
 
 I argued that correctness for a copying collector comes down to
 copying exactly the live cells and updating all pointers consistently.
