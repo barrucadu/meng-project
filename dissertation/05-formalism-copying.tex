@@ -173,13 +173,14 @@ Assuming the correctness of \texttt{flipconsspace} and
 \texttt{flipsemispace}, the correctness of \texttt{gc} consists in
 proving that \texttt{collect}($c$) returns a pointer to a copied
 version of $c$, in addition to the following loop invariant:
+
 \begin{align*}
-  \forall c \in h,\ \forall w \in c,\ &\alloc{c} \implies
+  \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
   (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
   &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
   \iff h[w] = h'[f^{-1}(w)])\\
-  &\land \alloc{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
-    0 \leq i < k\}}
+  &\land \lnot\free{c} \iff c \in
+  \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}
 \end{align*}
 
 In words, for every call \texttt{collect}($c$), everything (and
@@ -190,19 +191,19 @@ preserved.
 This is sufficient, as after the loop terminates we have $k = \len
 \mathtt{roots}$, and so
 \begin{align*}
-  \forall c \in h,\ \forall w \in c,\ &\alloc{c} \implies
+  \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
   (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
   &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
   \iff h[w] = h'[f^{-1}(w)])\\
-  &\land \alloc{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
+  &\land \lnot\free{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
     0 \leq i < \len\mathtt{roots}\}}
 \end{align*}
 \begin{align*}
-  \forall c \in h,\ \forall w \in c,\ &\alloc{c} \implies
+  \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
   (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
   &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
   \iff h[w] = h'[f^{-1}(w)])\\
-  &\land \alloc{c} \iff c \in \reach{h'}{r'}
+  &\land \lnot\free{c} \iff c \in \reach{h'}{r'}
 \end{align*}
 
 \begin{proof}
@@ -226,9 +227,9 @@ This is sufficient, as after the loop terminates we have $k = \len
   \item \texttt{collect} does not copy any unreachable cells
   \end{enumerate}
 
-  By (1) and (5), we have $\forall c \in h,\ \alloc{c} \iff c \in
+  By (1) and (5), we have $\forall c \in h,\ \lnot\free{c} \iff c \in
   \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}$. By (2),
-  (3), and (4) we have $\forall c \in h,\ \forall w \in c,\ \alloc{c}
+  (3), and (4) we have $\forall c \in h,\ \forall w \in c,\ \lnot\free{c}
   \implies \mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
   f(h'[f^{-1}(w)])$
 
@@ -237,15 +238,16 @@ This is sufficient, as after the loop terminates we have $k = \len
   that is handled correctly by \texttt{collectatom}. This is
   justifiable as the collector explicitly sets aside atoms, and hands
   them over to another collector. And so, by assumption, we have
-  $\forall c \in h,\ \forall w \in c,\ \alloc{c} \implies
+  $\forall c \in h,\ \forall w \in c,\ \lnot\free{c} \implies
   \mathrm{type}(w) \neq \mathrm{pointer} \iff h'[f^{-1}(w)]$, giving
   us,
+
   \begin{align*}
-    \forall c \in h,\ \forall w \in c,\ &\alloc{c} \implies
+    \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
     (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
     &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
     \iff h[w] = h'[f^{-1}(w)])\\
-    &\land \alloc{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
+    &\land \lnot\free{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
       0 \leq i < \len\mathtt{roots}\}}
   \end{align*}
 \end{proof}
@@ -409,6 +411,7 @@ and so a more realistic model of the heap was desirable.
     can be trivially expanded to what we need by ``filling in the
     blanks''. Having done that, let's rearrange to get $h$ and $r$
     from his definition,
+
     \begin{align*}
       (h', r') \gc (h, r) &= (\filter{h'}{r'}) \translate (h, r)\\
       &= (\filter{h'}{r'}) \translate (\rename{f}{\filter{h'}{r'}}, \map{f}{r'})\\
@@ -420,10 +423,11 @@ and so a more realistic model of the heap was desirable.
 
     We can expand the definition of $h$ and filter to check that only
     reachable cells are in $h$,
+
     \begin{align*}
-      \forall c \in h,\ \alloc{c} &\iff c \in \filter{h'}{r'}\\
+      \forall c \in h,\ \lnot\free{c} &\iff c \in \filter{h'}{r'}\\
       \reach{h'}{r'} &\iff \filter{h'}{r'}\\
-      \therefore \forall c \in h,\ \alloc{c} &\iff c \in \reach{h'}{r'}
+      \therefore \forall c \in h,\ \lnot\free{c} &\iff c \in \reach{h'}{r'}
     \end{align*}
 
     Myreen's definition requires that non-pointer words are
