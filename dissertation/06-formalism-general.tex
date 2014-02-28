@@ -67,10 +67,9 @@ cells, pointers, the live cell invariant, and reachability
 (defns. \ref{def:ms-heap}, \ref{def:ms-cell}, \ref{def:ms-pointer},
 \ref{def:ms-live-cell-invariant}, and \ref{def:ms-reachable}).
 
-From the copying collector, we re-use the definitions of cell IDs,
-allocation, the address translation function, and root translation
-(defns. \ref{def:c-cell-id}, \ref{def:c-allocation},
-\ref{def:c-address-translation-function}, and
+From the copying collector, we re-use the definitions of the address
+translation function and root translation
+(defns. \ref{def:c-address-translation-function} and
 \ref{def:c-root-translation}).
 
 Word preservation (correct copying)
@@ -87,12 +86,12 @@ possibility of mutated metadata words
   invariants or postconditions, of course).
 
   \begin{align*}
-    \forall c \in h,\ \forall w \in c,\ &\alloc{c} \implies
+    \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
     \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\right.\\
     &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
     \iff h[w] = h'[f^{-1}(w)]\\
     &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) = \mathrm{gc}\right)\\
-    &\land \alloc{c} \iff c \in \reach{h'}{r'}
+    &\land \lnot\free{c} \iff c \in \reach{h'}{r'}
   \end{align*}
 \end{definition}
 
@@ -205,14 +204,14 @@ loop invariant, it should be simpler to prove.
 Thus, it needs to be shown,
 
 \begin{align*}
-  \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \alloc{c} \land 
+  \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \lnot\free{c} \land 
   \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
     f(h'[f^{-1}(w)])\right.\\
   &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
   \iff h[w] = h'[f^{-1}(w)]\\
   &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
     \mathrm{gc}\right)\\
-  \forall c \in \mathrm{gcgarbage(h)},\ & \lnot \alloc{c}
+  \forall c \in \mathrm{gcgarbage(h)},\ & \free{c}
 \end{align*}
 
 If the collector performs no explicit partitioning step, instead doing
@@ -252,7 +251,7 @@ in.
 
 \begin{proof}
   \begin{align*}
-    \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \alloc{c}
+    \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \lnot\free{c}
       \land \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
       f(h'[f^{-1}(w)])\right.\\
     &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
@@ -261,14 +260,14 @@ in.
       \mathrm{gc}\right)\\
 %
     \forall c \in \reach{h}{\mathrm{gcroots}},\ \forall w \in c,\ &
-      \alloc{c} \land \left(\mathrm{type}(w) = \mathrm{pointer} \iff
+      \lnot\free{c} \land \left(\mathrm{type}(w) = \mathrm{pointer} \iff
       h[w] = f(h'[f^{-1}(w)])\right.\\
     &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
       \iff h[w] = h'[f^{-1}(w)]\\
     &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
       \mathrm{gc}\right)\\
 %
-    \forall c \in \reach{h}{r},\ \forall w \in c,\ & \alloc{c} \land
+    \forall c \in \reach{h}{r},\ \forall w \in c,\ & \lnot\free{c} \land
       \left(\mathrm{type}(w) = \mathrm{pointer} \iff
       h[w] = f(h'[f^{-1}(w)])\right.\\
     &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
@@ -284,15 +283,15 @@ in.
 
 \begin{proof}
   \begin{align*}
-    \forall c \in \mathrm{gcgarbage(h')},\ & \lnot \alloc{c}\\
+    \forall c \in \mathrm{gcgarbage(h')},\ & \free{c}\\
     \forall c \in \left\{c~|~c \in h' \land c \notin
-      \mathrm{gclive}(h')\right\},\ & \lnot \alloc{c}\\
+      \mathrm{gclive}(h')\right\},\ & \free{c}\\
     \forall c \in \left\{c~|~c \in h' \land c \notin
-      \reach{h'}{r}\right\},\ & \lnot \alloc{c}\\
+      \reach{h'}{r}\right\},\ & \free{c}\\
     \forall c \in \left\{c~|~c \in h \land c \notin
-      \reach{h'}{r}\right\},\ & \lnot \alloc{c}\\
-    \forall c \in h,\ & c \notin \reach{h'}{r'} \iff \lnot \alloc{c}\\
-    \forall c \in h,\ & \alloc{c} \iff c \in \reach{h'}{r'}
+      \reach{h'}{r}\right\},\ & \free{c}\\
+    \forall c \in h,\ & c \notin \reach{h'}{r'} \iff \free{c}\\
+    \forall c \in h,\ & \lnot\free{c} \iff c \in \reach{h'}{r'}
   \end{align*}
 
   The jump from $c \in h'$ to $c \in h$ is allowable, as all cells are
