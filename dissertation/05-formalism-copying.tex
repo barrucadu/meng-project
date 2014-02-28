@@ -1,14 +1,14 @@
 \chapter{Correctness of Copying Collectors}
 \label{sec:copying}
 
-We shall use the same definitions of the \gls{heap}
-(defn. \ref{def:ms-heap}), \gls{cell} (defn. \ref{def:ms-cell}),
-\gls{pointer} (defn. \ref{def:ms-pointer}), reachability
+We shall use the same definitions of the heap
+(defn. \ref{def:ms-heap}), cell (defn. \ref{def:ms-cell}), pointer
+(defn. \ref{def:ms-pointer}), reachability
 (defn. \ref{def:ms-reachable}), and the live cell invariant
 (defn. \ref{def:ms-live-cell-invariant}) as in the prior
 chapter. Unfortunately, the definition of word preservation
 (defn. \ref{def:ms-word-preservation}) will have to change, because a
-\gls{copying} \gls{collector} renames addresses.
+copying collector renames addresses.
 
 $\free{c}$ is a bit subtle in the copying collector, as there is no
 explicit free list. However, as there is a ``free pointer'' (or
@@ -21,14 +21,13 @@ inactive semispace.
 \label{sec:copying-copying}
 
 Before presenting a definition of correct copying, I have to highlight
-the inadequacies of the \gls{mark-sweep} word preservation. Firstly,
-it does not allow for mutation of \glspl{pointer}, which is essential
-for a \gls{copying} \gls{collector}, but more subtly, it does not
-allow for \glspl{cell} to be relocated. This arises in the $h[w] =
-h'[w]$ part of the formalism. If \glspl{cell} can be relocated, then
-this makes no sense, as $w$ is a \gls{pointer}, and so $w$ in the new
-\gls{heap} is not necessarily the same as $w$ in the old
-\gls{heap}. Thus, we also need to be able to find old $w$ values.
+the inadequacies of the mark-sweep word preservation. Firstly, it does
+not allow for mutation of pointers, which is essential for a copying
+collector, but more subtly, it does not allow for cells to be
+relocated. This arises in the $h[w] = h'[w]$ part of the formalism. If
+cells can be relocated, then this makes no sense, as $w$ is a pointer,
+and so $w$ in the new heap is not necessarily the same as $w$ in the
+old heap. Thus, we also need to be able to find old $w$ values.
 
 \begin{definition}[Correct Copying]
   \label{def:c-correct-copying}
@@ -48,19 +47,19 @@ this makes no sense, as $w$ is a \gls{pointer}, and so $w$ in the new
 I have decided to define correct copying as a word preservation-like
 property, rather than define it separately, as what is ``correct
 copying'' but a way of correctly transforming the contents and
-locations of \glspl{cell}, according to some rule?
+locations of cells, according to some rule?
 
 \section{Address Translation}
 \label{sec:copying-address}
 
-In the definition of correct \gls{copying}, I referenced a function
-$f$, to update addresses. Unfortunately, not every function will do
+In the definition of correct copying, I referenced a function $f$, to
+update addresses. Unfortunately, not every function will do
 here. Trivially, we can see that the constant function won't work, as
 then everything would be moved to the same place, resulting in data
 corruption. The function needs to preserve uniqueness of
 addresses. Furthermore, in order to reason about words in the original
-\gls{heap}, $h'$, we need to be able to go backwards: the function
-must be invertible.
+heap, $h'$, we need to be able to go backwards: the function must be
+invertible.
 
 \begin{definition}[Address Translation Function]
   \label{def:c-address-translation-function}
@@ -81,13 +80,12 @@ after collection. However, the totality requirement enables us to use
 the array reasoning to build up the function, which is useful.
 
 If we start with $f = \id$, then (for an involution) we simply need to
-show that, for every allocated word $w$, the \gls{garbage collector}
+show that, for every allocated word $w$, the garbage collector
 performs $f[w] = w'; f[w'] = w$. Furthermore, we need to show that
-contiguous words within the same \gls{cell} remain in the same
-relative place after copying. This could have been avoided by defining
-$f$ as a cell translation function, which moves entire cells at a
-time, but then this would have complicated reasoning about individual
-words.
+contiguous words within the same cell remain in the same relative
+place after copying. This could have been avoided by defining $f$ as a
+cell translation function, which moves entire cells at a time, but
+then this would have complicated reasoning about individual words.
 
 Finally, we must show that the roots are correctly translated, as they
 may not be correct after things have been moved,
@@ -481,19 +479,18 @@ obvious statement of correctness.
 \label{sec:copying-summary}
 
 In this chapter I highlighted the differences between the formalisms
-suitable for \gls{mark-sweep} and \gls{copying} \glspl{collector}:
+suitable for mark-sweep and copying collectors:
 cell IDs and a slightly more flexible way of determining if cells are
 allocated (defns. \ref{def:c-cell-id} and \ref{def:c-allocation})
 replacing the more strict equivalent mark-sweep definition; ``correct
 copying'' (defn. \ref{def:c-correct-copying}) replacing word
 preservation, and the introduction of ``correct translation''
 (defns. \ref{def:c-address-translation-function} and
-\ref{def:c-root-translation}) for \gls{pointer} mutation during
-\gls{garbage collection}.
+\ref{def:c-root-translation}) for pointer mutation during
+garbage collection.
 
-I argued that correctness for a \gls{copying} \gls{collector} comes
-down to copying exactly the \glspl{live cell} and updating all
-\glspl{pointer} consistently.
+I argued that correctness for a copying collector comes down to
+copying exactly the live cells and updating all pointers consistently.
 
 I then talked about the Fenichel/Yochelson\cite{Fenichel69} collector,
 and provided proofs of its partial and total correctness. These proofs
