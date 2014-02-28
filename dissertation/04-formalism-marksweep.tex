@@ -2,25 +2,24 @@
 \label{sec:marksweep}
 
 In this chapter, I shall talk about the necessary formalisms and proof
-obligations for \gls{mark-sweep} \glspl{collector}, building up to a
-proof of the Armstrong/Virding\cite{Armstrong95} \gls{collector}.
+obligations for mark-sweep collectors, building up to a
+proof of the Armstrong/Virding\cite{Armstrong95} collector.
 
 \begin{definition}[Heap]
   \label{def:ms-heap}
   The heap is an array of words in the form (type, data).
 \end{definition}
 
-Firstly, we need a \gls{heap}. I shall adopt the convention that the
-\gls{heap} is a flat array, and so \glspl{pointer} are just indexes
-into this array. This allows me to use Gries' array
-formalism\cite{Gries87}, which models arrays as functions; thus
-simplifying the reasoning needed when dealing with potential
-side-effects. Furthermore, type data is needed for each word, as there
-must be some way of distinguishing \gls{pointer} data from non-pointer
-data. It may seem that needing to tag every single word with a type is
-wasteful, but in the case where the \gls{collector} is able to
-determine this automatically, the type can be ``stored'' as a ghost
-variable.
+Firstly, we need a heap. I shall adopt the convention that the heap is
+a flat array, and so pointers are just indexes into this array. This
+allows me to use Gries' array formalism\cite{Gries87}, which models
+arrays as functions; thus simplifying the reasoning needed when
+dealing with potential side-effects. Furthermore, type data is needed
+for each word, as there must be some way of distinguishing pointer
+data from non-pointer data. It may seem that needing to tag every
+single word with a type is wasteful, but in the case where the
+collector is able to determine this automatically, the type can be
+``stored'' as a ghost variable.
 
 \begin{definition}[Cell]
   \label{def:ms-cell}
@@ -29,21 +28,21 @@ variable.
   garbage collector.
 \end{definition}
 
-Next we move on to \glspl{cell}. I have ruled out the possibility of
-fragmented \glspl{cell}, as these can always be modelled by smaller
-\glspl{cell} which point to each other (and this is really the only
-way that fragmentation could even be implemented). I have reserved at
-least an entire word for the use of the \gls{garbage collector}, but
-this is quite generous, and in practice would be reduced as much as
-possible. This reservation simplifies proofs, and can be worked around
-in practice by transforming a more efficient \gls{garbage collector}
-into a less efficient one, and then performing the proof: if the
-transformation is correct, the proof will hold for the original,
-albeit with slightly different space characteristics.
+Next we move on to cells. I have ruled out the possibility of
+fragmented cells, as these can always be modelled by smaller cells
+which point to each other (and this is really the only way that
+fragmentation could even be implemented). I have reserved at least an
+entire word for the use of the garbage collector, but this is quite
+generous, and in practice would be reduced as much as possible. This
+reservation simplifies proofs, and can be worked around in practice by
+transforming a more efficient garbage collector into a less efficient
+one, and then performing the proof: if the transformation is correct,
+the proof will hold for the original, albeit with slightly different
+space characteristics.
 
 Now we'll define a helper function which will be of use later on:
-given a \gls{pointer}, $p$, let $\gchead{p}$ return a pointer to the
-start of the \gls{garbage collection} metadata.
+given a pointer, $p$, let $\gchead{p}$ return a pointer to the start
+of the garbage collection metadata.
 
 \begin{definition}[Pointer]
   \label{def:ms-pointer}
@@ -51,13 +50,13 @@ start of the \gls{garbage collection} metadata.
   the data section (end of the header) of a cell.
 \end{definition}
 
-I have restricted \glspl{pointer} to only pointing at the start of the
-data portion of a \gls{cell}, as then going from an internal
-\gls{pointer} to a cell header does not need to be considered at all,
-furthermore, in practice the \gls{mutator} does not need to know about
-the metadata, and should not know: it should be for purely internal
-use. If the size and layout of the header is known in advance, any
-word in it can be accessed by \gls{pointer} arithmetic.
+I have restricted pointers to only pointing at the start of the data
+portion of a cell, as then going from an internal pointer to a cell
+header does not need to be considered at all, furthermore, in practice
+the mutator does not need to know about the metadata, and should not
+know: it should be for purely internal use. If the size and layout of
+the header is known in advance, any word in it can be accessed by
+pointer arithmetic.
 
 \begin{definition}[Word Preservation]
   \label{def:ms-word-preservation}
@@ -103,9 +102,9 @@ In this section I shall attack the problem of correct marking, firstly
 as a problem in graph theory, and then as a more concrete problem when
 dealing with an array of memory with pointers.
 
-Let's start out by saying exactly what goes in that \gls{garbage
-  collection} metadata. The first word is a mark flag, equal to 0 if
-the \gls{cell} has not been marked, and any other value if it has.
+Let's start out by saying exactly what goes in that garbage collection
+metadata. The first word is a mark flag, equal to 0 if the cell has
+not been marked, and any other value if it has.
 
 \begin{definition}[Reachable]
   \label{def:ms-reachable}
@@ -131,34 +130,34 @@ the \gls{cell} has not been marked, and any other value if it has.
 \end{definition}
 
 If we abandon our array-based interpretation of memory for the moment,
-and instead consider the \gls{heap} to be a digraph of \glspl{cell}
-connected by \glspl{pointer}, then reachabilty can be defined
-inductively over the nodes of the graph very simply, and this lends
-itself to implementation with a recursive function. If we denote the
-set of all marked (and allocated) cells by $\markset{h}{roots}$, then
-what we want after marking is $\markset{h}{roots} = \reach{h}{roots}$.
+and instead consider the heap to be a digraph of cells connected by
+pointers, then reachabilty can be defined inductively over the nodes
+of the graph very simply, and this lends itself to implementation with
+a recursive function. If we denote the set of all marked (and
+allocated) cells by $\markset{h}{roots}$, then what we want after
+marking is $\markset{h}{roots} = \reach{h}{roots}$.
 
 Returning to the array formalism, what we thus want from a marker is
 the following property:
 
 \begin{definition}[Correct Marking]
   \label{def:ms-correct-marking}
-  After marking, for all allocated \glspl{cell}, the mark flag is
-  unset if and only if the \gls{cell} is not reachable.
+  After marking, for all allocated cells, the mark flag is unset if
+  and only if the cell is not reachable.
+
   \[\forall c \in h,\ \lnot\free{c} \implies
   \left(h\left[\gchead{c}\right] = 0 \iff c \notin
     \reach{h}{roots}\right)\]
 \end{definition}
 
-Note that this does not say anything about unallocated
-\glspl{cell}. An unallocated \gls{cell} can contain any garbage, but
-then it is the job of the allocator to clean it up before handing it
-out to the \gls{mutator}. An alternative formulation would be
-$\lnot\free{c} \iff \left(\ldots\right)$, but this would then require the
-\gls{garbage collector} to unset the mark flag of any \gls{cell} it
-frees, and as \glspl{cell} need to be ``cleaned up'' before being
-given to the \gls{mutator} anyway, confining this to the allocator
-seems reasonable.
+Note that this does not say anything about unallocated cells. An
+unallocated cell can contain any garbage, but then it is the job of
+the allocator to clean it up before handing it out to the mutator. An
+alternative formulation would be $\lnot\free{c} \iff
+\left(\ldots\right)$, but this would then require the garbage
+collector to unset the mark flag of any cell it frees, and as cells
+need to be ``cleaned up'' before being given to the mutator anyway,
+confining this to the allocator seems reasonable.
 
 As we'll be referring to the property ``is marked'' multiple times,
 let's define a shorthand, $\marked{h}{c} \iff h\left[\gchead{c}\right]
@@ -173,12 +172,11 @@ little about interleaved marking and sweeping, such as happens in some
 incremental and other special-case collectors.
 
 What do we mean when we say a sweeper is ``correct''? After a little
-thought, we will realise that we mean it doesn't deallocate any
-\glspl{cell} which were marked, and it unmarks all of the
-\glspl{cell}. In the case of a correct marker, this is equivalent to
-preserving and unmarking exactly the reachable \glspl{cell}, which
-(with the constraint of word preservation) is exactly what we want our
-\gls{collector} to do.
+thought, we will realise that we mean it doesn't deallocate any cells
+which were marked, and it unmarks all of the cells. In the case of a
+correct marker, this is equivalent to preserving and unmarking exactly
+the reachable cells, which (with the constraint of word preservation)
+is exactly what we want our collector to do.
 
 \begin{definition}[Correct Sweeping]
   \label{def:ms-correct-sweeping}
@@ -215,19 +213,18 @@ obligation.
 \end{definition}
 
 Thus, the ``marker'' always remains ahead of the ``sweeper'', and so
-no problems arise. In fact, we could consider normal \gls{mark-sweep}
-\glspl{collector} a special case of this, where this property
-trivially holds.
+no problems arise. In fact, we could consider normal mark-sweep
+collectors a special case of this, where this property trivially
+holds.
 
 \section{Case Study: A Garbage Collector for Erlang}
 \label{sec:marksweep-example}
 
-Armstrong and Virding\cite{Armstrong95} introduce a simple
-\gls{mark-sweep} \gls{collector} for Erlang, making use of the
-immutability of the language in order to combine the mark and sweep
-stages. The \gls{collector} operates on a \gls{heap} of cons cells,
-and uses a \gls{pointer} \texttt{SCAV} to keep track of the current
-position of the \gls{collector} in the heap.
+Armstrong and Virding\cite{Armstrong95} introduce a simple mark-sweep
+collector for Erlang, making use of the immutability of the language
+in order to combine the mark and sweep stages. The collector operates
+on a heap of cons cells, and uses a pointer \texttt{SCAV} to keep
+track of the current position of the collector in the heap.
 
 The algorithm is as follows:
 
@@ -252,22 +249,21 @@ while (SCAV != first) {
 
 The \texttt{possibly\_mark} function follows and marks its argument if
 it is a pointer; \texttt{first} and \texttt{current} point to the
-first and last allocated \glspl{cell}; the \texttt{hist} function
-returns a \gls{pointer} to the \gls{cell} allocated before its
-argument. It is assumed that all cells pointed to by roots have been
-marked before calling the collector.
+first and last allocated cells; the \texttt{hist} function returns a
+pointer to the cell allocated before its argument. It is assumed that
+all cells pointed to by roots have been marked before calling the
+collector.
 
-This \gls{collector} works because the history fields form a linked
-list of allocated \glspl{cell}, going back to the beginning of
-time. As the language is immutable, \glspl{pointer} must always point
-back in time, and so if a \gls{cell} is unmarked by the time it is
-reached (by following the history list), then it must be
-\gls{garbage}.
+This collector works because the history fields form a linked list of
+allocated cells, going back to the beginning of time. As the language
+is immutable, pointer must always point back in time, and so if a cell
+is unmarked by the time it is reached (by following the history list),
+then it must be garbage.
 
-We can express this as a \gls{loop invariant}: the portion of the
-\gls{heap} which has been considered consists only of unmodified,
-reachable \glspl{cell}, and all \glspl{cell} which are directly
-reachable from a \gls{cell} in the considered region are marked.
+We can express this as a loop invariant: the portion of the heap which
+has been considered consists only of unmodified, reachable cells, and
+all cells which are directly reachable from a cell in the considered
+region are marked.
 
 \subsubsection{Partial Correctness}
 \label{sec:marksweep-example-partial}
@@ -276,7 +272,7 @@ Let $\id~x$ be the ``allocation ID'' of a cell $x$. The first cell has
 an ID of 0, and the ID of every other cell is 1 + the ID of the
 previously allocated cell.
 
-We can then express the \gls{loop invariant} as follows:
+We can then express the loop invariant as follows:
 
 \begin{align*}
   \forall c \in h',\ \forall w \in c,\ &first \in \reach{h'}{roots}\\
@@ -295,11 +291,11 @@ We can then express the \gls{loop invariant} as follows:
     c,\ \id~x > \id~\mathtt{SCAV}\right) \implies \lnot\marked{h}{c}
 \end{align*}
 
-As the \gls{collector} never touches the ``first'' \gls{cell}, in
-order for there to be no \gls{garbage} left over at the end, then it
-must necessarily be reachable. This is somewhat unusual, and arises
-purely because this \gls{collector} arguably has a bug, in that this
-one \gls{cell} of \gls{garbage} can survive a collection.
+As the collector never touches the ``first'' cell, in order for there
+to be no garbage left over at the end, then it must necessarily be
+reachable. This is somewhat unusual, and arises purely because this
+collector arguably has a bug, in that this one cell of garbage can
+survive a collection.
 
 Let's begin by rewriting the algorithm in terms of arrays, and expand
 out all of the functions within it. Furthermore, let's say that a cell
@@ -341,7 +337,7 @@ while (SCAV != first) {
 
 Combining the correct marking, correct sweeping, and word preservation
 requirements, we arrive at the following postcondition for a correct
-\gls{garbage collector}: \[\forall c \in h',\ \forall w \in c,\
+garbage collector: \[\forall c \in h',\ \forall w \in c,\
 (\free{c} \iff c \notin \reach{h'}{roots}) \land (\lnot\free{c} \implies
 h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
@@ -447,11 +443,10 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   \id~x < \id~SCAV) \implies \marked{h}{x}\]
 
   Fortunately, we know that if $x$ is a pointer, then the allocation
-  ID of its \gls{cell} must be lower than that of the current
-  \gls{cell} because of the constraint over the entire system: data is
-  immutable. Thus, only backward pointers are possible, and so we can
-  simplify the postcondition to just \[type(x) = pointer \implies
-  \marked{h}{x}\]
+  ID of its cell must be lower than that of the current cell because
+  of the constraint over the entire system: data is immutable. Thus,
+  only backward pointers are possible, and so we can simplify the
+  postcondition to just \[type(x) = pointer \implies \marked{h}{x}\]
 
   If $x$ is a pointer, then it gets marked. If we fill in the gaps in
   the proof tree as follows, then we can achieve this:
@@ -560,14 +555,13 @@ mutated yet, $h = h'$, which allows further simplifications to be made.
   \end{align*}
 
   Thus, we can see that the algorithm is correct if, when it starts,
-  no \glspl{cell} are marked. As no \glspl{cell} are marked after it
-  completes, this becomes a constraint on the allocator, to unmark
-  recycled \glspl{cell} before giving them to the
-  \gls{mutator}. It can also be seen from the precondition that the
-  \gls{collector} has an overhead of one \gls{cell}: the ``first''
-  \gls{cell} is never collected, and so correctness does not strictly
-  hold if ``first'' is not reachable, but the \gls{collector} is close
-  enough such that it doesn't really matter.
+  no cells are marked. As no cells are marked after it completes, this
+  becomes a constraint on the allocator, to unmark recycled cells
+  before giving them to the mutator. It can also be seen from the
+  precondition that the collector has an overhead of one cell: the
+  ``first'' cell is never collected, and so correctness does not
+  strictly hold if ``first'' is not reachable, but the collector is
+  close enough such that it doesn't really matter.
 \end{proof}
 
 \subsubsection{Total Correctness}
@@ -644,23 +638,22 @@ Trivially, we can now see that there are two cases:
 \section{Summary}
 \label{sec:marksweep-summary}
 
-In this chapter I have defined the \gls{heap}, \glspl{cell},
-\glspl{pointer}, word preservation, and reachability (defns.
-\ref{def:ms-heap}, \ref{def:ms-cell}, \ref{def:ms-pointer},
+In this chapter I have defined the heap, cells, pointers, word
+preservation, and reachability (defns.  \ref{def:ms-heap},
+\ref{def:ms-cell}, \ref{def:ms-pointer},
 \ref{def:ms-word-preservation}, and \ref{def:ms-reachable}), and used
 these to then define correct marking and sweeping (defns.
 \ref{def:ms-correct-marking} and \ref{def:ms-correct-sweeping}),
 giving some thought to the correctness of interleaved marking and
 sweeping (defn. \ref{def:ms-interleaved}).
 
-I argued that correctness for a \gls{mark-sweep} \gls{collector} comes
-down to marking all (and only) of the reachable \glspl{cell}, freeing
-all others, and then unmarking. And, furthermore, that no words should
-be modified in non-\gls{garbage} \glspl{cell} after \gls{garbage
-  collection}.
+I argued that correctness for a mark-sweep collector comes down to
+marking all (and only) of the reachable cells, freeing all others, and
+then unmarking. And, furthermore, that no words should be modified in
+non-garbage cells after garbage collection.
 
-I then talked about the Armstrong/Virding\cite{Armstrong95}
-\gls{collector}, and provided proofs of its partial and total
-correctness. This proof shall not be referenced in future chapters,
-and merely serves as an illustration of the utility of the definition
-of correctness presented here. Definitions, however, will be reused.
+I then talked about the Armstrong/Virding\cite{Armstrong95} collector,
+and provided proofs of its partial and total correctness. This proof
+shall not be referenced in future chapters, and merely serves as an
+illustration of the utility of the definition of correctness presented
+here. Definitions, however, will be reused.
