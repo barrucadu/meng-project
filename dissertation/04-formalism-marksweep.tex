@@ -279,14 +279,20 @@ previously allocated cell.
 We can then express the \gls{loop invariant} as follows:
 
 \begin{align*}
-  \forall c \in h',\ \forall w \in c,\ &first \in \reach{h'}{c} \land
-  \id~c \geq \id~\mathtt{SCAV} \implies (\alloc{c} \iff c \in
-  \reach{h'}{roots})\\
-  &\quad\land (\id~c > \id~\mathtt{SCAV} \land \alloc{c} \implies h[w]
-  = h'[w] \land \lnot \marked{h}{c})\\
-  &\quad\land (\alloc{c} \land \id~c > \id~\mathtt{SCAV} \implies
-  (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV} \implies
-  \marked{h}{x}))
+  \forall c \in h',\ \forall w \in c,\ &first \in \reach{h'}{roots}\\
+%
+  &\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
+    \iff c \notin \reach{h'}{roots})\\
+%
+  &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+    \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
+%
+  &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+    \implies (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV}
+    \implies \marked{h}{x})\\
+%
+  &\land \left(\id~c < \id~\mathtt{SCAV} \land \nexists x \pointsto
+    c,\ \id~x > \id~\mathtt{SCAV}\right) \implies \lnot\marked{h}{c}
 \end{align*}
 
 As the \gls{collector} never touches the ``first'' \gls{cell}, in
@@ -328,19 +334,15 @@ while (SCAV != first) {
         tmp = SCAV;
         SCAV = h[gchead(SCAV) + 1];
         h[gchead(last) + 1] = SCAV;
-        dealloc(tmp);
+        free_cons(tmp);
     }
 }
 \end{lstlisting}
 
-I have replaced \texttt{free\_cons} with \texttt{dealloc}, as it more
-closely reflects what happens: the \gls{cell} in question is no longer
-considered to be allocated.
-
 Combining the correct marking, correct sweeping, and word preservation
 requirements, we arrive at the following postcondition for a correct
 \gls{garbage collector}: \[\forall c \in h',\ \forall w \in c,\
-(\alloc{c} \iff c \in \reach{h'}{roots}) \land (\alloc{c} \implies
+(\free{c} \iff c \notin \reach{h'}{roots}) \land (\lnot\free{c} \implies
 h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
 \begin{lemma}[Loop Invariant]
@@ -348,27 +350,54 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
   \begin{align*}
     \forall c \in h',\ \forall w \in c,\ &\mathtt{SCAV} = first \land
-    first \in \reach{h'}{r'} \land
-    \id~c \geq \id~\mathtt{SCAV} \implies\\
-    &\quad(\alloc{c} \iff c \in \reach{h'}{roots})\\
-    &\quad\land (\id~c > \id~\mathtt{SCAV} \land \alloc{c} \implies
-    h[w] = h'[w] \land \lnot \marked{h}{c})\\
-    &\quad\land (\alloc{c} \land \id~c > \id~\mathtt{SCAV} \implies
-    (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV} \implies
-    \marked{h}{x}))\\
+      first \in \reach{h'}{roots}\\
 %
-    \forall c \in h',\ \forall w \in c,\ &\id~c \geq first \in
-    \reach{h'}{r'} \land \id~first
-    \implies (\alloc{c} \iff c \in \reach{h'}{roots})\\
-    &\quad\land (\id~c > \id~first \land \alloc{c} \implies
-    h[w] = h'[w] \land \lnot \marked{h}{c})\\
-    &\quad\land (\alloc{c} \land \id~c > \id~first \implies (\forall c
-    \pointsto x,\ \id~x < \id~first \implies
-    \marked{h}{x}))\\
+    &\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
+      \iff c \notin \reach{h'}{roots})\\
 %
-    \forall c \in h',\ \forall w \in c,\ 
-    &(\alloc{c} \iff c \in \reach{h'}{roots}) \land (\alloc{c}
-    \implies h[w] = h'[w] \land \lnot \marked{h}{c})
+    &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+      \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
+%
+    &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+      \implies (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV}
+      \implies \marked{h}{x})\\
+%
+    &\land \left(\id~c < \id~\mathtt{SCAV} \land \nexists x \pointsto
+      c,\ \id~x > \id~\mathtt{SCAV}\right) \implies
+      \lnot\marked{h}{c}\\\\
+%
+%
+    \forall c \in h',\ \forall w \in c,\ & \id~c > \id~first \implies
+      (\free{c} \iff c \notin \reach{h'}{roots})\\
+%
+    &\land \id~c > \id~first \land \lnot\free{c}
+      \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
+%
+    &\land \id~c > \id~first \land \lnot\free{c}
+      \implies (\forall c \pointsto x,\ \id~x < \id~first
+      \implies \marked{h}{x})\\
+%
+    &\land \left(\id~c < \id~first \land \nexists x \pointsto
+      c,\ \id~x > \id~first\right) \implies
+      \lnot\marked{h}{c}\\\\
+%
+%
+    \forall c \in h',\ \forall w \in c,\ & \free{c} \iff c \notin
+      \reach{h'}{roots}\\
+%
+    &\land \lnot\free{c} \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
+%
+    &\land \lnot\free{c} \implies (\forall c \pointsto x,\
+    \lfalse \implies \marked{h}{x})\\
+%
+    &\land \left(\lfalse \land \nexists x \pointsto
+      c,\ \id~x > \id~first\right) \implies
+      \lnot\marked{h}{c}\\\\
+%
+%
+    \forall c \in h',\ \forall w \in c,\ & (\free{c} \iff c \notin
+      \reach{h'}{roots}) \land (\lnot\free{c} \implies h[w] = h'[w] \land
+      \lnot \marked{h}{c})
   \end{align*}
 
   Now, we have to show it holds:
@@ -487,25 +516,44 @@ mutated yet, $h = h'$, which allows further simplifications to be made.
 
   \begin{align*}
     I' &= I[h[\gchead{last} + 1] / \mathtt{SCAV}]\\
-%
-    &= \forall c \in h,\ first \in \reach{h}{r}\\
-    &\quad\land \id~c \geq \id~h[\gchead{last} + 1] \implies
-    (\alloc{c} \iff c \in \reach{h}{roots})\\
-    &\quad\land (\alloc{c} \implies \lnot \marked{h}{c})\\
-    &\quad\land (\alloc{c} \land \id~c \geq \id~h[\gchead{last}+1] \implies\\
-    &\quad(\forall c \pointsto x,\ \id~x < \id~h[\gchead{last} + 1]
-    \implies \marked{h}{x}))\\\\
+    &=\forall c \in h,\ \forall w \in c,\\
+    &\quad\quad first \in \reach{h}{roots}\\
+    &\quad\quad \land \id~c > \id~h[\gchead{last} + 1] \implies
+    (\free{c} \iff c \notin \reach{h}{roots})\\
+    &\quad\quad \land \id~c > \id~h[\gchead{last} + 1] \land
+    \lnot\free{c} \implies h[w] = h[w] \land \lnot \marked{h}{c}\\
+    &\quad\quad \land \id~c > \id~h[\gchead{last} + 1] \land
+    \lnot\free{c} \implies (\forall c \pointsto x,\ \id~x <
+    \id~h[\gchead{last} + 1]\\&\quad\quad\quad\quad\implies \marked{h}{x})\\
+    &\quad\quad \land \left(\id~c < \id~h[\gchead{last} + 1] \land
+    \nexists x \pointsto c,\ \id~x > \id~h[\gchead{last} + 1]\right)
+    \implies \lnot\marked{h}{c}\\\\
 %
     I'' &= I'[current / last]\\
-    &= \forall c \in h,\ first \in \reach{h}{r}\\
-    &\quad\land \id~c \geq \id~h[\gchead{current} + 1] \implies
-    (\alloc{c} \iff c \in \reach{h}{roots})\\
-    &\quad\land (\alloc{c} \implies \lnot
-    \marked{h}{c})\\
-    &\quad\land (\alloc{c} \land \id~c \geq \id~h[\gchead{current}+1]
-    \implies\\
-    &\quad(\forall c \pointsto x,\ \id~x < \id~h[\gchead{current} + 1]
-    \implies \marked{h}{x}))\\
+    &=\forall c \in h,\ \forall w \in c,\\
+    &\quad\quad first \in \reach{h}{roots}\\
+    &\quad\quad \land \id~c > \id~h[\gchead{current} + 1] \implies
+    (\free{c} \iff c \notin \reach{h}{roots})\\
+    &\quad\quad \land \id~c > \id~h[\gchead{current} + 1] \land
+    \lnot\free{c} \implies h[w] = h[w] \land \lnot \marked{h}{c}\\
+    &\quad\quad \land \id~c > \id~h[\gchead{current} + 1] \land
+    \lnot\free{c} \implies (\forall c \pointsto x,\ \id~x <
+    \id~h[\gchead{current} + 1]\\&\quad\quad\quad\quad\implies \marked{h}{x})\\
+    &\quad\quad \land \left(\id~c < \id~h[\gchead{current} + 1] \land
+    \nexists x \pointsto c,\ \id~x > \id~h[\gchead{current} + 1]\right)
+    \\&\quad\quad\quad\quad\implies \lnot\marked{h}{c}\\
+%
+    &=\forall c \in h,\ \forall w \in c,\\
+    &\quad\quad first \in \reach{h}{roots}\\
+    &\quad\quad \land \lfalse \implies (\free{c} \iff c \notin
+    \reach{h}{roots})\\
+    &\quad\quad \land \lfalse \land \lnot\free{c} \implies
+    \ltrue \land \lnot \marked{h}{c}\\
+    &\quad\quad \land \lfalse \land \lnot\free{c} \implies
+    (\forall c \pointsto x,\ \id~x < \id~h[\gchead{current} + 1]
+    \implies \marked{h}{x})\\
+    &\quad\quad \land \left(\ltrue \land \nexists x \pointsto
+    c,\ \lfalse\right) \implies \lnot\marked{h}{c}\\
 %
     &= \forall c \in h,\ first \in \reach{h}{r} \land (\alloc{c}
     \implies \lnot \marked{h}{c})
