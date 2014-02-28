@@ -128,7 +128,7 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
 \label{sec:results-impl-ms-invariants}
 
 The invariants appear somewhat more complex. The first loop expresses
-$\forall c \in h,\ \alloc{c} \land \id~c > \id~\mathtt{SCAV} \implies
+$\forall c \in h,\ \lnot\free{c} \land \id~c > \id~\mathtt{SCAV} \implies
 (\forall c \pointsto x, \id~x < \id~\mathtt{SCAV} \implies
 \marked{h}{c})$: all cells outside of the region that has been
 collected, but which are pointed to by a cell in that region, have
