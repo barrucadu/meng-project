@@ -555,7 +555,7 @@ mutated yet, $h = h'$, which allows further simplifications to be made.
     &\quad\quad \land \left(\ltrue \land \nexists x \pointsto
     c,\ \lfalse\right) \implies \lnot\marked{h}{c}\\
 %
-    &= \forall c \in h,\ first \in \reach{h}{r} \land (\alloc{c}
+    &= \forall c \in h,\ first \in \reach{h}{r} \land (\lnot\free{c}
     \implies \lnot \marked{h}{c})
   \end{align*}
 
