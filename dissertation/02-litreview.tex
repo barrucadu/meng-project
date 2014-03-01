@@ -707,6 +707,34 @@ collectors (although the definition of correctness and logic developed
 can), whereas Myreen's proofs are much more applicable to copying
 collectors in general.
 
+\subsection{A General Framework for Certifying Garbage Collectors and Their Mutators}
+\label{sec:lit-verifying-mccreight}
+
+McCreight, Shao, Lin, and Li\cite{McCreight07} produced a generic
+method for certifying collectors and mutators independently, which is
+very similar to what I intend to do in this project. I unfortunately
+only found this paper very late in the project (the latter half of
+Spring term), after which the majority of the work had been done.
+
+Their approach is to define an abstract interface between the
+collector and mutator. The mutator works with an abstract heap,
+whereas the collector works with the concrete heap, and the mapping
+between the two is defined on a per-collector basis. As such a mapping
+exists, and the mutator proof is parameterised by both it, and a
+garbage collection step relation, independent verification of the
+collector and mutator is possible.
+
+They provide a mechanical verification of assembly language
+implementations of a generic mark-sweep collector, and the Cheney and
+Baker copying collectors, providing (to their knowledge) the first
+mechanical verification of the Baker collector. Furthermore, their
+approach supports incremental collection, and allows reasoning about
+collectors with read and write barriers.
+
+The verification is done in terms of an abstract MIPS-like machine
+using typed assembly language, and is intended to be targeted by
+compilers for languages such as Java and C\#.
+
 \section{Summary}
 \label{sec:lit-summary}
 
