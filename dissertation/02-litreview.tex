@@ -111,21 +111,23 @@ systems\cite{McCarthy60}, and it functions by giving every cell a
 memory, all cells reachable from the roots are marked (this can be
 done recursively quite simply), and then all cells in the heap are
 examined: those which are unmarked are freed, and those which are
-marked are unmarked, ready for the next collection\todo{cite}.
+marked are unmarked, ready for the next
+collection\cite{GarbageCollection}.
 
 Compared to reference counting, mark-sweep is a very different beast:
 it handles cycles easily and there is no overhead on pointer
 operations. It does, however, ``stop the world'' in order to perform a
 collection\cite{GarbageCollection}. Furthermore, garbage collection
-becomes more frequent as heap residency increases\todo{cite}, and the
-blocking time is proportional to the size of the heap\todo{cite}.
+becomes more frequent as heap residency increases\cite{McCarthy60},
+and the blocking time is proportional to the size of the
+heap\cite{McCarthy60}.
 
 These problems can be offset somewhat by interleaving the sweeping
 with the mutator (the user program, so called because it mutates the
-heap\todo{cite}). Hughes's lazy sweep algorithm\cite{Hughes82} does
-this by performing a fixed amount of sweeping at each allocation, and
-so the only long garbage collection pause happens when the heap needs
-to be marked.
+heap\cite{Dijkstra78}). Hughes's lazy sweep algorithm\cite{Hughes82}
+does this by performing a fixed amount of sweeping at each allocation,
+and so the only long garbage collection pause happens when the heap
+needs to be marked.
 
 \subsection{Copying}
 \label{sec:lit-gc-copying}
