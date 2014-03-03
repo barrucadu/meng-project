@@ -224,17 +224,17 @@ languages\cite{Rojemo95}\cite{Sansom93}\cite{Seward92}.
 
 \todo{Add bit about array reasoning}
 
-\Gls{algorithm verification} (or software verification) is the process
-of constructing a mathematical proof that an algorithm behaves as we
+Algorithm verification (or software verification) is the process of
+constructing a mathematical proof that an algorithm behaves as we
 expect it to. In the case of software, we may prove the actual code
 implements the specification, in the case of an algorithm, we may be
 satisfied with merely proving that it satisfies various properties
 (such as termination).
 
 We need verification because testing can never show that there are no
-bugs, it can only show that there have been no bugs found yet. A
-formal proof provides a much stronger guarantee than can be obtained
-by testing or inspection alone.
+bugs\todo{cite}, it can only show that there have been no bugs found
+yet. A formal proof provides a much stronger guarantee than can be
+obtained by testing or inspection alone.
 
 There are two methods of verification: constructing the algorithm and
 then proving things about it, and constructing a proof and then
@@ -246,7 +246,7 @@ extracting an algorithm out of it.
 This is arguably the more difficult method of verification, as it
 consists of taking a fairly low-level implementation (often at the
 level of code) and a very high-level specification and proving things
-about the two.
+about the two\todo{[cite]}.
 
 To begin with, the implementation must be formalised using some logic
 such as Hoare logic\cite{Hoare69}, which define the semantics for a
@@ -256,8 +256,7 @@ the stack and heap.
 
 Once formalised, the axioms of the logic can be used to deduce
 propositions about the implementation. This can be, to some extent,
-automated using \glspl{proof assistant}, but in general this is
-undecidable.
+automated using proof assistants, but in general this is undecidable.
 
 \begin{example}[Finding the index of the minimal element of a nonempty
   sequence of integers]
@@ -303,21 +302,22 @@ implementing the algorithm, and then showing that is satisfies a
 
 A precondition is some assertion which must hold before executing some
 code, and a postcondition is some assertion which must hold
-afterwards. Hoare triples express this.
+afterwards\cite{Hoare69}. Hoare triples express this.
 
 In the case of languages with formally specified semantics, we must be
 able to derive the postcondition from the precondition and the
 code. Sometimes ``backwards'' reasoning is used, by establishing the
 desired postcondition (the result of executing the code), and then
 working from end to beginning, in order to figure out what the
-necessary preconditions are. If both the precondition and
+necessary preconditions are\todo{[cite]}. If both the precondition and
 postcondition of some sequence of code are known, then the proof can
 progress inwards from both ends, meeting in the middle. If the two
-proof efforts cannot be unified, then there is a flaw in the code.
+proof efforts cannot be unified, then there is a flaw in the
+code\todo{[cite]}.
 
 Common to many proof systems is the ability to strengthen
-preconditions and weaken postconditions. This is expressed by the
-Hoare consequence rule:
+preconditions and weaken postconditions\todo{[justify/cite]}. This is
+expressed by the Hoare consequence rule:
 
 \begin{prooftree}
   \AxiomC{$P' \implies P$}
@@ -327,15 +327,15 @@ Hoare consequence rule:
 \end{prooftree}
 
 This allows localised proofs to be used in a larger proof, and so
-facilitates modularity.
+facilitates modularity\todo{[justify/cite]}.
 
 \subsubsection{Axiomatic Semantics}
 \label{sec:lit-verification-embedding-axioms}
 
 Axiomatic semantics allow us to reason about programs by providing
 tools to reason about the effect of program statements on program
-state. These are closely connected with Hoare logic. A simple example
-is the Hoare rule for composition:
+state\todo{[cite]}. These are closely connected with Hoare logic. A
+simple example is the Hoare rule for composition:
 
 \begin{prooftree}
   \AxiomC{$\htriple{P}{S}{Q}$}
@@ -345,9 +345,9 @@ is the Hoare rule for composition:
 
 This states that if we have two statements, $S$ and $T$, where the
 postcondition of $S$ is the precondition of $T$, then we can combine
-the two into the compound statement $S;T$\cite{Hoare69}. There are
-rules for assignment, ``skip'' (the statement which does nothing),
-while loops, conditional statements, and consequence.
+the two into the compound statement $S;T$\cite{Hoare69}. In Hoare
+logic, there are rules for assignment, ``skip'' (the statement which
+does nothing), while loops, conditional statements, and consequence.
 
 In general, axiomatic semantics specify how the post-state of a
 statement refers to the pre-state. They should be consistent, but (as
@@ -362,9 +362,9 @@ proof for the property we wish to establish.
 \subsubsection{Loop Invariants}
 \label{sec:lit-verification-embedding-invariants}
 
-Proofs of programs involving loops rely on finding a \gls{loop
-  invariant}: some property which does not change over time as the
-loop is executed. This is expressed in Hoare logic with the while
+Proofs of programs involving loops rely on finding a loop invariant:
+some property which does not change over time as the loop is
+executed\todo{cite}. This is expressed in Hoare logic with the while
 rule:
 
 \begin{prooftree}
@@ -385,12 +385,14 @@ under Hoare logic), is $\lnot B$, which doesn't seem very useful. The
 loop may be doing something very complicated, but it seems we can only
 extract a very small bit of information about this. The difficulty,
 then, lies in finding a loop invariant that, when combined with $\lnot
-B$, yields the result we want.
+B$, yields the result we want\todo{[cite]}.
 
 \begin{lscape}
 
 \phantomsection
 \label{sec:lit-verification-embedding-example}
+
+\todo{[tidy]}
 
 \begin{prooftree}
   \AxiomC{$\htriple{I[1/j][0/i]}{i := 0}{I[0/j]}$}
@@ -472,25 +474,28 @@ B$, yields the result we want.
 
 The other approach is to gradually work downwards from the high-level
 specification to a constructive proof, which can then be turned into
-an implementation. This is called refinement. A special case of
-refinement is when the specification is already in the form of a
-constructive proof, in which case we can extract the implicit program
-from it, this is called \gls{verification by extraction}.
+an implementation. This is called refinement\todo{[cite]}. A special
+case of refinement is when the specification is already in the form of
+a constructive proof, in which case we can extract the implicit
+program from it, this is called verification by
+extraction\todo{[cite]}.
 
 We start out by formalising the specification in some logic, such as Z
 or HOL, and then construct a slightly lower-level specification and
 prove that it is a correct refinement of the higher-level one by
 reasoning about the pre- and post-conditions of each abstract
-operation. Whilst it may take many refinement steps to get actual code
-out of this process, each proof is between two very similar
-\glspl{specification}, and so may be easier than the verification by
-proof method. \Glspl{proof assistant} may be more useful here than in
-verification by proof, but here the difficulty lies in finding the
-appropriate invariant to relate the two steps.
+operation\todo{[cite]}. Whilst it may take many refinement steps to
+get actual code out of this process, each proof is between two very
+similar specifications, and so may be easier than the verification by
+proof method\todo{[cite]}. Proof assistants may be more useful here
+than in verification by embedding, but here the difficulty lies in
+finding the appropriate invariant to relate the two
+steps\todo{[cite]}.
 
 Furthermore, there are often multiple choices of refinement step
 available, and so first few steps can be reused to construct different
-algorithms, simply by making different choices at the lower levels.
+algorithms, simply by making different choices at the lower
+levels\todo{[cite]}.
 
 \begin{example}[Finding the index of the minimal element of a nonempty
   sequence of integers]
@@ -577,9 +582,10 @@ abstract proof, and then gradually make it more constructive with each
 step.
 
 We can do this by using witnesses in our proof. A witness is a value
-which shows a proposition to be correct. For example, $x = 2$ is a
-witness for $\exists x \in \mathbb N, x > 1$. If we have witnesses for
-everything we prove, then we know how to solve the problem.
+which shows a proposition to be correct\todo{[cite]}. For example, $x
+= 2$ is a witness for $\exists x \in \mathbb N, x > 1$. If we know how
+to find a witness for everything we prove, then we know how to solve
+the problem.
 
 \subsubsection{Case Analysis}
 \label{sec:lit-verification-extraction-cases}
@@ -587,7 +593,7 @@ everything we prove, then we know how to solve the problem.
 Proofs often diverge into multiple cases to be shown. For example, an
 inductive proof (covered in more detail in the next section) has a
 base case and an inductive case. Only by proving both cases do we
-prove the whole.
+prove the whole\todo{[cite]}.
 
 Given a constructive proof, we can translate a case analysis to a
 switch statement (or conditional statement) in our program, and use
@@ -602,7 +608,7 @@ inductive case given the inductive hypothesis (being able to solve a
 slightly smaller problem) holds. This naturally translates to the
 programming methodology of reduce-and-conquer.
 
-We can translate induction into iteration as follows:
+We can translate induction into iteration as follows\todo{[cite]}:
 
 \begin{enumerate}
   \item The base case is set up by the program at the beginning
@@ -614,7 +620,7 @@ This is similar to the ladder-climbing analogy for induction: if you
 can get on the first rung, then you can get to the top, simply by
 going up one rung at a time.
 
-We can translate induction into recursion similarly:
+We can translate induction into recursion similarly\todo{[cite]}:
 
 \begin{enumerate}
   \item The base case is the recursive base case
@@ -632,11 +638,12 @@ We must be careful to honour any ``hidden'' assumptions in the
 proof. For example, if a proof requires a value to be a natural
 number, then we cannot use machine words in our program, unless it can
 also be proven that the natural numbers in question will always fit
-into this range.
+into this range\todo{[justify/cite]}.
 
 More generally, types in programming languages may not be identical to
 types used in proofs, and we must be careful not to invalidate the
-proof by getting the implementation types incorrect.
+proof by getting the implementation types
+incorrect\todo{[justify/cite]}.
 
 \subsubsection{Program Transformations}
 \label{sec:lit-verification-extraction-transformation}
@@ -645,7 +652,7 @@ When we extract a program from a proof, the structure of the program
 very closely mirrors that of the proof, as would be expected. However,
 this may not be considered good style. We can apply arbitrary
 transformations to the code of the extracted program, as long as these
-transformations preserve the semantics.
+transformations preserve the semantics\todo{[justify/cite]}.
 
 \section{Verified Garbage Collection}
 \label{sec:lit-verifiedgc}
