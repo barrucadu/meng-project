@@ -208,15 +208,16 @@ around\cite{Ungar84}.
 Allocation happens in the youngest generation, and when that fills up
 a \textit{minor collection} is started. The generation is garbage
 collected, and old enough blocks get copied to the next
-generation\todo{cite}. In the simplest case, all live cells at the
+generation\cite{Ungar84}. In the simplest case, all live cells at the
 time of a minor collection get promoted. If the entire heap is full, a
 \textit{major collection} is started, which uses some other garbage
 collection algorithm\cite{GarbageCollection}.
 
 Generational garbage collection tends to perform well for languages
-where old-to-young pointers are rare\todo{cite}, such as most
+where old-to-young pointers are rare\cite{Appel89}, such as most
 functional languages, and so has become fairly popular amongst
-implementers of such languages\todo{cite}.
+implementers of such
+languages\cite{Rojemo95}\cite{Sansom93}\cite{Seward92}.
 
 \section{Algorithm Verification}
 \label{sec:lit-verification}
