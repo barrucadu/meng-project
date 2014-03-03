@@ -191,6 +191,10 @@ reduce fragmentation. For another example, Immix\cite{Blackburn08} is
 a hybrid mark-region (memory is divided into large regions, inside
 which allocation occurs) and copying collector.
 
+A common type of hybrid collector is a generational garbage collector,
+which is composed of an incremental (typically copying) stage, and a
+whole-heap collection stage.
+
 \subsubsection{Generational Collectors}
 \label{sec:lit-gc-hybrid-generational}
 
