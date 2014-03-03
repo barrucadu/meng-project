@@ -24,22 +24,22 @@ some greater appreciation of the field, but is not essential.
 \label{sec:lit-gc}
 
 Garbage collection is the process of automatically reclaiming unneeded
-allocated memory from a program.\todo{cite} In languages with manual
+allocated memory from a program\todo{cite}. In languages with manual
 memory management, such as C, a programmer can allocate new memory
 with \texttt{malloc}, but then must remember to release it with
 \texttt{free}.\cite{KandR} If this is not done, a memory leak occurs,
-and the program may gradually consume more and more memory.\todo{cite}
+and the program may gradually consume more and more memory\todo{cite}.
 
 In a garbage collected language, however, the programmer can allocate
 new memory, but typically cannot (and does not need to) explicitly
-deallocate it. Instead, some runtime system determines when
-\glspl{cell} no longer needed, typically by determining if they can be
-reached by following pointers from the roots---the set of
-variables in scope---or not.
+deallocate it. Instead, some runtime system determines when cells no
+longer needed, typically by determining if they can be reached by
+following pointers from the roots---the set of variables in scope---or
+not.
 
 We can divide most garbage collection algorithms into four camps:
 reference counting, mark-sweep, copying, and
-mark-compact.\todo{cite} Each is suited to different use-cases, and the
+mark-compact\todo{cite}. Each is suited to different use-cases, and the
 choice of which to use is often determined by the behaviour of the
 particular system in which they will be used.
 
@@ -67,20 +67,20 @@ reference count is displayed in each cell.
   \label{fig:lit-gc-refcount}
 \end{figure}
 
-Reference counting is a very simple scheme where each \gls{cell}
-contains a \textit{reference count}, some integer field which keeps
-track of the number of references to the \gls{cell}. In the most basic
-form of the algorithm, the compiler maintains a write barrier, which
-increments and decrements the count immediately as references are
-created or destroyed. Furthermore, as soon as the count reaches zero,
-the \gls{cell} is deallocated\cite{Collins60}.
+Reference counting is a very simple scheme where each cell contains a
+\textit{reference count}, some integer field which keeps track of the
+number of references to the cell. In the most basic form of the
+algorithm, the compiler maintains a write barrier, which increments
+and decrements the count immediately as references are created or
+destroyed. Furthermore, as soon as the count reaches zero, the cell is
+deallocated\cite{Collins60}.
 
 This strategy seems good, as it distributes the load of memory
 management throughout the computation, however it results in the
-problem of unbounded time taken to free a \gls{cell}, as freeing it
-may cause other things to be freed, and so on\cite{GarbageCollection}.
-This problem can be offset by pushing to a \gls{free list}, rather
-than doing the recursive free, or by deferring the reference counting.
+problem of unbounded time taken to free a cell, as freeing it may
+cause other things to be freed, and so on\cite{GarbageCollection}.
+This problem can be offset by pushing to a free list, rather than
+doing the recursive free, or by deferring the reference counting.
 
 The Deutsch--Bobrow algorithm is an example of this kind, where
 reference count adjustments are stored in a transaction file, which is
@@ -91,8 +91,8 @@ A fatal flaw, alas, with reference counting is that it cannot reclaim
 self-referential structures, as shown in the example, even if they are
 garbage\cite{McBeth63}. Some systems make use of ``\glspl{weak
   reference}'', references which do not cause the count to be
-modified, to offset this. However, this places a burden on the
-programmer and so loses some of the convenience of the system.
+modified, to offset this\todo{cite}. However, this places a burden on
+the programmer and so loses some of the convenience of the system.
 
 \subsection{Mark-Sweep}
 \label{sec:lit-gc-marksweep}
@@ -105,26 +105,26 @@ programmer and so loses some of the convenience of the system.
 \end{figure}
 
 The mark-sweep method was invented for the early Lisp
-systems\cite{McCarthy60}, and it functions by giving every \gls{cell}
-a \textit{mark bit}, which is initially unset. Upon running out of
+systems\cite{McCarthy60}, and it functions by giving every cell a
+\textit{mark bit}, which is initially unset. Upon running out of
 memory, all cells reachable from the roots are marked (this can be
-done recursively quite simply), and then all \glspl{cell} in the heap
-are examined: those which are unmarked are freed, and those which are
-marked are unmarked, ready for the next collection.
+done recursively quite simply), and then all cells in the heap are
+examined: those which are unmarked are freed, and those which are
+marked are unmarked, ready for the next collection\todo{cite}.
 
 Compared to reference counting, mark-sweep is a very different beast:
 it handles cycles easily and there is no overhead on pointer
-operations. It does, however, ``\gls{stop the world}'' in order to
-perform a collection\cite{GarbageCollection}. Furthermore, garbage
-collection becomes more frequent as \gls{heap residency} increases,
-and the blocking time is proportional to the size of the heap.
+operations. It does, however, ``stop the world'' in order to perform a
+collection\cite{GarbageCollection}. Furthermore, garbage collection
+becomes more frequent as heap residency increases\todo{cite}, and the
+blocking time is proportional to the size of the heap\todo{cite}.
 
 These problems can be offset somewhat by interleaving the sweeping
-with the \gls{mutator} (the user program, so called because it mutates
-the heap). Hughes's lazy sweep algorithm\cite{Hughes82} does this by
-performing a fixed amount of sweeping at each allocation, and so the
-only long garbage collection pause happens when the heap needs to be
-marked.
+with the mutator (the user program, so called because it mutates the
+heap\todo{cite}). Hughes's lazy sweep algorithm\cite{Hughes82} does
+this by performing a fixed amount of sweeping at each allocation, and
+so the only long garbage collection pause happens when the heap needs
+to be marked.
 
 \subsection{Copying}
 \label{sec:lit-gc-copying}
@@ -138,11 +138,11 @@ marked.
 
 Copying collectors divide the heap into two \textit{semispaces}, where
 allocation is only done in one of them at a time. In garbage
-collection, all live \gls{cell} are copied to the other semispace (in
+collection, all live cell are copied to the other semispace (in
 the example this has been shown by shifting the addresses up by 8),
 and the roles of the semispaces are swapped\cite{Fenichel69}. Unlike
 mark-sweep collectors, the pause time of a copying collector is
-proportional only to the number of live \glspl{cell}.
+proportional only to the number of live cells\todo{cite}.
 
 Copying collectors have become fairly popular due to the low cost of
 allocation and reduction of fragmentation, however it has a space cost
@@ -158,20 +158,20 @@ of a half of the heap space\cite{GarbageCollection}.
   \label{fig:lit-gc-markcompact}
 \end{figure}
 
-Heap \gls{fragmentation} can be a great problem: there may be more
+Heap fragmentation can be a great problem\todo{cite}: there may be more
 than enough space to allocate something, but not enough contiguous
 space to do so. Furthermore, high fragmentation can increase the rate
 of page faults and cache misses, reducing the performance of the
-mutator.
+mutator\todo{cite}.
 
 Thus, we come to the mark-compact collectors. These first mark the
-live portion of the heap, and then copy marked \glspl{cell} over
-garbage ones, moving everything towards one end of the heap in order
-to remove fragmentation. There are three ways of performing this
-compacting: \glspl{cell} can be moved without regard for their
-original order; \glspl{cell} which point to each other can be placed
-next to each other; and \glspl{cell} can simply ``slide'' towards one
-end of the heap.
+live portion of the heap, and then copy marked cells over garbage
+ones, moving everything towards one end of the heap in order to remove
+fragmentation\todo{cite}. There are three ways of performing this
+compacting: cells can be moved without regard for their original
+order; cells which point to each other can be placed next to each
+other; and cells can simply ``slide'' towards one end of the
+heap\todo{cite}.
 
 Unfortunately, these collectors require multiple traversals over the
 heap, and so are potentially even slower than mark-sweep
@@ -191,25 +191,25 @@ which allocation occurs) and copying collector.
 \subsubsection{Generational Collectors}
 \label{sec:lit-gc-hybrid-generational}
 
-\Gls{generational garbage collection} is a type of \gls{hybrid
-  collector}: the heap is divided into a number of
-\textit{generations}, where each generation holds progressively older
-\glspl{cell}. This is based on empirical observations of block
-lifetimes resulting in the generational hypothesis: young objects die
-quickly, whereas old objects stick around\cite{Ungar84}.
+Generational garbage collectors are a type of hybrid collector: the
+heap is divided into a number of \textit{generations}, where each
+generation holds progressively older cells. This is based on empirical
+observations of block lifetimes resulting in the generational
+hypothesis: young objects die quickly, whereas old objects stick
+around\cite{Ungar84}.
 
 Allocation happens in the youngest generation, and when that fills up
 a \textit{minor collection} is started. The generation is garbage
-collected, and old enough blocks get copied to the next generation. In
-the simplest case, all \glspl{live cell} at the time of a minor
-collection get promoted. If the entire heap is full, a \textit{major
-  collection} is started, which uses some other garbage collection
-algorithm\cite{GarbageCollection}.
+collected, and old enough blocks get copied to the next
+generation\todo{cite}. In the simplest case, all live cells at the
+time of a minor collection get promoted. If the entire heap is full, a
+\textit{major collection} is started, which uses some other garbage
+collection algorithm\cite{GarbageCollection}.
 
 Generational garbage collection tends to perform well for languages
-where \glspl{old-to-young pointer} are rare, such as most functional
-languages, and so has become fairly popular amongst implementers of
-such languages.
+where old-to-young pointers are rare\todo{cite}, such as most
+functional languages, and so has become fairly popular amongst
+implementers of such languages\todo{cite}.
 
 \section{Algorithm Verification}
 \label{sec:lit-verification}
