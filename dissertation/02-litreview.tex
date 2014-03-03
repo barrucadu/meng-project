@@ -161,20 +161,20 @@ of a half of the heap space\cite{GarbageCollection}.
   \label{fig:lit-gc-markcompact}
 \end{figure}
 
-Heap fragmentation can be a great problem\todo{cite}: there may be more
-than enough space to allocate something, but not enough contiguous
-space to do so. Furthermore, high fragmentation can increase the rate
-of page faults and cache misses, reducing the performance of the
-mutator\todo{cite}.
+Heap fragmentation can be a great problem: there may be more than
+enough space to allocate something, but not enough contiguous space to
+do so. Furthermore, high fragmentation can increase the rate of page
+faults and cache misses, reducing the performance of the
+mutator\cite{Zorn90}.
 
 Thus, we come to the mark-compact collectors. These first mark the
 live portion of the heap, and then copy marked cells over garbage
 ones, moving everything towards one end of the heap in order to remove
-fragmentation\todo{cite}. There are three ways of performing this
-compacting: cells can be moved without regard for their original
-order; cells which point to each other can be placed next to each
-other; and cells can simply ``slide'' towards one end of the
-heap\todo{cite}.
+fragmentation\cite{GarbageCollection}. There are three ways of
+performing this compacting: cells can be moved without regard for
+their original order; cells which point to each other can be placed
+next to each other; and cells can simply ``slide'' towards one end of
+the heap\cite{Cohen81}.
 
 Unfortunately, these collectors require multiple traversals over the
 heap, and so are potentially even slower than mark-sweep
