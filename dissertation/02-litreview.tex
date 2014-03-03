@@ -120,7 +120,7 @@ operations. It does, however, ``stop the world'' in order to perform a
 collection\cite{GarbageCollection}. Furthermore, garbage collection
 becomes more frequent as heap residency increases\cite{McCarthy60},
 and the blocking time is proportional to the size of the
-heap\cite{McCarthy60}.
+heap\cite{Appel87}.
 
 These problems can be offset somewhat by interleaving the sweeping
 with the mutator (the user program, so called because it mutates the
@@ -141,11 +141,11 @@ needs to be marked.
 
 Copying collectors divide the heap into two \textit{semispaces}, where
 allocation is only done in one of them at a time. In garbage
-collection, all live cell are copied to the other semispace (in
-the example this has been shown by shifting the addresses up by 8),
-and the roles of the semispaces are swapped\cite{Fenichel69}. Unlike
+collection, all live cell are copied to the other semispace (in the
+example this has been shown by shifting the addresses up by 8), and
+the roles of the semispaces are swapped\cite{Fenichel69}. Unlike
 mark-sweep collectors, the pause time of a copying collector is
-proportional only to the number of live cells\todo{cite}.
+proportional only to the number of live cells\cite{Appel87}.
 
 Copying collectors have become fairly popular due to the low cost of
 allocation and reduction of fragmentation, however it has a space cost
