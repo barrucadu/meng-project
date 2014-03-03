@@ -24,32 +24,31 @@ some greater appreciation of the field, but is not essential.
 \label{sec:lit-gc}
 
 Garbage collection is the process of automatically reclaiming unneeded
-allocated memory from a program. In languages with manual memory
-management, such as C, a programmer can allocate new memory with
-\texttt{malloc}, but then must remember to release it with
-\texttt{free}. If this is not done, a memory leak occurs, and the
-program may gradually consume more and more memory\cite{KandR}.
+allocated memory from a program.\todo{cite} In languages with manual
+memory management, such as C, a programmer can allocate new memory
+with \texttt{malloc}, but then must remember to release it with
+\texttt{free}.\cite{KandR} If this is not done, a memory leak occurs,
+and the program may gradually consume more and more memory.\todo{cite}
 
 In a garbage collected language, however, the programmer can allocate
 new memory, but typically cannot (and does not need to) explicitly
 deallocate it. Instead, some runtime system determines when
 \glspl{cell} no longer needed, typically by determining if they can be
-reached by following pointers from the \glspl{root}---the set of
+reached by following pointers from the roots---the set of
 variables in scope---or not.
 
 We can divide most garbage collection algorithms into four camps:
-\gls{reference counting}, \gls{mark-sweep}, \gls{copying}, and
-\gls{mark-compact}. Each is suited to different use-cases, and the
+reference counting, mark-sweep, copying, and
+mark-compact.\todo{cite} Each is suited to different use-cases, and the
 choice of which to use is often determined by the behaviour of the
 particular system in which they will be used.
 
 Throughout this section, I shall be using a visual example to aid
-understanding. Figure \ref{fig:lit-gc-before} shows a \gls{heap}
-before \gls{garbage collection}, and for each \gls{collector}, I shall
-show the same \gls{heap} after collection. Green \glspl{cell} are
-those pointed to by the \glspl{root}, black are not garbage, red are
-garbage, and white are unallocated. A reference count is displayed in
-each \gls{cell}.
+understanding. Figure \ref{fig:lit-gc-before} shows a heap before
+garbage collection, and for each collector, I shall show the same heap
+after collection. Green cells are those pointed to by the roots, black
+are not garbage, red are garbage, and white are unallocated. A
+reference count is displayed in each cell.
 
 \begin{figure}[h]
   \centering
