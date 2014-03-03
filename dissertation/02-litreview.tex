@@ -90,10 +90,10 @@ system\cite{Deutsch76}.
 
 A fatal flaw, alas, with reference counting is that it cannot reclaim
 self-referential structures, as shown in the example, even if they are
-garbage\cite{McBeth63}. Some systems make use of ``\glspl{weak
-  reference}'', references which do not cause the count to be
-modified, to offset this\todo{cite}. However, this places a burden on
-the programmer and so loses some of the convenience of the system.
+garbage\cite{McBeth63}. Some systems make use of ``weak references'',
+references which do not cause the count to be modified, to offset
+this\cite{Brown95}. However, this places a burden on the programmer
+and so loses some of the convenience of the system.
 
 \subsection{Mark-Sweep}
 \label{sec:lit-gc-marksweep}
