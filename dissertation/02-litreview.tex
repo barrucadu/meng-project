@@ -47,9 +47,9 @@ behaviour of the particular system in which they will be used.
 Throughout this section, I shall be using a visual example to aid
 understanding. Figure \ref{fig:lit-gc-before} shows a heap before
 garbage collection, and for each collector, I shall show the same heap
-after collection. Green cells are those pointed to by the roots, black
-are not garbage, red are garbage, and white are unallocated. A
-reference count is displayed in each cell.
+after collection. Green cells are those pointed to by the roots (where
+pale green indicates those only pointed to indirectly: the live
+cells), red are garbage, and white are free.
 
 \begin{figure}[h]
   \centering
