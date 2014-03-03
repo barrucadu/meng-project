@@ -2,19 +2,23 @@
 \label{sec:lit}
 
 In this chapter, I shall review the work that has already been done in
-both the fields of \gls{garbage collection} in section
-\ref{sec:lit-gc}, and \gls{algorithm verification} in section
-\ref{sec:lit-verification}, and then consider in more detail two
-different verified \glspl{collector} in section
-\ref{sec:lit-verifiedgc}. I shall restrict the review largely to
-stop-the-world, non-concurrent, ``non-hybrid'' \glspl{collector}, by
-which I mean a \gls{collector} which uses just one method to garbage
-collect the \gls{heap}, rather than combining multiple methods. This
-is because I shall only be reasoning about such simple
-\glspl{collector}, as considering more complex situations would
-significantly complicate the work. I shall briefly mention
-generational \glspl{collector}, which are arguably hybrid, but shall
-not be rigorously proving things about them.
+both the fields of garbage collection in section \ref{sec:lit-gc}, and
+algorithm verification in section \ref{sec:lit-verification}, and then
+consider in more detail some instances of verified collectors in
+section \ref{sec:lit-verifiedgc}. I shall restrict the review largely
+to stop-the-world, non-concurrent, ``non-hybrid'' collectors, by which
+I mean a collector which uses just one method to garbage collect the
+heap, rather than combining multiple methods. This is because I shall
+only be reasoning about such simple collectors, as considering more
+complex situations would significantly complicate the work. I shall
+briefly mention generational collectors, which are arguably hybrid,
+but shall not be rigorously proving things about them.
+
+Understanding the dissertation will require some understanding of
+mark-sweep and copying collectors, Hoare logic, and array
+reasoning. Other information provided in this review should be
+considered as additional background information to give the reader
+some greater appreciation of the field, but is not essential.
 
 \section{Garbage Collection}
 \label{sec:lit-gc}
@@ -210,6 +214,8 @@ such languages.
 
 \section{Algorithm Verification}
 \label{sec:lit-verification}
+
+\todo{Add bit about array reasoning}
 
 \Gls{algorithm verification} (or software verification) is the process
 of constructing a mathematical proof that an algorithm behaves as we
