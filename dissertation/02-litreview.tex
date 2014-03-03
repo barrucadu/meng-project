@@ -261,9 +261,9 @@ automated using proof assistants, but in general this is undecidable.
 \begin{example}[Finding the index of the minimal element of a nonempty
   sequence of integers]
   \label{exmpl:lit-embedding}
-  As an example of \gls{verification by embedding}, consider the
-  following short program, to find the index of the minimal element in
-  a sequence of integers:
+  As an example of verification by embedding, consider the following
+  short program, to find the index of the minimal element in a
+  sequence of integers:
 
 \begin{verbatim}
 i := 0;
@@ -657,28 +657,28 @@ transformations preserve the semantics\todo{[justify/cite]}.
 \section{Verified Garbage Collection}
 \label{sec:lit-verifiedgc}
 
-Finally, we look at two examples of \glspl{garbage collector} which
-have been verified in different ways.
+Finally, we look at two examples of garbage collectors which have been
+verified in different ways.
 
 \subsection{Reusable verification of a copying collector}
 \label{sec:lit-verifiedgc-myreen}
 
-Myreen\cite{Myreen10} has constructed a verified \gls{garbage
-  collector} using the extraction method: correctness was formalised
-using the HOL4 theorem prover, was refined to produce an algorithm for
-correct \gls{copying} \glspl{collector}, and was then refined further
-to the level of verified machine code.
+Myreen\cite{Myreen10} has constructed a verified garbage collector
+using the extraction method: correctness was formalised using the HOL4
+theorem prover, was refined to produce an algorithm for correct
+copying collectors, and was then refined further to the level of
+verified machine code.
 
-The \glspl{collector} produced have been named L1, which is a
-specification of copying \gls{garbage collection}; L2, which is an
-implementation of L1 as the transitive closure of a step relation; L3,
-which is a deterministic implementation of L2 with more realistic
-memory semantics; L4, which uses actual implementation types; and L5,
-which is verified machine code. L5 is constructed by earlier work of
-Myreen, on constructing a certifying compiler.
+The collectors produced have been named L1, which is a specification
+of copying garbage collection; L2, which is an implementation of L1 as
+the transitive closure of a step relation; L3, which is a
+deterministic implementation of L2 with more realistic memory
+semantics; L4, which uses actual implementation types; and L5, which
+is verified machine code. L5 is constructed by earlier work of Myreen,
+on constructing a certifying compiler.
 
-The initial \gls{collector} is defined as a relation which restricts
-the heap to live cells, and performs consistent renaming, \[x \gc y =
+The initial collector is defined as a relation which restricts the
+heap to live cells, and performs consistent renaming, \[x \gc y =
 (\mathrm{filter}~x) \translate y\] and this specification is connected
 to the lower-level L2 collector with an invariant, $\mathrm{inv}$
 (where $x$ is a heap and $s$ and $t$ are root sets), \[\forall
@@ -699,20 +699,20 @@ non-copying collectors, with minor changes to the formalism.
 \label{sec:lit-verifiedgc-birkedal}
 
 Birkedal, Torp-Smith, and Reynolds\cite{Birkedal04} take a very
-different approach to Myreen, they take an existing \gls{garbage
-  collector} (Cheney's copying collector) and prove it correct, using
-a variant of separation logic, in a Hoare-style
-proof, \[\htriple{(\exists y.\ e \mapsto y \land A) \land x = e'}{x :=
-[e]}{e[e'/x] \mapsto x \land A[x/y]}\]
+different approach to Myreen, they take an existing garbage collector
+(Cheney's copying collector) and prove it correct, using a variant of
+separation logic, in a Hoare-style proof, \[\htriple{(\exists y.\ e
+  \mapsto y \land A) \land x = e'}{x := [e]}{e[e'/x] \mapsto x \land
+  A[x/y]}\]
 
 Similarly to Myreen, they define correctness in terms of a heap
 isomorphism modulo garbage cells, and in particular, that the
 resultant heap has no garbage cells whatsoever.
 
 The motivation of this paper is to be a stepping stone towards
-programming logics which incorporate \gls{garbage collection}, and so
-being able to prove the correctness of the combination of a program
-and a language runtime, which has thus far not been feasible.
+programming logics which incorporate garbage collection, and so being
+able to prove the correctness of the combination of a program and a
+language runtime, which has thus far not been feasible.
 
 This paper contributes to the field an extension of separation logic
 with semantics for more types of assertion over finite sets, which is
@@ -758,11 +758,11 @@ compilers for languages such as Java and C\#.
 \section{Summary}
 \label{sec:lit-summary}
 
-In this chapter I have summarised the traditional \gls{garbage collection}
-algorithms and approaches to \gls{algorithm verification}, and then turned
-to two particular verified \glspl{collector}. In future chapters I shall be
-working with \gls{mark-sweep} and \gls{copying} \glspl{collector}, and
-approaching the problem of verification using embedding.
+In this chapter I have summarised the traditional garbage collection
+algorithms and approaches to algorithm verification, and then turned
+to two particular verified collectors. In future chapters I shall be
+working with mark-sweep and copying collectors, and approaching the
+problem of verification using embedding.
 
 I shall briefly mention how verification could be extended to
 generational or incremental collectors, but this shall not be a focus
