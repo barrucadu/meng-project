@@ -24,11 +24,12 @@ some greater appreciation of the field, but is not essential.
 \label{sec:lit-gc}
 
 Garbage collection is the process of automatically reclaiming unneeded
-allocated memory from a program\todo{cite}. In languages with manual
-memory management, such as C, a programmer can allocate new memory
-with \texttt{malloc}, but then must remember to release it with
+allocated memory from a program\cite{McCarthy60}. In languages with
+manual memory management, such as C, a programmer can allocate new
+memory with \texttt{malloc}, but then must remember to release it with
 \texttt{free}.\cite{KandR} If this is not done, a memory leak occurs,
-and the program may gradually consume more and more memory\todo{cite}.
+and the program may gradually consume more and more
+memory\cite{Barach82}.
 
 In a garbage collected language, however, the programmer can allocate
 new memory, but typically cannot (and does not need to) explicitly
@@ -39,9 +40,9 @@ not.
 
 We can divide most garbage collection algorithms into four camps:
 reference counting, mark-sweep, copying, and
-mark-compact\todo{cite}. Each is suited to different use-cases, and the
-choice of which to use is often determined by the behaviour of the
-particular system in which they will be used.
+mark-compact\cite{GarbageCollection}. Each is suited to different
+use-cases, and the choice of which to use is often determined by the
+behaviour of the particular system in which they will be used.
 
 Throughout this section, I shall be using a visual example to aid
 understanding. Figure \ref{fig:lit-gc-before} shows a heap before
