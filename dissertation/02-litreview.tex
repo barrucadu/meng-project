@@ -224,10 +224,10 @@ languages\cite{Rojemo95}\cite{Sansom93}\cite{Seward92}.
 
 Algorithm verification (or software verification) is the process of
 constructing a mathematical proof that an algorithm behaves as we
-expect it to. In the case of software, we may prove the actual code
-implements the specification, in the case of an algorithm, we may be
-satisfied with merely proving that it satisfies various properties
-(such as termination).
+expect it to\cite{Floyd67}. In the case of software, we may prove the
+actual code implements the specification, in the case of an algorithm,
+we may be satisfied with merely proving that it satisfies various
+properties (such as termination).
 
 We need verification because testing can never show that there are no
 bugs, it can only show that there have been no bugs found yet, to
@@ -245,7 +245,7 @@ extracting an algorithm out of it.
 This is arguably the more difficult method of verification, as it
 consists of taking a fairly low-level implementation (often at the
 level of code) and a very high-level specification and proving things
-about the two\todo{[cite]}.
+about the two.
 
 To begin with, the implementation must be formalised using some logic
 such as Hoare logic\cite{Hoare69}, which define the semantics for a
@@ -308,14 +308,19 @@ able to derive the postcondition from the precondition and the
 code. Sometimes ``backwards'' reasoning is used, by establishing the
 desired postcondition (the result of executing the code), and then
 working from end to beginning, in order to figure out what the
-necessary preconditions are\todo{[cite]}. If both the precondition and
-postcondition of some sequence of code are known, then the proof can
-progress inwards from both ends, meeting in the middle. If the two
-proof efforts cannot be unified, then there is a flaw in the
-code\todo{[cite]}.
+necessary preconditions are (known as backwards
+chaining\cite{Russell05}). If both the precondition and postcondition
+of some sequence of code are known, then the proof can progress
+inwards from both ends, meeting in the middle. If the two proof
+efforts cannot be unified, then there is a flaw in the
+code.
 
 Common to many proof systems is the ability to strengthen
-preconditions and weaken postconditions\todo{[justify/cite]}. This is
+preconditions and weaken postconditions\cite{Hoare69}. This is legal
+because if precondition $P$ implies $P'$, then by using the
+precondition $P$ instead of $P'$, we know that $P'$ is guaranteed to
+hold. Similarly, postcondition $Q$ implies $Q'$, then by using the
+postcondition $Q'$, we know that $Q$ is guaranteed to hold. This is
 expressed by the Hoare consequence rule:
 
 \begin{prooftree}
@@ -326,14 +331,15 @@ expressed by the Hoare consequence rule:
 \end{prooftree}
 
 This allows localised proofs to be used in a larger proof, and so
-facilitates modularity\todo{[justify/cite]}.
+facilitates modularity by allowing proofs of (some) components of a
+program to be considered independently, and then combined later on.
 
 \subsubsection{Axiomatic Semantics}
 \label{sec:lit-verification-embedding-axioms}
 
 Axiomatic semantics allow us to reason about programs by providing
 tools to reason about the effect of program statements on program
-state\todo{[cite]}. These are closely connected with Hoare logic. A
+state\cite{Hoare69}. These are closely connected with Hoare logic. A
 simple example is the Hoare rule for composition:
 
 \begin{prooftree}
@@ -378,8 +384,8 @@ in another (the problem of aliasing), which simplifies reasoning.
 
 Proofs of programs involving loops rely on finding a loop invariant:
 some property which does not change over time as the loop is
-executed\todo{cite}. This is expressed in Hoare logic with the while
-rule:
+executed\cite{Hoare69}. This is expressed in Hoare logic with the
+while rule:
 
 \begin{prooftree}
   \AxiomC{$\htriple{I \land B}{S}{I}$}
@@ -399,14 +405,12 @@ under Hoare logic), is $\lnot B$, which doesn't seem very useful. The
 loop may be doing something very complicated, but it seems we can only
 extract a very small bit of information about this. The difficulty,
 then, lies in finding a loop invariant that, when combined with $\lnot
-B$, yields the result we want\todo{[cite]}.
+B$, yields the result we want.
 
 \begin{lscape}
 
 \phantomsection
 \label{sec:lit-verification-embedding-example}
-
-\todo{[tidy]}
 
 \begin{prooftree}
   \AxiomC{$\htriple{I[1/j][0/i]}{i := 0}{I[0/j]}$}
