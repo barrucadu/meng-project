@@ -222,8 +222,6 @@ languages\cite{Rojemo95}\cite{Sansom93}\cite{Seward92}.
 \section{Algorithm Verification}
 \label{sec:lit-verification}
 
-\todo{Add bit about array reasoning}
-
 Algorithm verification (or software verification) is the process of
 constructing a mathematical proof that an algorithm behaves as we
 expect it to. In the case of software, we may prove the actual code
@@ -359,6 +357,21 @@ Given these rules, we can very easily deconstruct a program into a
 proof tree showing how all of the assertions are related, which is
 often a very good starting point for then constructing a specific
 proof for the property we wish to establish.
+
+\subsubsection{Array Reasoning}
+\label{sec:lit-verification-embedding-arrays}
+
+Abstract program logics such as Hoare logic typically do not worry
+about data types beyond simple primitives such as integers and
+booleans, however this is not enough to model all aspects of
+programming. Gries introduces a model of arrays\cite{Gries87}, where
+an array of type $[T]$ is treated as a function $(N \subseteq \mathbb
+N) \to T$, and array assignment is modelled as functional override.
+
+The formalism has preconditions and postconditions for array access to
+ensure indices are in bounds, and by modelling assignment as override,
+updating an array in one location cannot cause it to appear to change
+in another (the problem of aliasing), which simplifies reasoning.
 
 \subsubsection{Loop Invariants}
 \label{sec:lit-verification-embedding-invariants}
