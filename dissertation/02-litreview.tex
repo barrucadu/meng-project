@@ -678,8 +678,10 @@ transformations preserve the semantics.
 \section{Verified Garbage Collection}
 \label{sec:lit-verifiedgc}
 
-Finally, we look at two examples of garbage collectors which have been
-verified in different ways.
+Finally, we look at some examples of garbage collectors which have
+been verified in different ways: a copying collector verified by
+refinement, a different copying collector verified by embedding, and
+finally a generic framework for verifying collectors and mutators.
 
 \subsection{Reusable verification of a copying collector}
 \label{sec:lit-verifiedgc-myreen}
@@ -712,9 +714,6 @@ proof is quite generic, as only the lowest level of refinement (L5)
 makes use of a specific programming logic, and could be applied to many
 different copying collectors, just by changing the specific refinement
 steps taken.
-
-As is shown in chapter 4, his L1 collector can be generalised to
-non-copying collectors, with minor changes to the formalism.
 
 \subsection{Local Reasoning about a Copying Garbage Collector}
 \label{sec:lit-verifiedgc-birkedal}
@@ -761,7 +760,7 @@ Their approach is to define an abstract interface between the
 collector and mutator. The mutator works with an abstract heap,
 whereas the collector works with the concrete heap, and the mapping
 between the two is defined on a per-collector basis. As such a mapping
-exists, and the mutator proof is parameterised by both it, and a
+exists, and the mutator proof is parameterised by both it and a
 garbage collection step relation, independent verification of the
 collector and mutator is possible.
 
