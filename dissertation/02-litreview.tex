@@ -492,28 +492,26 @@ B$, yields the result we want.
 
 The other approach is to gradually work downwards from the high-level
 specification to a constructive proof, which can then be turned into
-an implementation. This is called refinement\todo{[cite]}. A special
-case of refinement is when the specification is already in the form of
-a constructive proof, in which case we can extract the implicit
-program from it, this is called verification by
-extraction\todo{[cite]}.
+an implementation. This is called refinement. A special case of
+refinement is when the specification is already in the form of a
+constructive proof, in which case we can extract the implicit program
+from it, this is called extraction.
 
 We start out by formalising the specification in some logic, such as Z
 or HOL, and then construct a slightly lower-level specification and
 prove that it is a correct refinement of the higher-level one by
 reasoning about the pre- and post-conditions of each abstract
-operation\todo{[cite]}. Whilst it may take many refinement steps to
-get actual code out of this process, each proof is between two very
+operation\cite{Woodcock96}. Whilst it may take many refinement steps
+to get actual code out of this process, each proof is between two very
 similar specifications, and so may be easier than the verification by
-proof method\todo{[cite]}. Proof assistants may be more useful here
-than in verification by embedding, but here the difficulty lies in
-finding the appropriate invariant to relate the two
-steps\todo{[cite]}.
+proof method. Proof assistants may be more useful here than in
+verification by embedding, but here the difficulty lies in finding the
+appropriate invariant to relate the two steps\cite{Woodcock96}.
 
 Furthermore, there are often multiple choices of refinement step
 available, and so first few steps can be reused to construct different
 algorithms, simply by making different choices at the lower
-levels\todo{[cite]}.
+levels\cite{Myreen10}.
 
 \begin{example}[Finding the index of the minimal element of a nonempty
   sequence of integers]
@@ -600,10 +598,10 @@ abstract proof, and then gradually make it more constructive with each
 step.
 
 We can do this by using witnesses in our proof. A witness is a value
-which shows a proposition to be correct\todo{[cite]}. For example, $x
-= 2$ is a witness for $\exists x \in \mathbb N, x > 1$. If we know how
-to find a witness for everything we prove, then we know how to solve
-the problem.
+which shows a proposition to be correct. For example, $x = 2$ is a
+witness for $\exists x \in \mathbb N, x > 1$. If we know how to find a
+witness for everything we prove, then we know how to solve the
+problem.
 
 \subsubsection{Case Analysis}
 \label{sec:lit-verification-extraction-cases}
@@ -611,7 +609,7 @@ the problem.
 Proofs often diverge into multiple cases to be shown. For example, an
 inductive proof (covered in more detail in the next section) has a
 base case and an inductive case. Only by proving both cases do we
-prove the whole\todo{[cite]}.
+prove the whole.
 
 Given a constructive proof, we can translate a case analysis to a
 switch statement (or conditional statement) in our program, and use
@@ -656,12 +654,17 @@ We must be careful to honour any ``hidden'' assumptions in the
 proof. For example, if a proof requires a value to be a natural
 number, then we cannot use machine words in our program, unless it can
 also be proven that the natural numbers in question will always fit
-into this range\todo{[justify/cite]}.
+into this range.
+
+A famous example of a problem arising from this was in an
+implementation of a binary search algorithm proven correct by
+Bentley\cite{Bentley86}, which suffered from an integer overflow
+problem. The proof assumed mathematical integers, but the
+implementation did not provide this.
 
 More generally, types in programming languages may not be identical to
 types used in proofs, and we must be careful not to invalidate the
-proof by getting the implementation types
-incorrect\todo{[justify/cite]}.
+proof by getting the implementation types incorrect.
 
 \subsubsection{Program Transformations}
 \label{sec:lit-verification-extraction-transformation}
@@ -670,7 +673,7 @@ When we extract a program from a proof, the structure of the program
 very closely mirrors that of the proof, as would be expected. However,
 this may not be considered good style. We can apply arbitrary
 transformations to the code of the extracted program, as long as these
-transformations preserve the semantics\todo{[justify/cite]}.
+transformations preserve the semantics.
 
 \section{Verified Garbage Collection}
 \label{sec:lit-verifiedgc}
