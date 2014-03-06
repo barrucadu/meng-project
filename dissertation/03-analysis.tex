@@ -4,11 +4,10 @@
 In this chapter I shall discuss how I am going to approach the
 project. In section \ref{sec:analysis-aims} I will discuss the aims,
 with some reflection on the literature; in section
-\ref{sec:analysis-development} I will discuss how I am going to
-develop the formalism, the algorithm, and prove its correctness with
-respect to the formalism; and in section \ref{sec:analysis-evaluation}
-I will discuss how I am going to evaluate the success of my project at
-the end.
+\ref{sec:analysis-formalism} I will discuss how I am going to develop
+the formalism; and in section \ref{sec:analysis-evaluation} I will
+discuss how I am going to evaluate the success of my project at the
+end.
 
 \section{Aims Revisited}
 \label{sec:analysis-aims}
@@ -32,72 +31,48 @@ mind very difficult.
 This project explores the route of using generic and flexible
 formalisms, not tied to any particular class of collector, and which
 can be used for the proof or extraction methods. The aim, through
-algorithm/formalism co-design, is to produce:
+development and subsequent generalisation of formalisms, is to
+produce:
 
 \begin{itemize}
+  \item specific formalisms for mark-sweep and copying collectors,
+    with proofs of a simple collector of each type;
+
   \item a generic formalism for garbage collection partial
-    correctness, in terms of garbage collection as a function applied
-    to the program state;
+    correctness, in terms of the postconditions of the collector, and
+    any invariants which must hold over the heap;
 
-  \item an illustration of the utility of the formalism by proofs of
-    correctness of two simple mark-sweep collectors: one specialised
-    for immutable languages, and one more general;
-
-  \item design, proof, and implementation of a copying collector.
+  \item implementations of the two collectors, with assertions checked
+    at key program points.
 \end{itemize}
 
 \section{Development Methodology}
-\label{sec:analysis-development}
+\label{sec:analysis-formalism}
 
-\todo{How I'm going to develop the algorithm and prove it}
+I shall develop the formalisms by first defining all of the
+necessities (such as the heap, cells, pointers, reachability) and
+building everything up from first principles. Then, I shall consider
+what it means for a mark-sweep and a copying collector to be correct,
+and produce appropriate invariants and postconditions to ensure this.
+
+I shall then unify the two approaches, possibly branching out to
+include other properties, in the general formalism, and show how it
+could be specialised to the previously-proven collectors.
 
 \section{Evaluation Methodology}
 \label{sec:analysis-evaluation}
 
-The formalism and algorithm shall be evaluated separately.
+The specific formalisms shall be evaluated by considering how
+convincing the proofs are, and what issues (if any) are raised by the
+implementations with checked assertions. To a lesser extend, the
+evaluation will also consider how ``easy'' the proofs were. The
+implementations shall be evaluated by discussing which properties were
+checked, and which others could possibly have been. In addition, the
+test mutator will be discussed.
 
-\subsection{Evaluating the Formalism}
-\label{sec:analysis-evaluation-formalism}
-
-The formalism shall be evaluated by considering how well it applies to
-a variety of collectors. In this dissertation, only mark-sweep and
-copying will be proven, but the proof obligations for other types of
-collectors will be examined in order to determine if the formalism is
-capable of satisfying them.
-
-Furthermore, what the formalism doesn't state will be discussed, as in
-order to make it widely applicable it must abstract over the details
-which make each class of collector unique.
-
-Finally, it shall be compared to other formalisms, and the advantages
-and disadvantages of it over the others will be discussed.
-
-\subsection{Evaluating the Algorithm}
-\label{sec:analysis-evaluation-algorithm}
-
-The algorithm shall be compared to current garbage collection
-algorithms, in particular stop-the-world collectors, and the relative
-performance and ease of implementation discussed. Whilst performance
-is not a primary concern in the project, it would be nice to produce
-something of competitive speed.
-
-\subsection{Qualiative Evaluation}
-\label{sec:analysis-evaluation-qualitative}
-
-Finally, how ``nice'' the formalism and algorithm are to use will be
-considered. The aim of the project is primarily to produce a flexible
-and generic formalism, but also to produce a formalism which can be
-used to ease the difficulty of proving correctness. Even if the
-formalism has everything that could be desired, if it is difficult to
-work with, there is scope for improvement.
-
-Similarly, the algorithm should be simplistic and primarily be used to
-illustrate the use of the formalism, but it should also be a
-realistically viable garbage collection algorithm. Whilst designing
-and verifying a concurrent real-time collector is out of scope for
-this project, it should still offer something new.
-
-\subsection{Summary}
-\label{sec:analysis-summary}
-
-\todo{Summary, once I have written the rest}
+The generic formalism shall be evaluated by considering how different
+it is to the specific formalisms, and how easy it was to produce given
+them. Furthermore, I shall consider how ``obvious'' an extension it is
+of the specific formalisms, such as whether it is just a unification
+of the two, or whether it allows anything totally different to what
+the two specific formalisms permit.
