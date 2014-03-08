@@ -1,11 +1,30 @@
 \chapter{The Heap as an Array}
 \label{sec:heap}
 
-\todo{Chapter intro}
+In this chapter I shall explain and justify how the heap can be
+modelled as an array, and introduce a specific formalism for reasoning
+about array-based programs, along with some examples of its use. This
+formalism will be used in later chapters.
 
-\todo{Justification for considering the heap as an array}
+In a physical computer, the heap lives in virtual memory, where
+virtual memory consists of an integer-indexed collection of machine
+words. In the case of x86 computers, these words are bytes, and the
+range of addresses allows for 4GiB of virtual memory per
+process. Contiguous addresses refer to contiguous heap locations, and
+the addressing starts at zero (although this is usually mapped to an
+invalid memory location to catch errors).
 
-\todo{What pointers are under this}
+This sounds rather like a zero-indexed array, and in fact we can
+consider the heap to be such an array to allow reasoning. More
+abstract formalisms (such as considering the heap to be a digraph) are
+possible, and one such alternative (separation logic) shall be
+reviewed, however I argue that the array model is the simplest way to
+capture the semantics of memory as seen by programs.
+
+In the array formalism, pointers simply become indexes into this
+array. We need to be careful about illegal addresses, such as zero,
+but by imposing a validity condition upon pointers, such as requiring
+they all point to the start of a cell, we can side-step this issue.
 
 \section{The Alternative: Separation Logic}
 \label{sec:heap-separation}
