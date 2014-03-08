@@ -219,13 +219,18 @@ Thus, we can see that array reasoning is a very simple and intuitive
 tool, and as the axioms are very simple, they are amenable to machine
 verification or automation (although I will not make use of this).
 
-\subsection{The Heap as an Array for Garbage Collection}
-\label{sec:heap-arrays-gc}
-
-\todo{Why this makes thinking about gc easy}
-
 \section{Summary}
 \label{sec:heap-summary}
 
-\todo{Summary of chapter: key ideas behind Gries, what will need to be
-carried forward}
+In this chapter I introduced a simple formalism for reasoning about
+arrays, and showed two small examples of its use. I argued that
+modelling the heap as an array is, whilst a very simplistic approach,
+entirely appropriate for when the entirety of the heap is being
+reasoned about, as I intend to do so in this dissertation.
+
+In future chapters the heap will be treated as an array, and so the
+reader should keep in mind the access and assignment rules. However, I
+shall be defining pointers in such a way that they are always valid,
+and so the reader does not need to concern themselves with checking if
+heap access is within bounds or not, and I shall drop the bounds
+checking for simplicity.
