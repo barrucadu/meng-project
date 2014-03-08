@@ -78,15 +78,146 @@ be useful.
 \section{Reasoning with Arrays}
 \label{sec:heap-arrays}
 
-\todo{Intro to Gries formalism and key points}
+Abstract program logics such as Hoare logic typically do not worry
+about data types beyond simple primitives such as integers and
+booleans, however this is not enough to model all aspects of
+programming. Gries introduces a model of arrays\cite{Gries87}, where
+an array of type $[T]$ is treated as a function from some finite
+contiguous subset of the natural numbers (including zero) to $T$, and
+array assignment is modelled as functional override.
 
-\todo{Access axiom}
+Henceforth, I shall be using $A$ as an example array.
 
-\todo{Access example: summing a list}
+We denote an array as a tuple, where the $n$th element of the tuple is
+the value of $A[n]$. The bounding indices of the array are not
+constrained in general, and so these can be accessed by the values
+$A.lower$ and $A.upper$, leading to a definition of the domain of an
+array $\dom~A = \{i~|~A.lower \leq i \leq A.upper\}$.
 
-\todo{Assignment axiom}
+\begin{definition}[Array Access Triple]
+  Assigning an array member to a variable is exactly the same as
+  normal assignment, with the additional precondition that the array
+  subscript be in range.
 
-\todo{Assignment example: doubling every element in a list}
+  \begin{align*}
+    \htriple{P\left[A[n]/x\right] \land n \in \dom~A}{x := A[n]}{P}
+  \end{align*}
+\end{definition}
+
+\begin{example}[Summing a list]
+  \label{exmpl:heap-sum}
+  
+  Let's denote by $\mathrm{sum}~A$ (where $A$ is an array) the sum of
+  all the elements in it, and now we want to prove the following
+  program does satisfy this postcondition.
+
+\begin{verbatim}
+i   := A.lower;
+sum := 0;
+while i <= A.upper do
+    sum := sum + A[i];
+    i := i + 1
+\end{verbatim}
+
+  Specifically, we want to prove $\mathtt{sum} = \mathrm{sum}~A$. We
+  shall do so by using this loop invariant, $\mathtt{sum} =
+  \mathrm{sum}~A[A.lower : \mathtt{i} - 1]$, where $A[i:j]$ is the
+  array consisting of the elements of $A$ between $i$ and $j$, and if
+  $i = j + 1$ is the empty array.
+
+  \begin{prooftree}
+    \AxiomC{$\ltrue \implies I''$}
+
+    \AxiomC{$\htriple{I''}{L1}{I'}$}
+    \AxiomC{$\htriple{I'}{L2}{I}$}
+    \BinaryInfC{$\htriple{I''}{L1; L2}{I}$}
+
+    \AxiomC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4}{J}$}
+    \AxiomC{$\htriple{J}{L5}{I}$}
+    \BinaryInfC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4;
+        L5}{I}$}
+    \UnaryInfC{$\htriple{I}{while i < A.upper do (L4; L5)}{I \land
+        \mathtt{i} > A.upper}$}
+
+    \BinaryInfC{$\htriple{I''}{\ldots}{\mathtt{sum} =
+        \mathrm{sum}~A}$}
+
+    \BinaryInfC{$\htriple{\ltrue}{\ldots}{\mathtt{sum} =
+        \mathrm{sum}~A}$}
+  \end{prooftree}
+
+  Where the following definitions hold,
+
+  \begin{align*}
+    J &\iff \mathtt{sum} = \mathrm{sum}~A[A.lower : \mathtt{i} + 1]\\
+    I' &\iff I[0/\mathtt{sum}]\\
+    &\iff 0 = \mathrm{sum}~A[A.lower : \mathtt{i} - 1]\\
+    I'' &\iff I'[A.lower/\mathtt{i}]\\
+    &\iff 0 = \mathrm{sum}~A[A.lower : A.lower - 1]
+  \end{align*}
+\end{example}
+
+\begin{definition}[Array Assignment Triple]
+  Assignment to an array is modelled as functional override,
+
+  \begin{align*}
+    \htriple{P[(A; i : e)/A] \land i \in \dom~A}{A[i] = e}{P}
+  \end{align*}
+
+  Where $(A; i : e)[j]$ evaluates to $e$ if $i = j$, and $A[j]$
+  otherwise.
+\end{definition}
+
+\begin{example}[Doubling a list]
+  \label{exmpl:heap-double}
+
+  We want to prove that the following program doubles the value of
+  every element of the array $A$, storing the result in $B$,
+
+\begin{verbatim}
+i := A.lower;
+B := A;
+while i <= A.upper do
+    B[i] = B[i] * 2;
+    i := i + 1
+\end{verbatim}
+
+  And we shall use the invariant $\forall A.lower \leq j < i,\ B[j]
+  = 2 A[j]$ to do so.
+
+  \begin{prooftree}
+    \AxiomC{$\ltrue \implies I''$}
+
+    \AxiomC{$\htriple{I''}{L1}{I'}$}
+    \AxiomC{$\htriple{I'}{L2}{I}$}
+    \BinaryInfC{$\htriple{I''}{L1; L2}{I}$}
+
+    \AxiomC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4}{J}$}
+    \AxiomC{$\htriple{J}{L5}{I}$}
+    \BinaryInfC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4;
+        L5}{I}$}
+    \UnaryInfC{$\htriple{I}{\ldots}{I \land \mathtt{i} > A.upper}$}
+
+    \BinaryInfC{$\htriple{I''}{\ldots}{D}$}
+
+    \BinaryInfC{$\htriple{\ltrue}{\ldots}{D}$}
+  \end{prooftree}
+
+  Where the following definitions hold,
+
+  \begin{align*}
+    D &\iff \forall A.lower \leq i < A.upper,\ B[i] = 2 A[i]\\
+    J &\iff \forall A.lower \leq j < i + 1,\ B[j] = 2 A[j]\\
+    I' &\iff I[B/A]\\
+    &\iff \forall A.lower \leq j < i,\ A[j] = 2 A[j]\\
+    I'' &\iff I'[A.lower/\mathtt{i}]\\
+    &\iff \forall A.lower \leq j < A.lower,\ A[j] = 2 A[j]
+  \end{align*}
+\end{example}
+
+Thus, we can see that array reasoning is a very simple and intuitive
+tool, and as the axioms are very simple, they are amenable to machine
+verification or automation (although I will not make use of this).
 
 \subsection{The Heap as an Array for Garbage Collection}
 \label{sec:heap-arrays-gc}
