@@ -29,7 +29,51 @@ they all point to the start of a cell, we can side-step this issue.
 \section{The Alternative: Separation Logic}
 \label{sec:heap-separation}
 
-\todo{Brief intro to separation logic, maybe a short example}
+Separation logic, introduced by Reynolds in 2002\cite{Reynolds02}, is
+an extension of Hoare logic for reasoning about states consisting of a
+stack and heap, where the heap is a partial function from addresses to
+values. In particular, the logic provides the following extra
+predicates to reason about the heap,
+
+\begin{itemize}
+  \item $\mathbf{emp}$, the heap is empty;
+
+  \item $e \mapsto e'$, the heap is the singleton heap, where the
+    address $e$ maps to the value $e'$;
+
+  \item $P \sepc Q$, the heap can be split into two disjoint partitions
+    where $P$ holds in one and $Q$ in the other;
+
+  \item $P \sepi Q$, were the heap to be extended by a disjoint part
+    which satisfies $P$, the entire heap would satisfy $Q$.
+\end{itemize}
+
+In addition to these operators, there is an additional deduction rule,
+allowing modular reasoning about program components,
+
+\begin{prooftree}
+  \AxiomC{$\htriple{P}{C}{Q}$}
+  \UnaryInfC{$\htriple{P \sepc R}{C}{Q \sepc R}$}
+\end{prooftree}
+
+This is known as the frame rule, and is valid if no free variables in
+$R$ are modified in $C$. This states that you can take a proof of a
+program in a small context, and reuse it in a larger context.
+
+In this formalism pointers are parameters to the partial function
+which is the heap, where the heap can be anything. For example, you
+could reason about a heap of cells, where pointers are all multiples
+of 2. This formalism also allows pointer arithmetic (as does the array
+formalism), but reasoning about properties such as reachability is
+more difficult in this case.
+
+The main reason I do not use separation logic in this project is
+because I will necessarily be reasoning about the entire state, and
+there would be very little scope for separation to be of use. Thus,
+using separation logic could result in additional complication for
+little gain. However, in the case of non-stop-the-world collectors,
+the tools of separation logic (or something similar) would undoubtedly
+be useful.
 
 \section{Reasoning with Arrays}
 \label{sec:heap-arrays}
