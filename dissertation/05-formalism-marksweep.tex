@@ -51,7 +51,7 @@ of the garbage collection metadata.
 \end{definition}
 
 I have restricted pointers to only pointing at the start of the data
-portion of a cell\footnote{It would seem, at first glance, that this
+portion of a cell,\footnote{It would seem, at first glance, that this
   restriction in conjunction with the definition of words in the heap
   does not allow null pointers. This would be the case if we
   interpreted the definition of the heap to mean ``all words have a
@@ -60,7 +60,7 @@ portion of a cell\footnote{It would seem, at first glance, that this
   could, in practice, be something like ``resides in the nth word of a
   cell and is the address of the start of the data portion of another
   cell'', in which case invalid pointers (such as null pointers) would
-  be considered to be data.}, as then going from an internal pointer
+  be considered to be data.} as then going from an internal pointer
 to a cell header does not need to be considered at all, furthermore,
 in practice the mutator does not need to know about the metadata, and
 should not know: it should be for purely internal use. If the size and
