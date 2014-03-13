@@ -92,8 +92,8 @@ cell being allocated or not, we shall talk about it being on the free
 list or not. This is what the predicate $\free{c}$ expresses.
 
 Finally, in order to ensure that pointers only point to sane
-locations, we require that the live cells and the unallocated cells
-are disjoint,
+locations, we require that the live cells and the free cells are
+disjoint,
 
 \begin{definition}[Live Cell Invariant]
   \label{def:ms-live-cell-invariant}
