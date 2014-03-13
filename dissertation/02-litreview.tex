@@ -426,45 +426,45 @@ B$, yields the result we want.
 \begin{multicols}{3}
 \subsubsection{Common Definitions}
 \begin{align*}
-  L &\iff \len xs > 0\\
-  R(x) &\iff x < \len xs\\
-  C &\iff xs[i] = \min xs\\
-  C_{T}&\iff I \land R(j) \land xs[j] < xs[i]\\
-  C_{F}&\iff I \land R(j) \land \lnot(xs[j] < xs[i])\\
-  I&\iff xs[i] = \min \{xs[a]~|~0 \leq a < j\}\\
-  S&\iff I \land xs[i] \leq xs[j] \land R(j)
+  L &\equiv \len xs > 0\\
+  R(x) &\equiv x < \len xs\\
+  C &\equiv xs[i] = \min xs\\
+  C_{T}&\equiv I \land R(j) \land xs[j] < xs[i]\\
+  C_{F}&\equiv I \land R(j) \land \lnot(xs[j] < xs[i])\\
+  I&\equiv xs[i] = \min \{xs[a]~|~0 \leq a < j\}\\
+  S&\equiv I \land xs[i] \leq xs[j] \land R(j)
 \end{align*}
 \vfill
 
 \subsubsection{Proofs}
 \begin{align*}
-  I[1/j][0/i] &\iff xs[0] = \min \{xs[a]~|~0 \leq a < 1\}\\
-  &\iff \len xs > 0 \implies xs[0] = \min \{xs[0]\}\\
-  &\iff \len xs > 0 \implies xs[0] = xs[0]\\
-  &\iff \len xs > 0 \implies \true\\
-  &\iff \len xs > 0\\
+  I[1/j][0/i] &\equiv xs[0] = \min \{xs[a]~|~0 \leq a < 1\}\\
+  &\equiv \len xs > 0 \implies xs[0] = \min \{xs[0]\}\\
+  &\equiv \len xs > 0 \implies xs[0] = xs[0]\\
+  &\equiv \len xs > 0 \implies \true\\
+  &\equiv \len xs > 0\\
   \therefore I[1/j][0/i] &\iff L\\\\
 %
-  S[j/i] &\iff \left(I \land xs[i] \leq xs[j] \land R(j)\right)[j/i]\\
-  &\iff I \land xs[j] \leq xs[j] \land R(j)\\
-  &\iff I \land R(j)\\
+  S[j/i] &\equiv \left(I \land xs[i] \leq xs[j] \land R(j)\right)[j/i]\\
+  &\equiv I \land xs[j] \leq xs[j] \land R(j)\\
+  &\equiv I \land R(j)\\
   \therefore C_{T} &\implies S[j/i]\\\\
 %
-  I[j+1/j] &\iff I \land xs[i] \leq xs[j]\\
+  I[j+1/j] &\equiv I \land xs[i] \leq xs[j]\\
   \therefore S &\implies I[j+1/j]
 \end{align*}
 
 \begin{align*}
-  \lnot\left(xs[j] < xs[i]\right) &\iff xs[i] \leq xs[j]\\
+  \lnot\left(xs[j] < xs[i]\right) &\equiv xs[i] \leq xs[j]\\
   \therefore C_{F} &\iff S\\\\
 %
   I \land xs[i] \leq xs[j] \land R(j) &\implies I\\
   \therefore S &\implies I\\\\
 %
-  \lnot R(j) \land I &\iff j \geq \len xs \land xs[i] = \min
+  \lnot R(j) \land I &\equiv j \geq \len xs \land xs[i] = \min
   \{xs[a]~|~0 \leq a < j\}\\
-  &\iff xs[i] = \min \{x~|~x \in xs\}\\
-  &\iff xs[i] = \min xs\\
+  &\equiv xs[i] = \min \{x~|~x \in xs\}\\
+  &\equiv xs[i] = \min xs\\
   \therefore \lnot R(j) \land I &\implies C
 \end{align*}
 \vfill

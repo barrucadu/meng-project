@@ -149,11 +149,11 @@ while i <= A.upper do
   Where the following definitions hold,
 
   \begin{align*}
-    J &\iff \mathtt{sum} = \mathrm{sum}~A[A.lower : \mathtt{i} + 1]\\
-    I' &\iff I[0/\mathtt{sum}]\\
-    &\iff 0 = \mathrm{sum}~A[A.lower : \mathtt{i} - 1]\\
-    I'' &\iff I'[A.lower/\mathtt{i}]\\
-    &\iff 0 = \mathrm{sum}~A[A.lower : A.lower - 1]
+    J &\equiv \mathtt{sum} = \mathrm{sum}~A[A.lower : \mathtt{i} + 1]\\
+    I' &\equiv I[0/\mathtt{sum}]\\
+    &\equiv 0 = \mathrm{sum}~A[A.lower : \mathtt{i} - 1]\\
+    I'' &\equiv I'[A.lower/\mathtt{i}]\\
+    &\equiv 0 = \mathrm{sum}~A[A.lower : A.lower - 1]
   \end{align*}
 \end{example}
 
@@ -206,12 +206,12 @@ while i <= A.upper do
   Where the following definitions hold,
 
   \begin{align*}
-    D &\iff \forall A.lower \leq i < A.upper,\ B[i] = 2 A[i]\\
-    J &\iff \forall A.lower \leq j < i + 1,\ B[j] = 2 A[j]\\
-    I' &\iff I[B/A]\\
-    &\iff \forall A.lower \leq j < i,\ A[j] = 2 A[j]\\
-    I'' &\iff I'[A.lower/\mathtt{i}]\\
-    &\iff \forall A.lower \leq j < A.lower,\ A[j] = 2 A[j]
+    D &\equiv \forall A.lower \leq i < A.upper,\ B[i] = 2 A[i]\\
+    J &\equiv \forall A.lower \leq j < i + 1,\ B[j] = 2 A[j]\\
+    I' &\equiv I[B/A]\\
+    &\equiv \forall A.lower \leq j < i,\ A[j] = 2 A[j]\\
+    I'' &\equiv I'[A.lower/\mathtt{i}]\\
+    &\equiv \forall A.lower \leq j < A.lower,\ A[j] = 2 A[j]
   \end{align*}
 \end{example}
 
