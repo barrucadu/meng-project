@@ -75,19 +75,6 @@
 
 \usepackage[inner=2cm,outer=4cm]{geometry}
 
-\newenvironment{alittlewider}{%
-  \begin{list}{}{%
-      \setlength{\topsep}{0pt}%
-      \addtolength{\leftmargin}{-1cm}%
-      \addtolength{\rightmargin}{-1cm}%
-      \setlength{\listparindent}{\parindent}%
-      \setlength{\itemindent}{\parindent}%
-      \setlength{\parsep}{\parskip}}%
-  \item[]%
-}{%
-  \end{list}%
-}
-
 \newenvironment{wide}{%
   \begin{list}{}{%
       \setlength{\topsep}{0pt}%
@@ -105,13 +92,17 @@
 
 \newenvironment{lscape2col}{%
   \begin{landscape}%
-    \begin{alittlewider}%
+    \setlength{\topsep}{0pt}%
+    \addtolength{\leftmargin}{-1cm}%
+    \addtolength{\rightmargin}{-1cm}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
     \setlength{\columnsep}{1.5cm}%
-      \begin{multicols}{2}%
+    \begin{multicols}{2}%
 }{%
-      \end{multicols}%
-    \end{alittlewider}%
-\end{landscape}%
+    \end{multicols}%
+  \end{landscape}%
 }
 
 % Logic & Maths
