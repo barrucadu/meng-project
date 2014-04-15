@@ -73,6 +73,21 @@
 \usepackage{pdflscape}
 \usepackage{multicol}
 
+\usepackage[inner=2cm,outer=4cm]{geometry}
+
+\newenvironment{alittlewider}{%
+  \begin{list}{}{%
+      \setlength{\topsep}{0pt}%
+      \addtolength{\leftmargin}{-1cm}%
+      \addtolength{\rightmargin}{-1cm}%
+      \setlength{\listparindent}{\parindent}%
+      \setlength{\itemindent}{\parindent}%
+      \setlength{\parsep}{\parskip}}%
+  \item[]%
+}{%
+  \end{list}%
+}
+
 \newenvironment{wide}{%
   \begin{list}{}{%
       \setlength{\topsep}{0pt}%
@@ -86,9 +101,18 @@
   \end{list}%
 }
 
-\usepackage[inner=2cm,outer=4cm]{geometry}
-
 \newenvironment{lscape}{\begin{landscape}\begin{wide}}{\end{wide}\end{landscape}}
+
+\newenvironment{lscape2col}{%
+  \begin{landscape}%
+    \begin{alittlewider}%
+    \setlength{\columnsep}{1.5cm}%
+      \begin{multicols}{2}%
+}{%
+      \end{multicols}%
+    \end{alittlewider}%
+\end{landscape}%
+}
 
 % Logic & Maths
 \usepackage{bussproofs}
@@ -244,7 +268,9 @@ such there are no specific ethical implications.
 \include{09-conclusion}
 
 \begin{appendices}
-\include{A0-gc-impl}
+\begin{lscape2col}
+  \include{A0-gc-impl}
+\end{lscape2col}
 \end{appendices}
 
 \bibliographystyle{plain}
