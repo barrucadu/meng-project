@@ -29,7 +29,21 @@ is a good stepping-stone towards this.
 \section{Aims}
 \label{sec:intro-goals}
 
-In this project, I intend to accomplish the following,
+Reviewing the literature reveals that much of the recent work in
+garbage collector development has been focused on concurrency, and
+obtaining real-time guarantees. The topic of verified garbage
+collection has received comparatively little interest, and is perhaps
+viewed as something which would be nice in an ideal world, but not as
+important as making garbage collectors as fast as possible. It is
+unfortunate that verification has received little attention, as
+garbage collection bugs can be a very difficult problem to detect
+through testing alone.
+
+This project will explore the route of using generic and flexible
+formalisms, not tied to any particular class of collector, and which
+can be used for proving a particular collector correct, or extracting
+a new collector from the formalism. In this project, I intend to
+accomplish the following,
 
 \begin{enumerate}
   \item Formalise a notion of partial correctness for mark-sweep
@@ -44,10 +58,46 @@ In this project, I intend to accomplish the following,
   \item From these two formalisms, extract a common formalism
     applicable to both mark-sweep, copying, and some other types of
     collectors, and to provide some guidance to aid proof.
+
+  \item To implement the two proven collectors, and to verify key
+    assertions at runtime whilst inducing a large number of collection
+    cycles.
 \end{enumerate}
 
 Furthermore, at the end of the dissertation, I shall discuss how well
 I succeeded in meeting these goals.
+
+\subsection{Development Methodology}
+\label{sec:intro-goals-development}
+
+The formalisms shall be developed by building everything up from first
+principles, by firstly defining all of the necessities to talk about
+garbage collection. Then what it means for mark-sweep and copying
+collectors to be correct shall be considered, and appropriate
+invariants and postconditions produced to ensure correctness.
+
+The two approaches shall then be unified, possibly branching out to
+include other properties, in to the general formalism, and it shall be
+shown how it could be specialised to the previously proven collectors.
+
+\subsection{Evaluation Methodology}
+\label{sec:intro-goals-evaluation}
+
+The specific formalisms shall be evaluated by considering how
+convincing the proofs are, and what issues, if any, are raised by the
+implementations with checked assertions. The implementations shall be
+evaluated by discussing which properties were checked, and which
+others could possibly have been. To a lesser extend, the evaluation
+will also consider how easy the proofs were: measures such as length
+of proof may not be totally accurate when comparing them, but can
+provide a useful, albeit subjective, intuition.
+
+The generic formalism shall be evaluated by considering how different
+it is to the specific formalisms, and how easy it was to produce given
+them. Furthermore, I shall consider how obvious an extension it is of
+the specific formalisms, such as whether it is just a unification of
+the two, or whether it allows anything totally different to what the
+two specific formalisms permit.
 
 \section{Current Work}
 \label{sec:intro-current}
@@ -61,14 +111,11 @@ separation logic, and an example of the latter is
 Myreen's\cite{Myreen10} construction of a copying collector using
 HOL4: both of these shall be discussed further in the literature
 review.
-
 \section{Outline}
 \label{sec:intro-outline}
 
 Chapter \ref{sec:lit} summarises the historical context and recent
-developments in the field of the project, and is built upon in Chapter
-\ref{sec:analysis} where the literature-motivated aims of the project
-are presented.
+developments in the field of the project.
 
 An understanding of Gries' array reasoning\cite{Gries87} is required
 to follow the proofs, and an introduction to it is presented in
