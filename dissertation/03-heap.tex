@@ -1,9 +1,9 @@
 \chapter{The Heap as an Array}
 \label{sec:heap}
 
-In this chapter I shall explain and justify how the heap can be
-modelled as an array, and introduce a specific formalism for reasoning
-about array-based programs, along with some examples of its use. This
+This chapter explains and justifies how the heap can be modelled as an
+array, and introduces a specific formalism for reasoning about
+array-based programs, along with some examples of its use. This
 formalism will be used in later chapters.
 
 In a physical computer, the heap lives in virtual memory, where
@@ -11,17 +11,17 @@ virtual memory consists of an integer-indexed collection of machine
 words. In the case of x86 computers, these words are bytes, and the
 range of addresses allows for 4GiB of virtual memory per
 process. Contiguous addresses refer to contiguous heap locations, and
-the addressing starts at zero (although this is usually mapped to an
-invalid memory location to catch errors).
+the addressing starts at zero, although this is usually mapped to an
+invalid memory location to catch errors.
 
 This sounds rather like a zero-indexed array, and in fact we can
-consider the heap to be such an array to allow reasoning. More
-abstract formalisms (such as considering the heap to be a digraph) are
-possible, and one such alternative (separation logic) shall be
-reviewed, however I argue that the array model is the simplest way to
-capture the semantics of memory as seen by programs.
+consider the heap to be such an array to allow simple reasoning. More
+abstract formalisms, such as considering the heap to be a digraph, are
+possible, and one such alternative shall be reviewed, however I argue
+that the array model is the simplest way to capture the semantics of
+memory as seen by programs.
 
-In the array formalism, pointers simply become indexes into this
+In the array formalism, pointers simply become indices into this
 array. We need to be careful about illegal addresses, such as zero,
 but by imposing a validity condition upon pointers, such as requiring
 they all point to the start of a cell, we can side-step this issue.
@@ -49,31 +49,31 @@ predicates to reason about the heap,
 \end{itemize}
 
 In addition to these operators, there is an additional deduction rule,
-allowing modular reasoning about program components,
+the frame rule, allowing modular reasoning about program components,
 
 \begin{prooftree}
   \AxiomC{$\htriple{P}{C}{Q}$}
   \UnaryInfC{$\htriple{P \sepc R}{C}{Q \sepc R}$}
 \end{prooftree}
 
-This is known as the frame rule, and is valid if no free variables in
-$R$ are modified in $C$. This states that you can take a proof of a
-program in a small context, and reuse it in a larger context.
+The frame rule is valid if no free variables in $R$ are modified in
+$C$, it states that a proof of a program in a small context can be
+reused in a larger context.
 
 In this formalism pointers are parameters to the partial function
-which is the heap, where the heap can be anything. For example, you
-could reason about a heap of cells, where pointers are all multiples
-of 2. This formalism also allows pointer arithmetic (as does the array
-formalism), but reasoning about properties such as reachability is
-more difficult in this case.
+which is the heap, where the heap can consist of anything. For
+example, you could reason about a heap of cells, where pointers are
+all multiples of 2. Considering addresses to be numbers allows pointer
+arithmetic, as does the array formalism, but reasoning about
+properties such as reachability is more difficult in this case.
 
-The main reason I do not use separation logic in this project is
-because I will necessarily be reasoning about the entire state, and
+The main reason separation logic is not used in this project is
+because it will be necessary to reason about the entire state, and
 there would be very little scope for separation to be of use. Thus,
 using separation logic could result in additional complication for
 little gain. However, in the case of non-stop-the-world collectors,
-the tools of separation logic (or something similar) would undoubtedly
-be useful.
+the tools of something like separation logic would undoubtedly be
+useful.
 
 \section{Reasoning with Arrays}
 \label{sec:heap-arrays}
@@ -86,22 +86,18 @@ an array of type $[T]$ is treated as a function from some finite
 contiguous subset of the natural numbers (including zero) to $T$, and
 array assignment is modelled as functional override.
 
-Henceforth, I shall be using $A$ as an example array.
-
-We denote an array as a tuple, where the $n$th element of the tuple is
-the value of $A[n]$. The bounding indices of the array are not
-constrained in general, and so these can be accessed by the values
-$A.lower$ and $A.upper$, leading to a definition of the domain of an
-array $\dom~A = \{i~|~A.lower \leq i \leq A.upper\}$.
+Henceforth, $A$ shall be used as an example array. We denote an array
+as a tuple, where the $n$th element of the tuple is the value of
+$A[n]$. The bounding indices of the array are not constrained in
+general, and so these can be accessed by the values $A.lower$ and
+$A.upper$, leading to a definition of the domain of an array $\dom~A =
+\{i~|~A.lower \leq i \leq A.upper\}$.
 
 \begin{definition}[Array Access Triple]
   Assigning an array member to a variable is exactly the same as
   normal assignment, with the additional precondition that the array
   subscript be in range.
-
-  \begin{align*}
-    \htriple{P\left[A[n]/x\right] \land n \in \dom~A}{x := A[n]}{P}
-  \end{align*}
+  \[\htriple{P\left[A[n]/x\right] \land n \in \dom~A}{x := A[n]}{P}\]
 \end{definition}
 
 \begin{example}[Summing a list]
@@ -109,7 +105,7 @@ array $\dom~A = \{i~|~A.lower \leq i \leq A.upper\}$.
   
   Let's denote by $\mathrm{sum}~A$ (where $A$ is an array) the sum of
   all the elements in it, and now we want to prove the following
-  program does satisfy this postcondition.
+  program correctly computes this value.
 
 \begin{verbatim}
 i   := A.lower;
@@ -217,20 +213,20 @@ while i <= A.upper do
 
 Thus, we can see that array reasoning is a very simple and intuitive
 tool, and as the axioms are very simple, they are amenable to machine
-verification or automation (although I will not make use of this).
+verification or automation, although this will not be used in the project.
 
 \section{Summary}
 \label{sec:heap-summary}
 
-In this chapter I introduced a simple formalism for reasoning about
-arrays, and showed two small examples of its use. I argued that
-modelling the heap as an array is, whilst a very simplistic approach,
-entirely appropriate for when the entirety of the heap is being
-reasoned about, as I intend to do so in this dissertation.
+This chapter introduced a simple formalism for reasoning about arrays,
+and showed two small examples of its use. It was argued that modelling
+the heap as an array is, whilst a very simplistic approach, entirely
+appropriate for when the entirety of the heap is being reasoned about,
+as is intended to be done in this dissertation.
 
 In future chapters the heap will be treated as an array, and so the
-reader should keep in mind the access and assignment rules. However, I
-shall be defining pointers in such a way that they are always valid,
+reader should keep in mind the access and assignment rules. However,
+pointers shall be defined in such a way that they are always valid,
 and so the reader does not need to concern themselves with checking if
-heap access is within bounds or not, and I shall drop the bounds
-checking for simplicity.
+heap access is within bounds or not, and bounds checking will be
+dropped for simplicity.
