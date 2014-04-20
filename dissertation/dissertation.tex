@@ -19,6 +19,11 @@
     anchorcolor=black
 }
 
+% Figures
+\usepackage{caption}
+\DeclareCaptionFormat{myformat}{#1#2#3\hrulefill}
+\captionsetup[figure]{format=myformat}
+
 % Stuff at the end
 \usepackage[toc,page]{appendix}
 \usepackage[xindy]{glossaries}

@@ -1,48 +1,42 @@
 \chapter{Correctness of Mark-Sweep Collectors}
 \label{sec:marksweep}
 
-In this chapter, I shall talk about the necessary formalisms and proof
-obligations for mark-sweep collectors, building up to a
-proof of the Armstrong/Virding\cite{Armstrong95} collector.
+This chapter shall talk about the necessary formalisms and proof
+obligations for mark-sweep collectors, by firstly considering marking
+and sweeping independently in Sections \ref{sec:marksweep-marking} and
+\ref{sec:marksweep-sweeping}, and secondly building up to a proof of
+the Armstrong/Virding\cite{Armstrong95} collector in Section
+\ref{sec:marksweep-example}.
 
 \begin{definition}[Heap]
   \label{def:ms-heap}
   The heap is an array of words in the form (type, data).
 \end{definition}
 
-Firstly, we need a heap. I shall adopt the convention that the heap is
-a flat array, and so pointers are just indexes into this array. This
-allows me to use Gries' array formalism\cite{Gries87}, which models
-arrays as functions; thus simplifying the reasoning needed when
-dealing with potential side-effects. Furthermore, type data is needed
-for each word, as there must be some way of distinguishing pointer
-data from non-pointer data. It may seem that needing to tag every
-single word with a type is wasteful, but in the case where the
-collector is able to determine this automatically, the type can be
-``stored'' as a ghost variable.
+Firstly, we need a heap. The convention that the heap is a flat array
+has been used, and so pointers are just indices into this array. This
+allows the use of Gries' array formalism\cite{Gries87}. Furthermore,
+type data is needed for each word, as there must be some way of
+distinguishing pointer data from non-pointer data. It may seem that
+needing to tag every single word with a type is wasteful, but in the
+case where the collector is able to determine this automatically, the
+type can be stored, as it were, in a ghost variable.
 
 \begin{definition}[Cell]
   \label{def:ms-cell}
   A cell is a contiguous sequence of one or more words in the heap,
   starting with a sequence of one or more metadata words used by the
-  garbage collector.
+  garbage collector, known as the header of the cell.
 \end{definition}
 
-Next we move on to cells. I have ruled out the possibility of
-fragmented cells, as these can always be modelled by smaller cells
-which point to each other (and this is really the only way that
-fragmentation could even be implemented). I have reserved at least an
-entire word for the use of the garbage collector, but this is quite
-generous, and in practice would be reduced as much as possible. This
-reservation simplifies proofs, and can be worked around in practice by
-transforming a more efficient garbage collector into a less efficient
-one, and then performing the proof: if the transformation is correct,
-the proof will hold for the original, albeit with slightly different
-space characteristics.
-
-Now we'll define a helper function which will be of use later on:
-given a pointer, $p$, let $\gchead{p}$ return a pointer to the start
-of the garbage collection metadata.
+Next we move on to cells, at least an entire word has been reserved
+for the use of the garbage collector, but this is quite generous, and
+in practice would be reduced as much as possible. Reserving space
+simplifies proof, and can be worked around in practice by transforming
+a more efficient garbage collector into a less efficient one, and then
+performing the proof: if the transformation is correct, the proof will
+hold for the original, albeit with slightly different space
+characteristics.
 
 \begin{definition}[Pointer]
   \label{def:ms-pointer}
@@ -50,22 +44,26 @@ of the garbage collection metadata.
   the data section (end of the header) of a cell.
 \end{definition}
 
-I have restricted pointers to only pointing at the start of the data
-portion of a cell,\footnote{It would seem, at first glance, that this
-  restriction in conjunction with the definition of words in the heap
-  does not allow null pointers. This would be the case if we
+Pointers have been restricted to only pointing at the start of the
+data portion of a cell,\footnote{It would seem, at first glance, that
+  this restriction in conjunction with the definition of words in the
+  heap does not allow null pointers, and this would be the case if we
   interpreted the definition of the heap to mean ``all words have a
   static type'', but if we allow the type of a word to be determined
   at runtime, then this is not the case. The type rule for pointers
   could, in practice, be something like ``resides in the nth word of a
   cell and is the address of the start of the data portion of another
   cell'', in which case invalid pointers (such as null pointers) would
-  be considered to be data.} as then going from an internal pointer
-to a cell header does not need to be considered at all, furthermore,
-in practice the mutator does not need to know about the metadata, and
+  be considered to be data.} as then going from an internal pointer to
+a cell header does not need to be considered at all, furthermore, in
+practice the mutator does not need to know about the metadata, and
 should not know: it should be for purely internal use. If the size and
 layout of the header is known in advance, any word in it can be
-accessed by pointer arithmetic.
+accessed by pointer arithmetic. Now we'll define a helper function
+which will be of use later on: given a pointer, $p$, let $\gchead{p}$
+return the heap index for the start of the garbage collection
+metadata.
+
 
 \begin{definition}[Word Preservation]
   \label{def:ms-word-preservation}
@@ -78,18 +76,20 @@ accessed by pointer arithmetic.
    non-header words in the cell.
 \end{definition}
 
-This is a necessary property of an entire mark-sweep collector, but
-may be broken by the marker or the sweeper, as long as it is restored
-at the end. As such, I have not included it in the definitions of
-correctness in the following two sections, but it is still essential.
+A short word needs to be said on what it means for a cell to be
+allocated. Conceptually, cells are either allocated, in which case
+they may or may not be garbage, or deallocated, in which case the
+allocator can hand them out to the mutator. However, this is a
+temporal property, and difficult to define as a predicate. Thus,
+rather than talk about a cell being allocated or not, we shall talk
+about it being on the free list or not: this is what the predicate
+$\free{c}$ expresses.
 
-A short word needs to be said on what ``allocation'' is. Conceptually,
-cells are either allocated (in which case they may or may not be
-garbage), or deallocated (in which case the allocator can hand them
-out to the mutator). However, this is a temporal property, and
-difficult to define as a predicate. Thus, rather than talk about a
-cell being allocated or not, we shall talk about it being on the free
-list or not. This is what the predicate $\free{c}$ expresses.
+Word preservation is a necessary property of an entire mark-sweep
+collector, but may be broken by the marker or the sweeper, as long as
+it is restored at the end. As such, it has not included it in the
+definitions of correctness in the following two sections, but it is
+still essential.
 
 Finally, in order to ensure that pointers only point to sane
 locations, we require that the live cells and the free cells are
@@ -97,18 +97,15 @@ disjoint,
 
 \begin{definition}[Live Cell Invariant]
   \label{def:ms-live-cell-invariant}
+  No live cells contain a pointer to a cell on the free list.
   \[\forall c \in \reach{h}{r},\ \lnot\free{c}\]
 \end{definition}
-
-This ensures that no live cells contain a pointer to a cell on the
-free list, or whatever structure is used to store the unallocated
-cells.
 
 \section{Marking}
 \label{sec:marksweep-marking}
 
-In this section I shall attack the problem of correct marking, firstly
-as a problem in graph theory, and then as a more concrete problem when
+This section shall attack the problem of correct marking, firstly as a
+problem in graph theory, and then as a more concrete problem when
 dealing with an array of memory with pointers.
 
 Let's start out by saying exactly what goes in that garbage collection
@@ -142,8 +139,8 @@ If we abandon our array-based interpretation of memory for the moment,
 and instead consider the heap to be a digraph of cells connected by
 pointers, then reachabilty can be defined inductively over the nodes
 of the graph very simply, and this lends itself to implementation with
-a recursive function. If we denote the set of all marked (and
-allocated) cells by $\markset{h}{roots}$, then what we want after
+a recursive function. If we denote the set of all marked, and
+allocated, cells by $\markset{h}{roots}$, then what we want after
 marking is $\markset{h}{roots} = \reach{h}{roots}$.
 
 Returning to the array formalism, what we thus want from a marker is
@@ -165,27 +162,27 @@ the allocator to clean it up before handing it out to the mutator. An
 alternative formulation would be $\lnot\free{c} \iff
 \left(\ldots\right)$, but this would then require the garbage
 collector to unset the mark flag of any cell it frees, and as cells
-need to be ``cleaned up'' before being given to the mutator anyway,
+need to be modified before being given to the mutator anyway,
 confining this to the allocator seems reasonable.
 
-As we'll be referring to the property ``is marked'' multiple times,
-let's define a shorthand, $\marked{h}{c} \iff h\left[\gchead{c}\right]
-\neq 0$.
+As we'll be referring to the property of a cell being marked multiple
+times, define a shorthand, $\marked{h}{c} \equiv
+h\left[\gchead{c}\right] \neq 0$.
 
 \section{Sweeping}
 \label{sec:marksweep-sweeping}
 
-In this section I shall consider sweeping, with an assumption that
-correct marking has already been performed. Then, I shall talk a
-little about interleaved marking and sweeping, such as happens in some
-incremental and other special-case collectors.
+This section shall consider sweeping, with an assumption that correct
+marking has already been performed. Then, we shall briefly consider
+interleaved marking and sweeping, such as happens in some incremental
+and other special-case collectors.
 
-What do we mean when we say a sweeper is ``correct''? After a little
-thought, we will realise that we mean it doesn't deallocate any cells
-which were marked, and it unmarks all of the cells. In the case of a
-correct marker, this is equivalent to preserving and unmarking exactly
-the reachable cells, which (with the constraint of word preservation)
-is exactly what we want our collector to do.
+What is meant when it is said that a sweeper is correct? After a
+little thought, we will realise that we mean it doesn't deallocate any
+cells which were marked, and it unmarks all of the cells. In the case
+of a correct marker, this is equivalent to preserving and unmarking
+exactly the reachable cells, which (with the additional constraint of
+word preservation) is exactly what we want our collector to do.
 
 \begin{definition}[Correct Sweeping]
   \label{def:ms-correct-sweeping}
@@ -204,8 +201,8 @@ marked.
 \subsection{Interleaved Marking and Sweeping}
 \label{sec:marksweep-sweeping-interleaved}
 
-I have hitherto assumed that marking happens in its entirety, and then
-sweeping happens in its entirety. However, sometimes marking and
+Hitherto it has been assumed that marking happens in its entirety, and
+then sweeping happens in its entirety. However, sometimes marking and
 sweeping are interleaved, such that in each iteration of the collector
 a little more of each is done.
 
@@ -217,23 +214,23 @@ obligation.
 
 \begin{definition}[Interleaved Marking/Sweeping Correctness]
   \label{def:ms-interleaved}
-  When the ``sweeper'' considers a cell, the ``marker'' has already
-  marked it and everything it points to (if it was reachable).
+  When the sweeper considers a cell, the marker has already marked it
+  and everything it points to (if it was reachable).
 \end{definition}
 
-Thus, the ``marker'' always remains ahead of the ``sweeper'', and so
-no problems arise. In fact, we could consider normal mark-sweep
-collectors a special case of this, where this property trivially
+Thus, the marker always remains ahead of the sweeper, and so no
+problems arise. In fact, we could consider normal mark-sweep
+collectors a special case of this type, where this property trivially
 holds.
 
 \section{Case Study: A Garbage Collector for Erlang}
 \label{sec:marksweep-example}
 
-Armstrong and Virding\cite{Armstrong95} introduce a simple mark-sweep
+Armstrong and Virding\cite{Armstrong95} introduced a simple mark-sweep
 collector for Erlang, making use of the immutability of the language
 in order to combine the mark and sweep stages. The collector operates
-on a heap of cons cells, and uses a pointer \texttt{SCAV} to keep
-track of the current position of the collector in the heap.
+on a heap of cons cells, and uses a pointer named \texttt{SCAV} to
+keep track of the current position of the collector in the heap.
 
 The algorithm is as follows:
 
@@ -258,60 +255,67 @@ while (SCAV != first) {
 
 The \texttt{possibly\_mark} function follows and marks its argument if
 it is a pointer; \texttt{first} and \texttt{current} point to the
-first and last allocated cells; the \texttt{hist} function returns a
-pointer to the cell allocated before its argument. It is assumed that
-all cells pointed to by roots have been marked before calling the
-collector.
+first allocated cell and the head of the free list, respectively; and
+the \texttt{hist} function returns a pointer to the cell allocated
+before its argument. It is assumed that all cells pointed to by roots
+have been marked before calling the collector.
 
 This collector works because the history fields form a linked list of
 allocated cells, going back to the beginning of time. As the language
-is immutable, pointer must always point back in time, and so if a cell
-is unmarked by the time it is reached (by following the history list),
-then it must be garbage.
-
-We can express this as a loop invariant: the portion of the heap which
-has been considered consists only of unmodified, reachable cells, and
-all cells which are directly reachable from a cell in the considered
-region are marked.
+is immutable, pointers must always point back in time, and so if a
+cell is unmarked by the time it is reached by following the history
+list, then it must be garbage. We can express this property as a loop
+invariant: the portion of the heap which has been considered consists
+only of unmodified, reachable cells, and all cells which are directly
+reachable from a cell in the considered region are marked.
 
 \subsubsection{Partial Correctness}
 \label{sec:marksweep-example-partial}
 
-Let $\id~x$ be the ``allocation ID'' of a cell $x$. The first cell has
-an ID of 0, and the ID of every other cell is 1 + the ID of the
-previously allocated cell.
+Let $\id~x$ be the \textit{allocation ID} of a cell $x$. The first
+cell has an ID of zero, and the ID of every other cell is one greater
+than the ID of the previously allocated cell: we can then express the
+loop invariant as in Figure
+\ref{fig:marksweep-example-partial-invariant}.
 
-We can then express the loop invariant as follows:
+\begin{figure}[t]
+  \centering
+  \begin{align*}
+    \forall c \in h',\ \forall w \in c,\ &first \in \reach{h'}{roots}\\
+%
+    &\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
+      \iff c \notin \reach{h'}{roots})\\
+%
+    &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+      \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
+%
+    &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+      \implies (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV}
+      \implies \marked{h}{x})\\
+%
+    &\land \left(\id~c < \id~\mathtt{SCAV} \land \nexists x \pointsto
+      c,\ \id~x > \id~\mathtt{SCAV}\right) \implies \lnot\marked{h}{c}
+  \end{align*}  
+  \caption{Loop invariant for the Armstrong/Virding collector}
+  \label{fig:marksweep-example-partial-invariant}
+\end{figure}
 
-\begin{align*}
-  \forall c \in h',\ \forall w \in c,\ &first \in \reach{h'}{roots}\\
-%
-  &\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
-    \iff c \notin \reach{h'}{roots})\\
-%
-  &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
-    \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
-%
-  &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
-    \implies (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV}
-    \implies \marked{h}{x})\\
-%
-  &\land \left(\id~c < \id~\mathtt{SCAV} \land \nexists x \pointsto
-    c,\ \id~x > \id~\mathtt{SCAV}\right) \implies \lnot\marked{h}{c}
-\end{align*}
-
-As the collector never touches the ``first'' cell, in order for there
-to be no garbage left over at the end, then it must necessarily be
-reachable. This is somewhat unusual, and arises purely because this
+As the collector never touches the \texttt{first} cell, in order for
+there to be no garbage left over at the end, then it must necessarily
+be reachable. This is somewhat unusual, and arises purely because this
 collector arguably has a bug, in that this one cell of garbage can
-survive a collection.
+survive collection.
 
 Let's begin by rewriting the algorithm in terms of arrays, and expand
 out all of the functions within it. Furthermore, let's say that a cell
 in this scheme consists of two words of metadata and two of data,
-arranged in the order $\langle mark,\ history,\ car,\ cdr \rangle$.
+arranged in the order $\langle mark,\ history,\ car,\ cdr
+\rangle$. The rewritten algorithm is displayed in Figure
+\ref{fig:marksweep-example-partial-arrays}.
 
-\begin{lstlisting}
+\begin{figure}[t]
+  \centering
+  \begin{lstlisting}
 last = current
 SCAV = h[gchead(last) + 1]
 while (SCAV != first) {
@@ -342,7 +346,10 @@ while (SCAV != first) {
         free_cons(tmp);
     }
 }
-\end{lstlisting}
+  \end{lstlisting}
+  \caption{Array-based version of the Armstrong/Virding collector}
+  \label{fig:marksweep-example-partial-arrays}
+\end{figure}
 
 Combining the correct marking, correct sweeping, and word preservation
 requirements, we arrive at the following postcondition for a correct
@@ -351,61 +358,66 @@ garbage collector: \[\forall c \in h',\ \forall w \in c,\
 h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
 \begin{lemma}[Loop Invariant]
-  Firstly, let's show the sufficiency of the loop invariant:
+  \begin{figure}[t]
+    \centering
+    \begin{align*}
+      \forall c \in h',\ \forall w \in c,\ &\mathtt{SCAV} = first \land
+        first \in \reach{h'}{roots}\\
+%
+      &\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
+        \iff c \notin \reach{h'}{roots})\\
+%
+      &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+        \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
+%
+      &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+        \implies (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV}
+        \implies \marked{h}{x})\\
+%
+      &\land \left(\id~c < \id~\mathtt{SCAV} \land \nexists x \pointsto
+        c,\ \id~x > \id~\mathtt{SCAV}\right) \implies
+        \lnot\marked{h}{c}\\\\
+%
+%
+      \forall c \in h',\ \forall w \in c,\ & \id~c > \id~first \implies
+        (\free{c} \iff c \notin \reach{h'}{roots})\\
+%
+      &\land \id~c > \id~first \land \lnot\free{c}
+        \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
+%
+      &\land \id~c > \id~first \land \lnot\free{c}
+        \implies (\forall c \pointsto x,\ \id~x < \id~first
+        \implies \marked{h}{x})\\
+%
+      &\land \left(\id~c < \id~first \land \nexists x \pointsto
+        c,\ \id~x > \id~first\right) \implies
+        \lnot\marked{h}{c}\\\\
+%
+%
+      \forall c \in h',\ \forall w \in c,\ & \free{c} \iff c \notin
+        \reach{h'}{roots}\\
+%
+      &\land \lnot\free{c} \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
+%
+      &\land \lnot\free{c} \implies (\forall c \pointsto x,\
+        \lfalse \implies \marked{h}{x})\\
+%
+      &\land \left(\lfalse \land \nexists x \pointsto
+        c,\ \id~x > \id~first\right) \implies
+        \lnot\marked{h}{c}\\\\
+%
+%
+      \forall c \in h',\ \forall w \in c,\ & (\free{c} \iff c \notin
+        \reach{h'}{roots}) \land (\lnot\free{c} \implies h[w] = h'[w] \land
+        \lnot \marked{h}{c})
+    \end{align*}
+    \caption{Sufficiency of the loop invariant for the Armstrong/Virding collector}
+    \label{fig:marksweep-example-partial-sufficient}
+  \end{figure}
 
-  \begin{align*}
-    \forall c \in h',\ \forall w \in c,\ &\mathtt{SCAV} = first \land
-      first \in \reach{h'}{roots}\\
-%
-    &\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
-      \iff c \notin \reach{h'}{roots})\\
-%
-    &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
-      \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
-%
-    &\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
-      \implies (\forall c \pointsto x,\ \id~x < \id~\mathtt{SCAV}
-      \implies \marked{h}{x})\\
-%
-    &\land \left(\id~c < \id~\mathtt{SCAV} \land \nexists x \pointsto
-      c,\ \id~x > \id~\mathtt{SCAV}\right) \implies
-      \lnot\marked{h}{c}\\\\
-%
-%
-    \forall c \in h',\ \forall w \in c,\ & \id~c > \id~first \implies
-      (\free{c} \iff c \notin \reach{h'}{roots})\\
-%
-    &\land \id~c > \id~first \land \lnot\free{c}
-      \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
-%
-    &\land \id~c > \id~first \land \lnot\free{c}
-      \implies (\forall c \pointsto x,\ \id~x < \id~first
-      \implies \marked{h}{x})\\
-%
-    &\land \left(\id~c < \id~first \land \nexists x \pointsto
-      c,\ \id~x > \id~first\right) \implies
-      \lnot\marked{h}{c}\\\\
-%
-%
-    \forall c \in h',\ \forall w \in c,\ & \free{c} \iff c \notin
-      \reach{h'}{roots}\\
-%
-    &\land \lnot\free{c} \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
-%
-    &\land \lnot\free{c} \implies (\forall c \pointsto x,\
-    \lfalse \implies \marked{h}{x})\\
-%
-    &\land \left(\lfalse \land \nexists x \pointsto
-      c,\ \id~x > \id~first\right) \implies
-      \lnot\marked{h}{c}\\\\
-%
-%
-    \forall c \in h',\ \forall w \in c,\ & (\free{c} \iff c \notin
-      \reach{h'}{roots}) \land (\lnot\free{c} \implies h[w] = h'[w] \land
-      \lnot \marked{h}{c})
-  \end{align*}
-
-  Now, we have to show it holds:
+  The sufficiency of the loop invariant is shown in Figure
+  \ref{fig:marksweep-example-partial-sufficient}, and now it remains
+  to be shown that the invariant holds,
 
   \begin{prooftree}
     \AxiomC{$\htriple{I \land C \land M}{\ldots}{I}$}
@@ -413,31 +425,28 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
     \BinaryInfC{$\htriple{I \land C}{if(marked(h, SCAV)) \ldots}{I}$}
     \UnaryInfC{$\htriple{I}{while \ldots}{I \land \lnot C}$}
   \end{prooftree}
-
   where $C = \mathtt{SCAV} \neq first$ and $M =
   \marked{h}{\mathtt{SCAV}}$.
 
-  This naturally separates into two cases, one for each branch of the
-  if statement. These are proven separately in Lemmas \ref{lem:lia}
-  and \ref{lem:lib}.
+  The proof naturally separates into two cases, one for each branch of
+  the if statement. These are proven separately in Lemmas
+  \ref{lem:lia} and \ref{lem:lib}.
   \label{lem:li}
 \end{lemma}
 
 \begin{lemma}[Loop Invariant (first branch)]
-  Knowing that nothing in this branch deallocates cells, we can
-  immediately simplify the proof goals to these three conditions:
-
+  Knowing that nothing in this branch deallocates cells, the proof
+  goals can immediately be simplified to these three conditions:
   \begin{enumerate}
     \item $\mathtt{SCAV} \in \reach{h'}{roots}$
     \item $\forall w \in \mathtt{SCAV},\ h[w] = h'[w] \land
       \lnot\marked{h}{\mathtt{SCAV}}$
     \item $\forall \mathtt{SCAV} \pointsto x,\ \marked{h}{x}$
   \end{enumerate}
-
-  Firstly, let's look at the two expansions of \texttt{possibly\_mark},
-  as they are almost identical. Let's refer to the variable holding
-  the possible pointer as $x$, and let $X \iff type(x) = pointer$.
-
+  Firstly, let's look at the two expansions of
+  \texttt{possibly\_mark}, as they are almost identical. Let's refer
+  to the variable holding the possible pointer as $x$, and let $X
+  \equiv type(x) = pointer$.
   \begin{prooftree}
     \AxiomC{$\htriple{X \land P}{h[gchead(x)] = 1}{Q}$}
 
@@ -447,7 +456,6 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
     \BinaryInfC{$\htriple{P}{if(type(x) == pointer) \{ \ldots \} else \{
           skip \}}{Q}$}
   \end{prooftree}
-
   The desired postcondition, of course, is \[(type(x) = pointer \land
   \id~x < \id~SCAV) \implies \marked{h}{x}\]
 
@@ -457,16 +465,14 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   only backward pointers are possible, and so we can simplify the
   postcondition to just \[type(x) = pointer \implies \marked{h}{x}\]
 
-  If $x$ is a pointer, then it gets marked. If we fill in the gaps in
-  the proof tree as follows, then we can achieve this:
-
+  If $x$ is a pointer, then the cell it points to gets marked. If the
+  gaps in the proof tree are filled in as follows, then this can be
+  achieved:
   \begin{align*}
     P &\equiv type(x) = pointer \implies \marked{(h; \gchead{x}:1)}{x}\\
     Q &\equiv type(x) = pointer \implies \marked{h}{x}
   \end{align*}
-
-  Now we must just show that the assignment works:
-
+  Now it must just be shown that the assignment works:
   \begin{align*}
     (X \land P)[h/(h; \gchead{x}:1)] &\iff (type(x) = pointer\\
     &\quad\land (type(x) = pointer \implies \marked{(h;
@@ -478,19 +484,15 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
 %
     &\implies Q
   \end{align*}
-
-  We can now see that by simply combining lines 5 to 18, we end up in
-  the state, \[(type(car) = pointer \implies \marked{h}{car}) \land
+  It can now be seen that by simply combining lines 5 to 18, we end up
+  in the state, \[(type(car) = pointer \implies \marked{h}{car}) \land
   (type(cdr) = pointer \implies \marked{h}{cdr})\] which is exactly
-  what we want. We have just handled part (3) of the invariant.
-
-  We can now inductively apply this result, combined with the
+  what is wanted. Part (3) of the invariant has now been handled. This
+  result can now be inductively applied, combined with the
   precondition of this entire block, $\marked{h}{\mathtt{SCAV}}$ to
-  trivially see that part (1) holds.
-
-  Finally, we can see that we never assign to anything other than the
-  mark flags, and the mark flag of \texttt{SCAV} is unset on line 20,
-  and so part (2) holds.
+  trivially see that part (1) holds. Finally, it can be seen that we
+  never assign to anything other than the mark flags, and the mark
+  flag of \texttt{SCAV} is unset on line 20, and so part (2) holds.
   \label{lem:lia}
 \end{lemma}
 
@@ -514,9 +516,11 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
     \BinaryInfC{$\htriple{I''}{last = current; \texttt{SCAV} = h[gchead(last) + 1]}{I}$}
   \end{prooftree}
 
-Furthermore, as $h$ refers to the current heap and $h'$ to the
-original heap (being a ghost variable), and as the heap has not been
-mutated yet, $h = h'$, which allows further simplifications to be made.
+  Furthermore, as $h$ refers to the current heap and $h'$ to the
+  original heap (being a ghost variable), and as the heap has not been
+  mutated yet, $h = h'$, which allows further simplifications to be
+  made.
+
 
   \begin{align*}
     I' &= I[h[\gchead{last} + 1] / \mathtt{SCAV}]\\
@@ -568,9 +572,9 @@ mutated yet, $h = h'$, which allows further simplifications to be made.
   becomes a constraint on the allocator, to unmark recycled cells
   before giving them to the mutator. It can also be seen from the
   precondition that the collector has an overhead of one cell: the
-  ``first'' cell is never collected, and so correctness does not
-  strictly hold if ``first'' is not reachable, but the collector is
-  close enough such that it doesn't really matter.
+  \texttt{first} cell is never collected, and so correctness does not
+  strictly hold if \texttt{first} is not reachable, but the collector
+  is close enough such that it doesn't really matter.
 \end{proof}
 
 \subsubsection{Total Correctness}
@@ -647,22 +651,22 @@ Trivially, we can now see that there are two cases:
 \section{Summary}
 \label{sec:marksweep-summary}
 
-In this chapter I have defined the heap, cells, pointers, word
-preservation, and reachability (defns.  \ref{def:ms-heap},
-\ref{def:ms-cell}, \ref{def:ms-pointer},
-\ref{def:ms-word-preservation}, and \ref{def:ms-reachable}), and used
-these to then define correct marking and sweeping (defns.
-\ref{def:ms-correct-marking} and \ref{def:ms-correct-sweeping}),
-giving some thought to the correctness of interleaved marking and
-sweeping (defn. \ref{def:ms-interleaved}).
+This chapter has defined the heap, cells, pointers, word preservation,
+and reachability (defns.  \ref{def:ms-heap}, \ref{def:ms-cell},
+\ref{def:ms-pointer}, \ref{def:ms-word-preservation}, and
+\ref{def:ms-reachable}), and used these to then define correct marking
+and sweeping (defns.  \ref{def:ms-correct-marking} and
+\ref{def:ms-correct-sweeping}), giving some thought to the correctness
+of interleaved marking and sweeping (defn. \ref{def:ms-interleaved}).
 
-I argued that correctness for a mark-sweep collector comes down to
-marking all (and only) of the reachable cells, freeing all others, and
-then unmarking. And, furthermore, that no words should be modified in
-non-garbage cells after garbage collection.
+It has been argued that correctness for a mark-sweep collector comes
+down to marking all (and only) of the reachable cells, freeing all
+others, and then unmarking. And, furthermore, that no words should be
+modified in non-garbage cells after garbage collection.
 
-I then talked about the Armstrong/Virding\cite{Armstrong95} collector,
-and provided proofs of its partial and total correctness. This proof
-shall not be referenced in future chapters, and merely serves as an
-illustration of the utility of the definition of correctness presented
-here. Definitions, however, will be reused.
+Then the Armstrong/Virding\cite{Armstrong95} collector was used as an
+example of the developed formalism, with proofs of its partial and
+total correctness provided. These proofs shall not be referenced in
+future chapters, and merely serve as an illustration of the utility
+of the definition of correctness presented here. Definitions, however,
+will be reused.
