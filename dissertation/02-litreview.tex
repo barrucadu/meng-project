@@ -1,18 +1,21 @@
 \chapter{Literature Review}
 \label{sec:lit}
 
-In this chapter, I shall review the work that has already been done in
-both the fields of garbage collection in Section \ref{sec:lit-gc}, and
+This chapter shall review the work that has already been done in both
+the fields of garbage collection in Section \ref{sec:lit-gc}, and
 algorithm verification in Section \ref{sec:lit-verification}, and then
 consider in more detail some instances of verified collectors in
-Section \ref{sec:lit-verifiedgc}. I shall restrict the review largely
-to stop-the-world, non-concurrent, ``non-hybrid'' collectors, by which
-I mean a collector which uses just one method to garbage collect the
-heap, rather than combining multiple methods. This is because I shall
-only be reasoning about such simple collectors, as considering more
-complex situations would significantly complicate the work. I shall
-briefly mention generational collectors, which are arguably hybrid,
-but shall not be rigorously proving things about them.
+Section \ref{sec:lit-verifiedgc}.
+
+The review shall largely be restricted to stop-the-world,
+non-concurrent, non-hybrid\footnote{A garbage collector which just
+  uses one method to collect the heap, such as mark-sweep, rather than
+  combining multiple methods} collectors. This is because the project
+shall only directly involve such simple collectors, as considering
+more complex situations would significantly complicate the work. A
+brief mention shall be given to generational collectors, which are
+arguably hybrid, but shall not be rigorously proving things about
+them.
 
 Understanding the dissertation will require some understanding of
 mark-sweep and copying collectors, Hoare logic, and array
@@ -27,7 +30,7 @@ Garbage collection is the process of automatically reclaiming unneeded
 allocated memory from a program\cite{McCarthy60}. In languages with
 manual memory management, such as C, a programmer can allocate new
 memory with \texttt{malloc}, but then must remember to release it with
-\texttt{free}.\cite{KandR} If this is not done, a memory leak occurs,
+\texttt{free}\cite{KandR}. If this is not done, a memory leak occurs,
 and the program may gradually consume more and more
 memory\cite{Barach82}.
 
@@ -44,12 +47,12 @@ mark-compact\cite{GarbageCollection}. Each is suited to different
 use-cases, and the choice of which to use is often determined by the
 behaviour of the particular system in which they will be used.
 
-Throughout this section, I shall be using a visual example to aid
+Throughout this section, a visual example shall be used to aid
 understanding. Figure \ref{fig:lit-gc-before} shows a heap before
-garbage collection, and for each collector, I shall show the same heap
-after collection. Green cells are those pointed to by the roots (where
-pale green indicates those only pointed to indirectly: the reachable
-cells), red are garbage, and white are free.
+garbage collection, and for each collector the same heap after
+collection shall be shown. Green cells are those pointed to by the
+roots (where pale green indicates those only pointed to indirectly:
+the reachable cells), red are garbage, and white are free.
 
 \begin{figure}[h]
   \centering
@@ -81,19 +84,17 @@ management throughout the computation, however it results in the
 problem of unbounded time taken to free a cell, as freeing it may
 cause other things to be freed, and so on\cite{GarbageCollection}.
 This problem can be offset by pushing to a free list, rather than
-doing the recursive free, or by deferring the reference counting.
-
-The Deutsch--Bobrow algorithm is an example of this kind, where
-reference count adjustments are stored in a transaction file, which is
-routinely processed to adjust the state of the entire
-system\cite{Deutsch76}.
+doing the recursive free, or by deferring the reference counting. The
+Deutsch--Bobrow algorithm is an example of this kind, where reference
+count adjustments are stored in a transaction file, which is routinely
+processed to adjust the state of the entire system\cite{Deutsch76}.
 
 A fatal flaw, alas, with reference counting is that it cannot reclaim
 self-referential structures, as shown in the example, even if they are
-garbage\cite{McBeth63}. Some systems make use of ``weak references'',
-references which do not cause the count to be modified, to offset
-this\cite{Brown95}. However, this places a burden on the programmer
-and so loses some of the convenience of the system.
+garbage\cite{McBeth63}. Some systems make use of \textit{weak
+  references}---references which do not cause the count to be
+modified---to offset this\cite{Brown95}. However, this places a burden
+on the programmer and so loses some of the convenience of the system.
 
 \subsection{Mark-Sweep}
 \label{sec:lit-gc-marksweep}
@@ -116,18 +117,19 @@ collection\cite{GarbageCollection}.
 
 Compared to reference counting, mark-sweep is a very different beast:
 it handles cycles easily and there is no overhead on pointer
-operations. It does, however, ``stop the world'' in order to perform a
+operations. It does, however, halt the computation\footnote{Sometimes
+  called a stop-the-world collector} in order to perform a
 collection\cite{GarbageCollection}. Furthermore, garbage collection
 becomes more frequent as heap residency increases\cite{McCarthy60},
 and the blocking time is proportional to the size of the
 heap\cite{Appel87}.
 
 These problems can be offset somewhat by interleaving the sweeping
-with the mutator (the user program, so called because it mutates the
-heap\cite{Dijkstra78}). Hughes's lazy sweep algorithm\cite{Hughes82}
-does this by performing a fixed amount of sweeping at each allocation,
-and so the only long garbage collection pause happens when the heap
-needs to be marked.
+with the mutator: the garbage collected program, so called because it
+mutates the heap\cite{Dijkstra78}. Hughes's lazy sweep
+algorithm\cite{Hughes82} does this by performing a fixed amount of
+sweeping at each allocation, and so the only long garbage collection
+pause happens when the heap needs to be marked.
 
 \subsection{Copying}
 \label{sec:lit-gc-copying}
@@ -148,8 +150,8 @@ mark-sweep collectors, the pause time of a copying collector is
 proportional only to the number of live cells\cite{Appel87}.
 
 Copying collectors have become fairly popular due to the low cost of
-allocation and reduction of fragmentation, however it has a space cost
-of a half of the heap space\cite{GarbageCollection}.
+allocation and reduction of fragmentation, however they have a space
+cost of a half of the heap space\cite{GarbageCollection}.
 
 \subsection{Mark-Compact}
 \label{sec:lit-gc-markcompact}
@@ -173,8 +175,8 @@ ones, moving everything towards one end of the heap in order to remove
 fragmentation\cite{GarbageCollection}. There are three ways of
 performing this compacting: cells can be moved without regard for
 their original order; cells which point to each other can be placed
-next to each other; and cells can simply ``slide'' towards one end of
-the heap\cite{Cohen81}.
+next to each other; and cells can simply `slide' towards one end of the
+heap\cite{Cohen81}.
 
 Unfortunately, these collectors require multiple traversals over the
 heap, and so are potentially even slower than mark-sweep
@@ -183,16 +185,16 @@ collectors\cite{GarbageCollection}.
 \subsection{Hybrid Collectors}
 \label{sec:lit-gc-hybrid}
 
-Sometimes any one of the ``standard'' algorithms is not quite good
+Sometimes any one of these standard algorithms is not quite good
 enough for a particular problem, and a better collector can be formed
 by combining them. For example, reference counting could be combined
 with periodic copying, in order to reclaim cyclic structures and
-reduce fragmentation. For another example, Immix\cite{Blackburn08} is
-a hybrid mark-region (memory is divided into large regions, inside
-which allocation occurs) and copying collector.
+reduce fragmentation. Immix\cite{Blackburn08} is a hybrid mark-region
+(memory is divided into large regions, inside which allocation occurs)
+and copying collector.
 
 A common type of hybrid collector is a generational garbage collector,
-which is composed of an incremental (typically copying) stage, and a
+which is composed of an incremental, typically copying, stage, and a
 whole-heap collection stage.
 
 \subsubsection{Generational Collectors}
@@ -201,13 +203,13 @@ whole-heap collection stage.
 Generational garbage collectors are a type of hybrid collector: the
 heap is divided into a number of \textit{generations}, where each
 generation holds progressively older cells. This is based on empirical
-observations of block lifetimes resulting in the generational
-hypothesis: young objects die quickly, whereas old objects stick
-around\cite{Ungar84}.
+observations of cell lifetimes resulting in the generational
+hypothesis: young objects tend to die quickly, whereas old objects
+tend to stick around\cite{Ungar84}.
 
 Allocation happens in the youngest generation, and when that fills up
 a \textit{minor collection} is started. The generation is garbage
-collected, and old enough blocks get copied to the next
+collected, and old enough cells get copied to the next
 generation\cite{Ungar84}. In the simplest case, all live cells at the
 time of a minor collection get promoted. If the entire heap is full, a
 \textit{major collection} is started, which uses some other garbage
@@ -225,9 +227,9 @@ languages\cite{Rojemo95}\cite{Sansom93}\cite{Seward92}.
 Algorithm verification (or software verification) is the process of
 constructing a mathematical proof that an algorithm behaves as we
 expect it to\cite{Floyd67}. In the case of software, we may prove the
-actual code implements the specification, in the case of an algorithm,
+actual code implements the specification; in the case of an algorithm,
 we may be satisfied with merely proving that it satisfies various
-properties (such as termination).
+properties, such as termination.
 
 We need verification because testing can never show that there are no
 bugs, it can only show that there have been no bugs found yet, to
@@ -243,12 +245,12 @@ extracting an algorithm out of it.
 \label{sec:lit-verification-embedding}
 
 This is arguably the more difficult method of verification, as it
-consists of taking a fairly low-level implementation (often at the
-level of code) and a very high-level specification and proving things
-about the two.
+consists of taking a fairly low-level implementation, often at the
+level of code, and a very high-level specification and proving things
+about the relationship between the two.
 
 To begin with, the implementation must be formalised using some logic
-such as Hoare logic\cite{Hoare69}, which define the semantics for a
+such as Hoare logic\cite{Hoare69}, which defines the semantics for a
 very simple imperative language, or separation logic\cite{Reynolds02},
 which is similar to Hoare logic but adds axioms for reasoning about
 the stack and heap.
@@ -265,10 +267,11 @@ automated using proof assistants, but in general this is undecidable.
   sequence of integers:
 
 \begin{verbatim}
-i := 0;
+i := 1;
 j := 1;
 while j < len xs do
-    if xs[j] < xs[i] then
+\label{fig:exmpl-lit-embedding-loopinv}
+if xs[j] < xs[i] then
         i := j
     else
         skip
@@ -282,10 +285,42 @@ while j < len xs do
   assertion $P$ holds before executing a statement $S$, then the
   assertion $Q$ holds afterwards.
 
-  A full proof tree is displayed on Page
-  \pageref{sec:lit-verification-embedding-example}, you may wish to
-  glance at that before reading the following sections, which explain
-  the ideas used in the proof, and then examine it more closely.
+  A condensed proof tree is presented in Figure
+  \ref{fig:exmpl:lit-embedding-tree}, with further proofs in Figures
+  \ref{fig:exmpl:lit-embedding-sequencing} and
+  \ref{fig:exmpl:lit-embedding-loop}.
+
+  \begin{figure}[t]
+    \centering
+    \begin{prooftree}
+      \AxiomC{$\htriple{I[1/j][0/i]}{i := 0; j := 1}{I}$}
+      \AxiomC{$I[1/j][0/i] \iff L$}
+      \BinaryInfC{$\htriple{L}{i := 0; j := 1}{I}$}
+
+      \AxiomC{$\htriple{I \land R(j)}{if \ldots}{S}$}
+      \AxiomC{$\htriple{S}{j := j + 1}{I}$}
+      \BinaryInfC{$\htriple{R(j) \land I}{if \ldots; j := j + 1}{I}$}
+
+      \BinaryInfC{$\htriple{\len xs > 0}{P}{xs[i] = \min xs}$}
+    \end{prooftree}
+    \caption{Proof tree for the embedding example}
+    \label{fig:exmpl:lit-embedding-tree}
+  \end{figure}
+
+  Some definitions used in the proof trees are as follows,
+
+  \begin{align*}
+    R(x) &\equiv x < \len xs\\
+    C    &\equiv xs[i] = \min xs\\
+    C_{T} & \equiv I \land R(j) \land xs[j] < xs[i]\\
+    C_{F} & \equiv I \land R(j) \land \lnot(xs[j] < xs[i])\\
+    L    & \equiv \len xs > 0\\
+    I    & \equiv xs[i] = \min \{xs[a]~|~0 \leq a < j\}\\
+    S    & \equiv I \land xs[i] \leq xs[j] \land R(j)
+  \end{align*}
+
+  A full proof is omitted here as it is not essential to appreciate
+  the example.
 \end{example}
 
 This approach is good to take if the property to be proven is more
@@ -293,8 +328,8 @@ easily expressed by code than by proof. For example, a garbage
 collector may move things around in memory. Producing a constructive
 proof (as is used in extraction) that this is soluble and then
 plucking out the desired algorithm may be more difficult than
-implementing the algorithm, and then showing that is satisfies a
-``non-heap-clobbering'' invariant.
+implementing the algorithm, and then showing that is satisfies an
+appropriate invariant.
 
 \subsubsection{Preconditions and Postconditions}
 \label{sec:lit-verification-embedding-conditions}
@@ -305,23 +340,21 @@ afterwards\cite{Hoare69}. Hoare triples express this.
 
 In the case of languages with formally specified semantics, we must be
 able to derive the postcondition from the precondition and the
-code. Sometimes ``backwards'' reasoning is used, by establishing the
-desired postcondition (the result of executing the code), and then
-working from end to beginning, in order to figure out what the
-necessary preconditions are (known as backwards
-chaining\cite{Russell05}). If both the precondition and postcondition
-of some sequence of code are known, then the proof can progress
-inwards from both ends, meeting in the middle. If the two proof
-efforts cannot be unified, then there is a flaw in the
-code.
+code. One approach is establishing the desired postcondition (the
+result of executing the code), and then working from end to beginning,
+in order to figure out what the necessary preconditions are, this is
+known as backwards chaining\cite{Russell05}. If both the precondition
+and postcondition of some sequence of code are known, then the proof
+can progress inwards from both ends, meeting in the middle. If the two
+proof efforts cannot be unified, then there is a flaw in the code.
 
 Common to many proof systems is the ability to strengthen
 preconditions and weaken postconditions\cite{Hoare69}. This is legal
-because if precondition $P$ implies $P'$, then by using the
-precondition $P$ instead of $P'$, we know that $P'$ is guaranteed to
-hold. Similarly, postcondition $Q$ implies $Q'$, then by using the
-postcondition $Q'$, we know that $Q$ is guaranteed to hold. This is
-expressed by the Hoare consequence rule:
+because if precondition $P'$ implies $P$, then by using the
+precondition $P'$ instead of $P$, we know that $P$ is guaranteed to
+hold. Similarly, if postcondition $Q$ implies $Q'$, then we know that
+$Q'$ is guaranteed to hold. This is expressed by the Hoare consequence
+rule:
 
 \begin{prooftree}
   \AxiomC{$P' \implies P$}
@@ -331,11 +364,24 @@ expressed by the Hoare consequence rule:
 \end{prooftree}
 
 This allows localised proofs to be used in a larger proof, and so
-facilitates modularity by allowing proofs of (some) components of a
+facilitates modularity by allowing proofs of some components of a
 program to be considered independently, and then combined later on.
 
 \subsubsection{Axiomatic Semantics}
 \label{sec:lit-verification-embedding-axioms}
+
+\begin{figure}[t]
+  \centering
+  \begin{prooftree}
+      \AxiomC{$\htriple{I[1/j][0/i]}{i := 0}{I[0/j]}$}
+      \AxiomC{$\htriple{I[1/j]}{j := 1}{I}$}
+      \BinaryInfC{$\htriple{I[1/j][0/i]}{i := 0; j := 1}{I}$}
+      \AxiomC{$I[1/j][0/i] \iff L$}
+      \BinaryInfC{$\htriple{L}{i := 0; j := 1}{I}$}
+  \end{prooftree}
+  \caption{Sequencing of statements in Hoare logic}
+  \label{fig:exmpl:lit-embedding-sequencing}
+\end{figure}
 
 Axiomatic semantics allow us to reason about programs by providing
 tools to reason about the effect of program statements on program
@@ -351,12 +397,13 @@ simple example is the Hoare rule for composition:
 This states that if we have two statements, $S$ and $T$, where the
 postcondition of $S$ is the precondition of $T$, then we can combine
 the two into the compound statement $S;T$\cite{Hoare69}. In Hoare
-logic, there are rules for assignment, ``skip'' (the statement which
-does nothing), while loops, conditional statements, and consequence.
+logic, there are rules for assignment, \textit{skip} (the statement
+which does nothing), while loops, conditional statements, and
+consequence.
 
 In general, axiomatic semantics specify how the post-state of a
-statement refers to the pre-state. They should be consistent, but (as
-a consequence of G{\"o}del's incompleteness theorems), this cannot
+statement refers to the pre-state. They should be consistent but, as
+a consequence of G{\"o}del's incompleteness theorems, this cannot
 necessarily be proven.
 
 Given these rules, we can very easily deconstruct a program into a
@@ -366,6 +413,28 @@ proof for the property we wish to establish.
 
 \subsubsection{Loop Invariants}
 \label{sec:lit-verification-embedding-invariants}
+
+\begin{figure}[t]
+  \centering
+  \begin{prooftree}
+    \AxiomC{$C_{T} \implies S[j/i]$}
+    \UnaryInfC{$\htriple{C_{T}}{i := j}{S}$}
+
+    \AxiomC{$C_{F} \iff S$}
+    \AxiomC{$\htriple{C_{F}}{skip}{C_{F}}$}
+    \BinaryInfC{$\htriple{C_{F}}{skip}{S}$}
+    \BinaryInfC{$\htriple{I \land R(j)}{if \ldots}{S}$}
+
+    \AxiomC{$S \implies I[j + 1/j]$}
+    \AxiomC{$S \implies I$}
+    \BinaryInfC{$\htriple{S}{j := j + 1}{I}$}
+
+    \BinaryInfC{$\htriple{R(j) \land I}{if \ldots; j := j + 1}{I}$}
+    \UnaryInfC{$\htriple{I}{while \ldots}{\lnot R(j) \land I}$}
+  \end{prooftree}
+  \caption{Loop invariants in Hoare logic}
+  \label{fig:exmpl:lit-embedding-loop}
+\end{figure}
 
 Proofs of programs involving loops rely on finding a loop invariant:
 some property which does not change over time as the loop is
@@ -378,99 +447,19 @@ while rule:
 \end{prooftree}
 
 $I$ is the loop invariant, $B$ is the loop condition, and $S$ is the
-statement that is the loop body. The premise is read ``If the
+statement that is the loop body. The premise is read ``if the
 proposition $I \land B$ holds, then after doing S once, the
-proposition $I$ holds,'' and the consequence is read ``If the
+proposition $I$ holds,'' and the consequence is read ``if the
 proposition $I$ holds, then after doing the loop \textit{while B do
   S}, the proposition $\lnot B \land I$ holds''. Thus, we can see that
 $I$ is invariant.
 
-The only information we can ``get out'' of a loop, then (at least
-under Hoare logic), is $\lnot B$, which doesn't seem very useful. The
-loop may be doing something very complicated, but it seems we can only
-extract a very small bit of information about this. The difficulty,
-then, lies in finding a loop invariant that, when combined with $\lnot
-B$, yields the result we want.
-
-\begin{lscape}
-
-\phantomsection
-\label{sec:lit-verification-embedding-example}
-
-\begin{prooftree}
-  \AxiomC{$\htriple{I[1/j][0/i]}{i := 0}{I[0/j]}$}
-  \AxiomC{$\htriple{I[1/j]}{j := 1}{I}$}
-  \BinaryInfC{$\htriple{I[1/j][0/i]}{i := 0; j := 1}{I}$}
-  \AxiomC{$I[1/j][0/i] \iff L$}
-  \BinaryInfC{$\htriple{L}{i := 0; j := 1}{I}$}
-
-  \AxiomC{$C_{T} \implies S[j/i]$}
-  \UnaryInfC{$\htriple{C_{T}}{i := j}{S}$}
-
-  \AxiomC{$C_{F} \iff S$}
-  \AxiomC{$\htriple{C_{F}}{skip}{C_{F}}$}
-  \BinaryInfC{$\htriple{C_{F}}{skip}{S}$}
-  \BinaryInfC{$\htriple{I \land R(j)}{if \ldots}{S}$}
-
-  \AxiomC{$S \implies I[j + 1/j]$}
-  \AxiomC{$S \implies I$}
-  \BinaryInfC{$\htriple{S}{j := j + 1}{I}$}
-
-  \BinaryInfC{$\htriple{R(j) \land I}{if \ldots; j := j + 1}{I}$}
-  \UnaryInfC{$\htriple{I}{while \ldots}{\lnot R(j) \land I}$}
-
-  \BinaryInfC{$\htriple{\len xs > 0}{i := 0; j := 0; while j < len xs do if
-      xs[j] < xs[i] then i := j else skip; j := j + 1}{xs[i] = \min xs}$}
-\end{prooftree}
-
-\begin{multicols}{3}
-\subsubsection{Common Definitions}
-\begin{align*}
-  L &\equiv \len xs > 0\\
-  R(x) &\equiv x < \len xs\\
-  C &\equiv xs[i] = \min xs\\
-  C_{T}&\equiv I \land R(j) \land xs[j] < xs[i]\\
-  C_{F}&\equiv I \land R(j) \land \lnot(xs[j] < xs[i])\\
-  I&\equiv xs[i] = \min \{xs[a]~|~0 \leq a < j\}\\
-  S&\equiv I \land xs[i] \leq xs[j] \land R(j)
-\end{align*}
-\vfill
-
-\subsubsection{Proofs}
-\begin{align*}
-  I[1/j][0/i] &\equiv xs[0] = \min \{xs[a]~|~0 \leq a < 1\}\\
-  &\equiv \len xs > 0 \implies xs[0] = \min \{xs[0]\}\\
-  &\equiv \len xs > 0 \implies xs[0] = xs[0]\\
-  &\equiv \len xs > 0 \implies \true\\
-  &\equiv \len xs > 0\\
-  \therefore I[1/j][0/i] &\iff L\\\\
-%
-  S[j/i] &\equiv \left(I \land xs[i] \leq xs[j] \land R(j)\right)[j/i]\\
-  &\equiv I \land xs[j] \leq xs[j] \land R(j)\\
-  &\equiv I \land R(j)\\
-  \therefore C_{T} &\implies S[j/i]\\\\
-%
-  I[j+1/j] &\equiv I \land xs[i] \leq xs[j]\\
-  \therefore S &\implies I[j+1/j]
-\end{align*}
-
-\begin{align*}
-  \lnot\left(xs[j] < xs[i]\right) &\equiv xs[i] \leq xs[j]\\
-  \therefore C_{F} &\iff S\\\\
-%
-  I \land xs[i] \leq xs[j] \land R(j) &\implies I\\
-  \therefore S &\implies I\\\\
-%
-  \lnot R(j) \land I &\equiv j \geq \len xs \land xs[i] = \min
-  \{xs[a]~|~0 \leq a < j\}\\
-  &\equiv xs[i] = \min \{x~|~x \in xs\}\\
-  &\equiv xs[i] = \min xs\\
-  \therefore \lnot R(j) \land I &\implies C
-\end{align*}
-\vfill
-\end{multicols}
-
-\end{lscape}
+The only information we can extract from a loop, at least under Hoare
+logic, is $\lnot B$, which doesn't seem very useful. The loop may be
+doing something very complicated, but it seems we can only extract a
+very small bit of information about this. The difficulty, then, lies
+in finding a loop invariant that, when combined with $\lnot B$, yields
+the result we want.
 
 \subsection{Verification by Extraction}
 \label{sec:lit-verification-extraction}
@@ -489,13 +478,13 @@ reasoning about the pre- and post-conditions of each abstract
 operation\cite{Woodcock96}. Whilst it may take many refinement steps
 to get actual code out of this process, each proof is between two very
 similar specifications, and so may be easier than the verification by
-proof method. Proof assistants may be more useful here than in
+embedding method. Proof assistants may be more useful here than in
 verification by embedding, but here the difficulty lies in finding the
 appropriate invariant to relate the two steps\cite{Woodcock96}.
 
 Furthermore, there are often multiple choices of refinement step
-available, and so first few steps can be reused to construct different
-algorithms, simply by making different choices at the lower
+available, and so the first few steps can be reused to construct
+different algorithms, simply by making different choices at the lower
 levels\cite{Myreen10}.
 
 \begin{example}[Finding the index of the minimal element of a nonempty
@@ -540,9 +529,9 @@ f :: [Integer] -> Integer
 f sequence = case sequence of
                [_] -> 1
                (x:xs) -> let mk = f xs
-                        in if x <= genericIndex xs (mk - 1)
-                           then 1
-                           else 1 + mk
+                         in if x <= genericIndex xs (mk - 1)
+                            then 1
+                            else 1 + mk
 \end{lstlisting}
 
 Even in such a short program, there are a couple of language-imposed
@@ -569,7 +558,7 @@ complex, and would be difficult to prove correct by itself, but where
 the process of refining it from an initial specification may be
 easier. For example, we could start out with a formalism for garbage
 collection correctness, and then refine that until we produce an
-actual collector (as done by Myreen\cite{Myreen10}).
+actual collector.
 
 \subsubsection{Constructive Proof}
 \label{sec:lit-verification-extraction-constructive}
@@ -592,12 +581,12 @@ problem.
 \label{sec:lit-verification-extraction-cases}
 
 Proofs often diverge into multiple cases to be shown. For example, an
-inductive proof (covered in more detail in the next section) has a
+inductive proof, covered in more detail in the next section, has a
 base case and an inductive case. Only by proving both cases do we
 prove the whole.
 
 Given a constructive proof, we can translate a case analysis to a
-switch statement (or conditional statement) in our program, and use
+switch statement, or conditional statement, in our program, and use
 the witnesses for each case to construct the solution to the entire
 switch.
 
@@ -635,7 +624,7 @@ smaller one.
 \subsubsection{Types}
 \label{sec:lit-verification-extraction-types}
 
-We must be careful to honour any ``hidden'' assumptions in the
+We must be careful to honour any non-obvious assumptions in the
 proof. For example, if a proof requires a value to be a natural
 number, then we cannot use machine words in our program, unless it can
 also be proven that the natural numbers in question will always fit
@@ -665,7 +654,7 @@ transformations preserve the semantics.
 
 Finally, we look at some examples of garbage collectors which have
 been verified in different ways: a copying collector verified by
-refinement, a different copying collector verified by embedding, and
+extraction, a different copying collector verified by embedding, and
 finally a generic framework for verifying collectors and mutators.
 
 \subsection{Reusable verification of a copying collector}
@@ -703,14 +692,14 @@ steps taken.
 \subsection{Local Reasoning about a Copying Garbage Collector}
 \label{sec:lit-verifiedgc-birkedal}
 
-Birkedal, Torp-Smith, and Reynolds\cite{Birkedal04} take a very
-different approach to Myreen, they take an existing garbage collector
-(Cheney's copying collector) and prove it correct, using a variant of
+Birkedal, Torp-Smith, and Reynolds\cite{Birkedal04} took a very
+different approach to Myreen, they took an existing garbage collector
+(Cheney's copying collector) and proved it correct, using a variant of
 separation logic, in a Hoare-style proof, \[\htriple{(\exists y.\ e
   \mapsto y \land A) \land x = e'}{x := [e]}{e[e'/x] \mapsto x \land
   A[x/y]}\]
 
-Similarly to Myreen, they define correctness in terms of a heap
+Similarly to Myreen, they defined correctness in terms of a heap
 isomorphism modulo garbage cells, and in particular, that the
 resultant heap has no garbage cells whatsoever.
 
@@ -727,9 +716,9 @@ moves data around in the heap.
 
 The major difference between these two verified garbage collectors is
 that Myreen used extraction whereas Birkedal \textit{et al.} used
-proof. Thus, this proof cannot really be generalised to other
-collectors (although the definition of correctness and logic developed
-can), whereas Myreen's proofs are much more applicable to copying
+embedding. Thus, this proof cannot really be generalised to other
+collectors, although the definition of correctness and logic developed
+can, whereas Myreen's proofs are much more applicable to copying
 collectors in general.
 
 \subsection{A General Framework for Certifying Garbage Collectors and Their Mutators}
@@ -737,7 +726,7 @@ collectors in general.
 
 McCreight, Shao, Lin, and Li\cite{McCreight07} produced a generic
 method for certifying collectors and mutators independently, which is
-very similar to what I intend to do in this project. I unfortunately
+very similar to the intended goals of this project. I unfortunately
 only found this paper very late in the project (the latter half of
 Spring term), after which the majority of the work had been done.
 
@@ -751,7 +740,7 @@ collector and mutator is possible.
 
 They provide a mechanical verification of assembly language
 implementations of a generic mark-sweep collector, and the Cheney and
-Baker copying collectors, providing (to their knowledge) the first
+Baker copying collectors, providing, to their knowledge, the first
 mechanical verification of the Baker collector. Furthermore, their
 approach supports incremental collection, and allows reasoning about
 collectors with read and write barriers.
@@ -763,12 +752,12 @@ compilers for languages such as Java and C\#.
 \section{Summary}
 \label{sec:lit-summary}
 
-In this chapter I have summarised the traditional garbage collection
-algorithms and approaches to algorithm verification, and then turned
-to two particular verified collectors, and one potential method for
-generic verification of collectors. In future chapters I shall be
-working with mark-sweep and copying collectors, and approaching the
-problem of verification using embedding.
+This chapter summarised the traditional garbage collection algorithms
+and approaches to algorithm verification, and then turned to two
+particular verified collectors, and one potential method for generic
+verification of collectors. Further chapters shall be working with
+mark-sweep and copying collectors, and approaching the problem of
+verification using embedding.
 
-I shall briefly mention how verification could be extended to
+It shall briefly be mentioned how verification could be extended to
 generational collectors, but this shall not be a focus of the work.
