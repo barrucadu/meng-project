@@ -1,18 +1,18 @@
 \chapter{Partial Correctness for Garbage Collection}
 \label{sec:gc}
 
-In this chapter, I shall produce a general correctness criteria for
-garbage collection, and show how it can be applied. I shall do this by
+This chapter shall produce a general correctness criteria for garbage
+collection, and show how it can be applied: this shall be done by
 first comparing the mark-sweep and copying formalisms, and abstracting
 the commonalities from both. Definitions shall be reused, but
 specifics of the proofs shall not be.
 
 As proving a very abstract correctness criteria holds for a concrete
-implementation may be difficult, I shall provide a ``framework'' for
-proof: a collection of simpler obligations which, together, are
-sufficient for correctness. I shall then conclude by briefly
-discussing how the formalism could possibly be extended to apply to
-collectors other than the stop-the-world type.
+implementation may be difficult, a framework for proof shall be
+provided: a collection of simpler obligations which, together, are
+sufficient for correctness. Finally, it will briefly be discussed how
+the formalism could possibly be extended to apply to collectors other
+than the stop-the-world type.
 
 \section{Comparison of Mark-Sweep and Copying Correctness}
 \label{sec:gc-comparison}
@@ -28,20 +28,20 @@ changed is how this was achieved.
 
 However, the mark-sweep correctness very naturally decomposes into
 correct marking and correct sweeping, whereas there was no such
-similar decomposition for the copying correctness. This showed in the
-proofs, where the loop invariant for the mark-sweep collector dealt
-with both cases, but the invariant for the copying collector had to
-consider the entire state at once.
+similar decomposition for the copying correctness. This decomposition
+showed in the proofs, where the loop invariant for the mark-sweep
+collector dealt with both cases, but the invariant for the copying
+collector had to consider the entire state at once.
 
 Despite this apparent difference, as the decomposition arises from
 combining the domain-specific knowledge of how a mark-sweep collector
-works with the notion of what correct garbage collection entails, I
-don't think that this difference is relevant at this more abstract
-level.
+works with the notion of what correct garbage collection entails, this
+difference will not be considered further at this level of
+abstraction.
 
-Setting aside the decomposition, I believe that the mark-sweep
+Setting aside the decomposition, consider how the mark-sweep
 correctness can apply to any non-moving collector, and the copying
-correctness to any moving collector. This is because the only
+correctness to any moving collector: this is because the only
 mark-sweep-specific part of the mark-sweep correctness is the mark
 flag, but this is unset before and after collection, and so other
 non-moving collectors can be used by disregarding it, and then not
@@ -54,13 +54,12 @@ collector.
 \label{sec:gc-correct}
 
 As we have notions of correctness for both moving and non-moving
-correctness, and given that a non-moving collector can be seen as a
+collectors, and given that a non-moving collector can be seen as a
 special case of a moving collector where the translation function is
-the identity, I believe that the copying correctness, with a slight
+the identity, consider that the copying correctness, with a slight
 extension to allow garbage collection metadata, expresses a notion of
 correct garbage collection in general, at least for stop-the-world
-collectors. I shall reiterate all of the definitions used, and
-highlight the changes that must be made.
+collectors.
 
 From the mark-sweep collector, we re-use the definitions of the heap,
 cells, pointers, the live cell invariant, and reachability
@@ -74,9 +73,8 @@ translation function and root translation
 
 Word preservation (correct copying)
 (defns. \ref{def:ms-word-preservation} and
-\ref{def:c-correct-copying}) are redefined to allow for the
-possibility of mutated metadata words
-(defn. \ref{def:g-preservation}).
+\ref{def:c-correct-copying}) is redefined to allow for the possibility
+of mutated metadata words (defn. \ref{def:g-preservation}).
 
 \begin{definition}[Preservation]
   \label{def:g-preservation}
@@ -84,7 +82,6 @@ possibility of mutated metadata words
   have been remapped consistently, and garbage collection metadata may
   have been mutated (but in a way which still obeys any other
   invariants or postconditions, of course).
-
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
     \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\right.\\
@@ -97,18 +94,18 @@ possibility of mutated metadata words
 
 To apply this to the mark-sweep collector, we simply take $f = \id$,
 let there be one metadata word, and have a pre- and post-condition
-that it be set to ``unmarked''. The collector may break this condition
-in the middle, and does so: this allows the separation of reasoning
-about the marking and sweeping phases. To apply this to the copying
+that it be set to unmarked. The collector may break this condition in
+the middle, and does so: this allows the separation of reasoning about
+the marking and sweeping phases. To apply this to the copying
 collector, we see that this is identical to what we already had if
 there are no metadata words.
 
 \section{A Framework for Proof}
 \label{sec:gc-framework}
 
-In this section, I shall outline the stages that all garbage
-collectors follow, and then provide proof obligations for each which,
-taken together, show correctness.
+This section shall outline the stages that all garbage collectors
+follow, and then provide proof obligations for each which, taken
+together, show correctness.
 
 \subsection{Stages of Garbage Collection}
 \label{sec:gc-framework-stages}
@@ -120,7 +117,7 @@ may only be implicit,
 \begin{description}
   \item[Identify all roots] strictly speaking, this isn't a part of
     the garbage collector, but it is a precondition of all collectors,
-    and so I have included it here.
+    and so it has been included here.
 
   \item[Partition cells] specifically, the collector identifies a
     subset of all the allocated cells to preserve, and for
@@ -143,16 +140,13 @@ may only be implicit,
     preconditions of the collector when it is next called.
 \end{description}
 
-I believe that this outline is general enough to apply to any
-stop-the-world collector.
-
 \subsection{Proof Obligations}
 \label{sec:gc-framework-obligations}
 
-I shall now produce a series of proof obligations for each step, each
-building upon the last. This allows proofs to decompose into smaller
-units, and perhaps gives some indication that some parts are `more
-important' to get right than others.
+Now shall be produced a series of proof obligations for each step,
+each building upon the last, allowing proofs to decompose into smaller
+units, and perhaps gives some indication that some parts are more
+important, as it were, to get right than others.
 
 \subsubsection{Identify all roots}
 \label{sec:gc-framework-obligations-roots}
@@ -309,3 +303,18 @@ in.
     roots &= \map{f}{roots'}
   \end{align*}
 \end{proof}
+
+\section{Summary}
+\label{sec:gc-summary}
+
+This chapter combined the definitions of mark-sweep and copying
+correctness from Chapters \ref{sec:marksweep} and \ref{sec:copying} to
+produce a more general formalism in Section \ref{sec:gc-correct}. This
+formalism is a strict generalisation as it allows reasoning about
+collectors which mutate the garbage collection metadata, which neither
+of the two prior formalisms permit. Furthermore, a series of smaller
+proof obligations were provided, in order to ease proof of correctness
+for individual collectors.
+
+Section \ref{sec:results-correctness} shall discuss further how this
+formalism is more general than the prior two.
