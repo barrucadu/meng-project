@@ -1,33 +1,41 @@
 \chapter{Correctness of Copying Collectors}
 \label{sec:copying}
 
-We shall use the same definitions of the heap
-(defn. \ref{def:ms-heap}), cell (defn. \ref{def:ms-cell}), pointer
-(defn. \ref{def:ms-pointer}), reachability
-(defn. \ref{def:ms-reachable}), and the live cell invariant
-(defn. \ref{def:ms-live-cell-invariant}) as in the prior
-chapter. Unfortunately, the definition of word preservation
+This chapter extends the definition of correctness established for
+mark-sweep collectors to copying collectors. A copying collector shall
+be considered as two separate components, a copying part and an
+address updating part, in Sections \ref{sec:copying-copying} and
+\ref{sec:copying-address} respectively. Then, the Fenichel/Yochelson
+collector shall be considered as an example of the formalism in
+Section \ref{sec:copying-example}.
+
+The same definitions of the heap (defn. \ref{def:ms-heap}), cells
+(defn. \ref{def:ms-cell}), pointers (defn. \ref{def:ms-pointer}),
+reachability (defn. \ref{def:ms-reachable}), and the live cell
+invariant (defn. \ref{def:ms-live-cell-invariant}) will be used as in
+the prior chapter. Unfortunately, the definition of word preservation
 (defn. \ref{def:ms-word-preservation}) will have to change, because a
 copying collector renames addresses.
 
 $\free{c}$ is a bit subtle in the copying collector, as there is no
-explicit free list. However, as there is a ``free pointer'' (or
-something similar) indicating the start of the free region of the
-active semispace, we can consider there to be an implicit free list,
+explicit free list. However, as there is a \textit{free pointer}, or
+equivalent, indicating the start of the free region of the active
+semispace, we can consider there to be an implicit free list,
 consisting of all cells after that point, and all cells in the
 inactive semispace.
 
 \section{Copying}
 \label{sec:copying-copying}
 
-Before presenting a definition of correct copying, I have to highlight
-the inadequacies of the mark-sweep word preservation. Firstly, it does
-not allow for mutation of pointers, which is essential for a copying
-collector, but more subtly, it does not allow for cells to be
-relocated. This arises in the $h[w] = h'[w]$ part of the formalism. If
-cells can be relocated, then this makes no sense, as $w$ is a pointer,
-and so $w$ in the new heap is not necessarily the same as $w$ in the
-old heap. Thus, we also need to be able to find old $w$ values.
+Before presenting a definition of correct copying, it is necessary to
+highlight the inadequacies of the mark-sweep word
+preservation. Firstly, it does not allow for mutation of pointers,
+which is essential for a copying collector, but more subtly, it does
+not allow for cells to be relocated, as the problem arises in the
+$h[w] = h'[w]$ part of the formalism. If cells can be relocated, then
+this makes no sense, as $w$ is an index into the heap, and so $w$ in
+the new heap is not necessarily the same as $w$ in the old heap. Thus,
+we also need to be able to find old $w$ values.
 
 \begin{definition}[Correct Copying]
   \label{def:c-correct-copying}
@@ -44,15 +52,10 @@ old heap. Thus, we also need to be able to find old $w$ values.
   \end{align*}
 \end{definition}
 
-I have decided to define correct copying as a word preservation-like
-property, rather than define it separately, as what is ``correct
-copying'' but a way of correctly transforming the contents and
-locations of cells, according to some rule?
-
 \section{Address Translation}
 \label{sec:copying-address}
 
-In the definition of correct copying, I referenced a function $f$, to
+In the definition of correct copying, a function $f$ was invoked to
 update addresses. Unfortunately, not every function will do
 here. Trivially, we can see that the constant function won't work, as
 then everything would be moved to the same place, resulting in data
@@ -83,9 +86,10 @@ If we start with $f = \id$, then (for an involution) we simply need to
 show that, for every allocated word $w$, the garbage collector
 performs $f[w] = w'; f[w'] = w$. Furthermore, we need to show that
 contiguous words within the same cell remain in the same relative
-place after copying. This could have been avoided by defining $f$ as a
-cell translation function, which moves entire cells at a time, but
-then this would have complicated reasoning about individual words.
+place after copying. This further obligation could have been avoided
+by defining $f$ as a cell translation function, which moves entire
+cells at a time, but then this would have complicated reasoning about
+individual words.
 
 Finally, we must show that the roots are correctly translated, as they
 may not be correct after things have been moved,
@@ -104,8 +108,8 @@ Fenichel and Yochelson\cite{Fenichel69} introduced a simple semispace
 copying garbage collector for lists in Lisp systems, and assume the
 existence of a correct collector for atoms. The collector works by
 storing in the car of each cell a flag indicating that it has been
-copied, and a forwarding pointer in the cdr. This permits a very
-simple algorithm, which has been recast in a Hoare-like form below:
+copied, and a forwarding pointer in the cdr, permitting a very simple
+algorithm which has been recast in a Hoare-like form below:
 
 \begin{lstlisting}
 gc():
@@ -144,65 +148,72 @@ atoms, which we assume to be correct; \texttt{nrplaca} and
 they interpret the pointer in the other semispace.
 
 We can thus see that the collector allocates cons cells for every
-reachable cons cell in the other semispace, copying over car and cdrs
+reachable cons cell in the other semispace, copying over car and cdr
 as it goes, and then flips the roles of the semispaces, so that the
 mutator uses the new space.
-
-The ``copying'' of the cell ID can be said to happen after line 15 of
-the collector. This allowable, as by the end of the \texttt{collect}
-call, the cell contents will be correct.
 
 \subsection{Partial Correctness}
 \label{sec:copying-example-partial}
 
-Firstly, we need to define what an ``address'' for this rather strange
-system is. As pointers are interpreted relative to a semispace, each
-pointer has two related memory addresses, which means we can't just
-talk about $h[p]$. Let's define an address as a pair, consisting of a
-semispace to interpret it in, and a pointer, $(s, p)$. Assuming the
-two semispaces are contiguous, are numbered 0 and 1, and pointers
-range from 0 to the size of the semispace, turning this into a numeric
-address is done by the operation $s \times \mathrm{semispace\_size} +
-p$. We shall proceed to use $s'$ to refer to the semispace before
-garbage collection was initiated, and $s$ to refer to the current
-(different) semispace.
+Firstly, it is necessary to define what an address for this rather
+strange system is. As pointers are interpreted relative to a
+semispace, each pointer has two related memory addresses, which means
+we can't just talk about $h[p]$. Let's define an address as a pair,
+consisting of a semispace to interpret it in, and a pointer, $(s,
+p)$. Assuming the two semispaces are contiguous, are numbered 0 and 1,
+and pointers range from 0 to the size of the semispace, turning this
+into a numeric address is done by the operation $s \times
+\mathrm{semispace\_size} + p$. We shall proceed to use $s'$ to refer
+to the semispace before garbage collection was initiated, and $s$ to
+refer to the current (different) semispace.
 
 Assuming the correctness of \texttt{flipconsspace} and
 \texttt{flipsemispace}, the correctness of \texttt{gc} consists in
 proving that \texttt{collect}($c$) returns a pointer to a copied
-version of $c$, in addition to the following loop invariant:
+version of $c$, in addition to the loop invariant in Figure
+\ref{fig:copying-example-partial-invariant}. In words, the invariant
+states, for every call \texttt{collect}($c$), everything (and nothing
+more) reachable from $c$ (including itself) is copied, pointers are
+translated according to $f$, and non-pointers are preserved. The
+invariant is sufficient, as shown in Figure
+\ref{fig:copying-example-partial-sufficient}, as after the loop
+terminates we have $k = \len \mathtt{roots}$.
 
-\begin{align*}
-  \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-  (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-  &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
-  \iff h[w] = h'[f^{-1}(w)])\\
-  &\land \lnot\free{c} \iff c \in
-  \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}
-\end{align*}
+\begin{figure}[t]
+  \centering
+  \begin{align*}
+    \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
+    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    \iff h[w] = h'[f^{-1}(w)])\\
+    &\land \lnot\free{c} \iff c \in
+    \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}
+  \end{align*}
+  \captionsetup{format=default}
+  \caption{Loop invariant for the Fenichel/Yochelson collector}
+  \label{fig:copying-example-partial-invariant}
+\end{figure}
 
-In words, for every call \texttt{collect}($c$), everything (and
-nothing more) reachable from $c$ (including itself) is copied,
-pointers are translated according to $f$, and non-pointers are
-preserved.
-
-This is sufficient, as after the loop terminates we have $k = \len
-\mathtt{roots}$, and so
-\begin{align*}
-  \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-  (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-  &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
-  \iff h[w] = h'[f^{-1}(w)])\\
-  &\land \lnot\free{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
-    0 \leq i < \len\mathtt{roots}\}}
-\end{align*}
-\begin{align*}
-  \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-  (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-  &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
-  \iff h[w] = h'[f^{-1}(w)])\\
-  &\land \lnot\free{c} \iff c \in \reach{h'}{r'}
-\end{align*}
+\begin{figure}[t]
+  \centering
+  \begin{align*}
+    \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
+    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    \iff h[w] = h'[f^{-1}(w)])\\
+    &\land \lnot\free{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
+      0 \leq i < \len\mathtt{roots}\}}\\
+%
+    \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
+    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    \iff h[w] = h'[f^{-1}(w)])\\
+    &\land \lnot\free{c} \iff c \in \reach{h'}{r'}
+  \end{align*}
+  \caption{Sufficiency of the loop invariant for the
+    Fenichel/Yochelson collector}
+  \label{fig:copying-example-partial-sufficient}
+\end{figure}
 
 \begin{proof}
   Showing the correctness of \texttt{collect} consists of showing the
@@ -233,7 +244,7 @@ This is sufficient, as after the loop terminates we have $k = \len
 
   As the collector does not deal with non-pointer values (atoms), we
   can ignore the lack of mutation of non-pointers entirely, and assume
-  that is handled correctly by \texttt{collectatom}. This is
+  that is handled correctly by \texttt{collectatom}, which is
   justifiable as the collector explicitly sets aside atoms, and hands
   them over to another collector. And so, by assumption, we have
   $\forall c \in h,\ \forall w \in c,\ \lnot\free{c} \implies
@@ -314,8 +325,8 @@ A quick read of the code will reveal that the only place in which
 nontermination could possibly occur is in the recursive call in the
 else clause of \texttt{collect}. However, equally obviously, we can
 see that this will never happen, because the base case of the
-termination is that the car of a cell is \texttt{ALREADYCOPIED}, and
-as soon as we hit the else case we do that. Thus, even if we were to
+recursion is that the car of a cell is \texttt{ALREADYCOPIED}, and as
+soon as we hit the else case we do that. Thus, even if we were to
 encounter a cyclic structure, reaching again the point at which we
 entered it would end the recursion.
 
@@ -376,8 +387,8 @@ That is, a relation is a garbage collection relation if it renames all
 addresses in the heap by applying an involution $f$, and removes all
 non-reachable cells from the heap.
 
-This sounds rather similar to my formalism, but with a few key
-differences:
+This sounds rather similar to the formalism developed in this chapter,
+but with a few key differences:
 
 \begin{itemize}
 \item $f$ is defined on cell addresses, rather than word addresses
@@ -406,9 +417,9 @@ and so a more realistic model of the heap was desirable.
   \begin{proof}
     Myreen's $f$ is only defined for cell start addresses, as his heap
     is a partial function from addresses to cells, but the function
-    can be trivially expanded to what we need by ``filling in the
-    blanks''. Having done that, let's rearrange to get $h$ and $r$
-    from his definition,
+    can be trivially expanded to what we need by filling in the
+    blanks. Having done that, let's rearrange to get $h$ and $r$ from
+    his definition,
 
     \begin{align*}
       (h', r') \gc (h, r) &= (\filter{h'}{r'}) \translate (h, r)\\
@@ -455,7 +466,7 @@ and so a more realistic model of the heap was desirable.
 
     After collection, the heap contains only allocated cells, which
     have been moved in memory by applying $f$, and all pointers have
-    been updated by $f$. This is exactly the combination of filter and
+    been updated by $f$, giving exactly the combination of filter and
     translate as used by Myreen.
 
     Thus, Correct Copying and Root Translation, if and only if we also
@@ -478,24 +489,24 @@ obvious statement of correctness.
 \section{Summary}
 \label{sec:copying-summary}
 
-In this chapter I highlighted the differences between the formalisms
-suitable for mark-sweep and copying collectors: ``correct copying''
+This chapter highlighted the differences between the formalisms
+suitable for mark-sweep and copying collectors: correct copying
 (defn. \ref{def:c-correct-copying}) replacing word preservation, and
-the introduction of ``correct translation''
+the introduction of address translation
 (defns. \ref{def:c-address-translation-function} and
 \ref{def:c-root-translation}) for pointer mutation during garbage
 collection.
 
-I argued that correctness for a copying collector comes down to
+It was argued that correctness for a copying collector comes down to
 copying exactly the live cells and updating all pointers consistently.
 
-I then talked about the Fenichel/Yochelson\cite{Fenichel69} collector,
-and provided proofs of its partial and total correctness. These proofs
-shall not be referenced in future chapters, and merely serve as an
-illustration of the utility of the definition of correctness presented
-here. Definitions will be reused, however, in producing an abstract
-formalism of garbage collection.
+Then the Fenichel/Yochelson\cite{Fenichel69} collector was considered,
+and proofs of its partial and total correctness were developed. These
+proofs shall not be referenced in future chapters, and merely serve as
+an illustration of the utility of the definition of correctness
+presented here. Definitions will be reused, however, in producing an
+abstract formalism of garbage collection.
 
-Finally, I compared this formalism of copying correctness with that of
-Myreen\cite{Myreen10}, discussed the differences, and then showed
-their equivalence, given an additional lemma.
+Finally, this formalism of copying correctness was compared with that
+of Myreen\cite{Myreen10}, the differences were discussed, and then it
+was shown that they are equivalent, given an additional lemma.
