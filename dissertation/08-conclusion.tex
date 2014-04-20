@@ -31,7 +31,35 @@ different collectors will have different invariants and preconditions.
 \section{Review}
 \label{sec:conclusion-review}
 
-% TODO
+Chapter \ref{sec:marksweep} produced precise formal definitions of
+many common structures used by garbage collectors from first
+principles, allowing reasoning about garbage collection at all to be
+possible, then used these to formalise mark-sweep correctness and
+prove correct the Armstrong/Virding collector. As this is quite a
+simple collector, there are undoubtedly other proofs of its
+correctness somewhere, however a non-verified proof is only as
+reliable as the collection of people who have read it, and so each new
+proof adds further evidence that it is correct.
+
+Chapter \ref{sec:copying} extended the definitions produced in Chapter
+\ref{sec:marksweep} to allow reasoning about copying collection, and
+then verified the Fenichel/Yochelson collector. The formalism was then
+compared with that of Myreen\cite{Myreen10} and shown to be very
+similar, providing confidence that Myreen's formalism is a reasonable
+one for verifying copying collectors, even though it was developed in
+a very different way.
+
+Chapter \ref{sec:gc} further extended the results of Chapter
+\ref{sec:copying}, resulting in a natural progression from the more
+specific to the more general, and gives a new formalism which allows
+reasoning about different types of collectors, as shown in Section
+\ref{sec:results-correctness}.
+
+To conclude, the project contributes an independently-produced
+standard for garbage collection correctness, which has been used,
+indirectly, to verify two extant garbage collectors: the
+Armstrong/Virding mark-sweep collector for languages with immutable
+state, and the Fenichel/Yochelson copying collector for LISP systems.
 
 \section{Further Work}
 \label{sec:conclusion-further}
