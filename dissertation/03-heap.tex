@@ -115,35 +115,38 @@ while i <= A.upper do
     i := i + 1
 \end{verbatim}
 
+  \begin{figure}[t]
+    \centering
+      \begin{prooftree}
+        \AxiomC{$\ltrue \implies I''$}
+
+        \AxiomC{$\htriple{I''}{L1}{I'}$}
+        \AxiomC{$\htriple{I'}{L2}{I}$}
+        \BinaryInfC{$\htriple{I''}{L1; L2}{I}$}
+
+        \AxiomC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4}{J}$}
+        \AxiomC{$\htriple{J}{L5}{I}$}
+        \BinaryInfC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4;
+            L5}{I}$}
+        \UnaryInfC{$\htriple{I}{while i < A.upper do (L4; L5)}{I \land
+            \mathtt{i} > A.upper}$}
+
+        \BinaryInfC{$\htriple{I''}{\ldots}{\mathtt{sum} =
+            \mathrm{sum}~A}$}
+
+        \BinaryInfC{$\htriple{\ltrue}{\ldots}{\mathtt{sum} =
+            \mathrm{sum}~A}$}
+      \end{prooftree}
+    \caption{Proof tree for the list sum example}
+    \label{fig:exmpl:heap-sum-tree}
+  \end{figure}
+
   Specifically, we want to prove $\mathtt{sum} = \mathrm{sum}~A$. We
   shall do so by using this loop invariant, $\mathtt{sum} =
   \mathrm{sum}~A[A.lower : \mathtt{i} - 1]$, where $A[i:j]$ is the
   array consisting of the elements of $A$ between $i$ and $j$, and if
-  $i = j + 1$ is the empty array.
-
-  \begin{prooftree}
-    \AxiomC{$\ltrue \implies I''$}
-
-    \AxiomC{$\htriple{I''}{L1}{I'}$}
-    \AxiomC{$\htriple{I'}{L2}{I}$}
-    \BinaryInfC{$\htriple{I''}{L1; L2}{I}$}
-
-    \AxiomC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4}{J}$}
-    \AxiomC{$\htriple{J}{L5}{I}$}
-    \BinaryInfC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4;
-        L5}{I}$}
-    \UnaryInfC{$\htriple{I}{while i < A.upper do (L4; L5)}{I \land
-        \mathtt{i} > A.upper}$}
-
-    \BinaryInfC{$\htriple{I''}{\ldots}{\mathtt{sum} =
-        \mathrm{sum}~A}$}
-
-    \BinaryInfC{$\htriple{\ltrue}{\ldots}{\mathtt{sum} =
-        \mathrm{sum}~A}$}
-  \end{prooftree}
-
-  Where the following definitions hold,
-
+  $i = j + 1$ is the empty array. A proof tree is displayed in Figure
+  \ref{fig:exmpl:heap-sum-tree}, where the following definitions hold,
   \begin{align*}
     J &\equiv \mathtt{sum} = \mathrm{sum}~A[A.lower : \mathtt{i} + 1]\\
     I' &\equiv I[0/\mathtt{sum}]\\
@@ -178,29 +181,32 @@ while i <= A.upper do
     i := i + 1
 \end{verbatim}
 
+  \begin{figure}[t]
+    \centering
+    \begin{prooftree}
+      \AxiomC{$\ltrue \implies I''$}
+
+      \AxiomC{$\htriple{I''}{L1}{I'}$}
+      \AxiomC{$\htriple{I'}{L2}{I}$}
+      \BinaryInfC{$\htriple{I''}{L1; L2}{I}$}
+
+      \AxiomC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4}{J}$}
+      \AxiomC{$\htriple{J}{L5}{I}$}
+      \BinaryInfC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4;
+          L5}{I}$}
+      \UnaryInfC{$\htriple{I}{\ldots}{I \land \mathtt{i} > A.upper}$}
+
+      \BinaryInfC{$\htriple{I''}{\ldots}{D}$}
+
+      \BinaryInfC{$\htriple{\ltrue}{\ldots}{D}$}
+    \end{prooftree}
+    \caption{Proof tree for the list doubling example}
+    \label{fig:exmpl:heap-double-tree}
+  \end{figure}
+
   And we shall use the invariant $\forall A.lower \leq j < i,\ B[j]
-  = 2 A[j]$ to do so.
-
-  \begin{prooftree}
-    \AxiomC{$\ltrue \implies I''$}
-
-    \AxiomC{$\htriple{I''}{L1}{I'}$}
-    \AxiomC{$\htriple{I'}{L2}{I}$}
-    \BinaryInfC{$\htriple{I''}{L1; L2}{I}$}
-
-    \AxiomC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4}{J}$}
-    \AxiomC{$\htriple{J}{L5}{I}$}
-    \BinaryInfC{$\htriple{I \land \mathtt{i} \leq A.upper}{L4;
-        L5}{I}$}
-    \UnaryInfC{$\htriple{I}{\ldots}{I \land \mathtt{i} > A.upper}$}
-
-    \BinaryInfC{$\htriple{I''}{\ldots}{D}$}
-
-    \BinaryInfC{$\htriple{\ltrue}{\ldots}{D}$}
-  \end{prooftree}
-
-  Where the following definitions hold,
-
+  = 2 A[j]$ to do so. A proof tree is displayed in Figure
+  \ref{fig:exmpl:heap-double-tree}, where the following definitions hold,
   \begin{align*}
     D &\equiv \forall A.lower \leq i < A.upper,\ B[i] = 2 A[i]\\
     J &\equiv \forall A.lower \leq j < i + 1,\ B[j] = 2 A[j]\\
