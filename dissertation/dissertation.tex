@@ -21,8 +21,9 @@
 
 % Figures
 \usepackage{caption}
-\DeclareCaptionFormat{myformat}{#1#2#3\hrulefill}
-\captionsetup[figure]{format=myformat}
+\DeclareCaptionFormat{default}{#1#2#3}
+\DeclareCaptionFormat{underlined}{#1#2#3\hrulefill}
+\captionsetup[figure]{format=underlined}
 
 % Stuff at the end
 \usepackage[toc,page]{appendix}

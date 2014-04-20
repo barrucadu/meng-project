@@ -10,7 +10,7 @@ Section \ref{sec:lit-verifiedgc}.
 The review shall largely be restricted to stop-the-world,
 non-concurrent, non-hybrid\footnote{A garbage collector which just
   uses one method to collect the heap, such as mark-sweep, rather than
-  combining multiple methods} collectors. This is because the project
+  combining multiple methods} collectors, this is because the project
 shall only directly involve such simple collectors, as considering
 more complex situations would significantly complicate the work. A
 brief mention shall be given to generational collectors, which are
@@ -54,9 +54,10 @@ collection shall be shown. Green cells are those pointed to by the
 roots (where pale green indicates those only pointed to indirectly:
 the reachable cells), red are garbage, and white are free.
 
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{lit-gc-before}
+  \captionsetup{format=default}
   \caption{Heap with garbage}
   \label{fig:lit-gc-before}
 \end{figure}
@@ -64,7 +65,7 @@ the reachable cells), red are garbage, and white are free.
 \subsection{Reference Counting}
 \label{sec:lit-gc-refcount}
 
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{lit-gc-refcount}
   \caption{Heap after reference counting}
@@ -99,9 +100,10 @@ on the programmer and so loses some of the convenience of the system.
 \subsection{Mark-Sweep}
 \label{sec:lit-gc-marksweep}
 
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{lit-gc-marksweep}
+  \captionsetup{format=default}
   \caption{Heap after mark-sweep collection}
   \label{fig:lit-gc-marksweep}
 \end{figure}
@@ -134,7 +136,7 @@ pause happens when the heap needs to be marked.
 \subsection{Copying}
 \label{sec:lit-gc-copying}
 
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{lit-gc-copying}
   \caption{Heap after copying collection}
@@ -156,7 +158,7 @@ cost of a half of the heap space\cite{GarbageCollection}.
 \subsection{Mark-Compact}
 \label{sec:lit-gc-markcompact}
 
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{lit-gc-markcompact}
   \caption{Heap after mark-compact collection}
@@ -202,8 +204,8 @@ whole-heap collection stage.
 
 Generational garbage collectors are a type of hybrid collector: the
 heap is divided into a number of \textit{generations}, where each
-generation holds progressively older cells. This is based on empirical
-observations of cell lifetimes resulting in the generational
+generation holds progressively older cells. This technique is based on
+empirical observations of cell lifetimes resulting in the generational
 hypothesis: young objects tend to die quickly, whereas old objects
 tend to stick around\cite{Ungar84}.
 
@@ -256,8 +258,9 @@ which is similar to Hoare logic but adds axioms for reasoning about
 the stack and heap.
 
 Once formalised, the axioms of the logic can be used to deduce
-propositions about the implementation. This can be, to some extent,
-automated using proof assistants, but in general this is undecidable.
+propositions about the implementation. Deduction can be, to some
+extent, automated using proof assistants, but in general this is
+undecidable.
 
 \begin{example}[Finding the index of the minimal element of a nonempty
   sequence of integers]
@@ -270,8 +273,7 @@ automated using proof assistants, but in general this is undecidable.
 i := 1;
 j := 1;
 while j < len xs do
-\label{fig:exmpl-lit-embedding-loopinv}
-if xs[j] < xs[i] then
+    if xs[j] < xs[i] then
         i := j
     else
         skip
@@ -336,7 +338,7 @@ appropriate invariant.
 
 A precondition is some assertion which must hold before executing some
 code, and a postcondition is some assertion which must hold
-afterwards\cite{Hoare69}. Hoare triples express this.
+afterwards\cite{Hoare69}, Hoare triples express this.
 
 In the case of languages with formally specified semantics, we must be
 able to derive the postcondition from the precondition and the
@@ -349,12 +351,12 @@ can progress inwards from both ends, meeting in the middle. If the two
 proof efforts cannot be unified, then there is a flaw in the code.
 
 Common to many proof systems is the ability to strengthen
-preconditions and weaken postconditions\cite{Hoare69}. This is legal
+preconditions and weaken postconditions\cite{Hoare69}, this is legal
 because if precondition $P'$ implies $P$, then by using the
 precondition $P'$ instead of $P$, we know that $P$ is guaranteed to
 hold. Similarly, if postcondition $Q$ implies $Q'$, then we know that
-$Q'$ is guaranteed to hold. This is expressed by the Hoare consequence
-rule:
+$Q'$ is guaranteed to hold. The ability to do this is expressed by the
+Hoare consequence rule:
 
 \begin{prooftree}
   \AxiomC{$P' \implies P$}
@@ -457,8 +459,8 @@ $I$ is invariant.
 The only information we can extract from a loop, at least under Hoare
 logic, is $\lnot B$, which doesn't seem very useful. The loop may be
 doing something very complicated, but it seems we can only extract a
-very small bit of information about this. The difficulty, then, lies
-in finding a loop invariant that, when combined with $\lnot B$, yields
+very small bit of information about it. The difficulty, then, lies in
+finding a loop invariant that, when combined with $\lnot B$, yields
 the result we want.
 
 \subsection{Verification by Extraction}
@@ -466,7 +468,8 @@ the result we want.
 
 The other approach is to gradually work downwards from the high-level
 specification to a constructive proof, which can then be turned into
-an implementation. This is called refinement. A special case of
+an implementation. Gradually turning a specification into an
+implementation in this way is called refinement. A special case of
 refinement is when the specification is already in the form of a
 constructive proof, in which case we can extract the implicit program
 from it, this is called extraction.
@@ -564,7 +567,7 @@ actual collector.
 \label{sec:lit-verification-extraction-constructive}
 
 Often when proving that a problem is soluble, we do not care about how
-an answer can be found, only that one exists. This can lead to very
+an answer can be found, only that one exists, which can lead to very
 concise existence proofs; when extracting a program directly from the
 proof, however, we need to be able to show how to find the
 answer. When refining from a specification, we start out with such an
@@ -595,7 +598,7 @@ switch.
 
 Proofs by induction require proving a base case, and then proving an
 inductive case given the inductive hypothesis (being able to solve a
-slightly smaller problem) holds. This naturally translates to the
+slightly smaller problem) holds, which naturally translates to the
 programming methodology of reduce-and-conquer.
 
 We can translate induction into iteration as follows:
