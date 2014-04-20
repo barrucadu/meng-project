@@ -1,36 +1,34 @@
 \chapter{Results \& Evaluation}
 \label{sec:results}
 
-Previously, I have attempted to provide proofs of correctness for two
-extant garbage collection algorithms, and from this extract a more
-generalised notion of correctness. In this chapter, I shall discuss
-and evaluate the results of the two facets of my work, and how
-successful I have been in achieving the goal of this project. I shall
-also discuss an experimental validation of my proofs involving an
-implementation of the two collectors discussed.
+Previously, formalisms and proofs of correctness for two extant
+garbage collection algorithms were developed, and from this a more
+generalised notion of correctness was extracted. This chapter shall
+discuss and evaluate the results of the two facets of the work, and
+how successfully the goals of the project have been met. An
+experimental validation of the proofs involving an implementation of
+the two collectors shall also be discussed.
 
 \section{Proofs of Collectors}
 \label{sec:results-collectors}
 
 In the process of producing a generalised notion of correctness for
-garbage collectors, I first provided proofs of the Armstrong/Virding
-and Fenichel/Yochelson collectors: two very different approaches, but
-both for systems based on fixed-size cons cells. The proofs for
-neither collector I considered could be machine verified in their
-current form, however I believe that they remain convincing despite
-this.
+garbage collectors, proofs of the Armstrong/Virding and
+Fenichel/Yochelson collectors were first provided: two very different
+approaches, but both for systems based on fixed-size cons cells. The
+proofs for neither collector could be machine verified in their
+current form, however they remain convincing despite this.
 
-I hold this to be the case because the collectors were chosen for
-their simplicity: they are both old, established, collectors which
-have stood the test of time, and they are sufficiently simple that one
-can `see' their correctness at a glance. They do not attempt to
-perform any nontrivial cleverness to improve the performance of the
-mutator or memory system, as more modern hybrid collectors are wont to
-do, and they fall strictly within the bounds of mark-sweep and copying
-collectors, without borrowing anything from other areas. Thus, the
-proofs simply make explicit the intuition we feel when we read them,
-and the implementation of the collectors provides an experimental
-validation of this intuition.
+The collectors were chosen for their simplicity: they are both old,
+established, collectors which have stood the test of time, and they
+are sufficiently simple that one can `see' their correctness at a
+glance. They do not attempt to perform any nontrivial cleverness to
+improve the performance of the mutator or memory system, as more
+modern hybrid collectors are wont to do, and they fall strictly within
+the bounds of mark-sweep and copying collectors, without borrowing
+anything from other areas. Thus, the proofs simply make explicit the
+intuition we feel when we read them, and the implementation of the
+collectors provides an experimental validation of this intuition.
 
 The proofs may appear quite different on the surface, however many of
 the definitions used in the mark-sweep proof were reused in the
@@ -44,45 +42,40 @@ amenable to proof.
 \section{Collector Implementation}
 \label{sec:results-impl}
 
-As evidence of the correctness of the proofs, I
-implemented\footnote{All of the code produced can be found in Appendix
-  \ref{sec:gc-impl}, and online at
-  \url{https://github.com/barrucadu/meng-project}.} both of the
-collectors in C, and wrote a small test program with a very
-constrained heap which constructs a variety of linked lists, and
-results in over 200 garbage collections occurring. I then attached
-assertions to points in the programs to verify the preconditions,
-postconditions, and invariants of the collectors.
-
-The implementations are written in C99, and have been tested with both
-clang 3.4 and gcc 4.8.2. They should work under any
-standards-compliant compiler, but I have not verified this.
+As evidence of the correctness of the proofs, both of the collectors
+were implemented\footnote{All of the code produced can be found in
+  Appendix \ref{sec:gc-impl}, and online at
+  \url{https://github.com/barrucadu/meng-project}.} in C, with a small
+test program with a very constrained heap which constructs a variety
+of linked lists, and results in over 200 garbage collections
+occurring. Assertions were then attached to points in the programs to
+verify the preconditions, postconditions, and invariants of the
+collectors.
 
 The implementation does have some limitations imposed upon it for
 simplicity: there is a fixed-size array of roots, which the programmer
 must ensure contains all roots, and the requirement of immutable cells
 in the Armstrong/Virding collector is not implemented. Resolving both
-of these would have been significantly more work, and are not
-necessary in order to demonstrate that the garbage collection works.
+of these would have been significantly more work, and is not necessary
+in order to demonstrate that the garbage collection works.
 
-Both collectors manage a heap of \texttt{NUM\_CELLS} cells (in the
-case of Fenichel/Yochelson, both semispaces are this big), in order to
-have identical characteristics. This then allows identical assertions
-to be used in the test program. As neither collector comes with an
-allocator, I have had to produce allocators, \texttt{alloc()}, which
-work with them. The way I have done so is not necessarily the only, or
-best, way, it is just what occurred to me and appears to work. In both
-cases, the collector is invoked by the allocator upon not having
-enough memory left for an allocation. The preconditions are checked
-before calling the \texttt{gc()} function, and the postconditions
-checked after. In each of the garbage collector loops, the invariants
-are checked after each iteration.
+Both collectors manage a heap of the same number of cells (in the case
+of Fenichel/Yochelson, both semispaces are this big), in order to have
+identical characteristics, allowing identical assertions to be used in
+the test program. As neither collector comes with an allocator,
+allocators have been produced which work with them. The way that this
+has been done is not necessarily the only, or best, way, it is just
+what appears to work. In both cases, the collector is invoked by the
+allocator upon not having enough memory left for an allocation. The
+preconditions are checked before calling the garbage collection
+function, and the postconditions checked after. In each of the garbage
+collector loops, the invariants are checked after each iteration.
 
 Due to using a low level language, the implementations of the
 collectors look somewhat more complex than what is specified in their
-respective papers, but is as close as I could reasonably obtain.
+respective papers, but is as close as could reasonably be obtained.
 
-The assertions, and their implementation are discussed below.
+The assertions, and their implementation, are discussed below.
 
 \subsection{Armstrong/Virding}
 \label{sec:results-impl-ms}
@@ -90,8 +83,8 @@ The assertions, and their implementation are discussed below.
 \subsubsection{Preconditions}
 \label{sec:results-impl-ms-pre}
 
-The Armstrong/Virding collector, as I discussed, has a precondition
-that the $first$ cell is always reachable, as otherwise it would be
+The Armstrong/Virding collector has a precondition that the
+\texttt{first} cell is always reachable, as otherwise it would be
 garbage, and due to it never being freed, garbage would survive a
 collection. Furthermore, it is assumed that when the collector is
 called, all cells pointed to by roots have been marked.
@@ -166,14 +159,14 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
 \subsubsection{Preconditions}
 \label{sec:results-impl-c-pre}
 
-An invariant which I did not mention whilst discussing my proof, but
+An invariant which was not mentioned whilst discussing the proof, but
 which the garbage collector, mutator, and allocator must obey, is that
-there are no inter-semispace pointers. Due to a bug in my linked list
-code (which has since been remedied), a garbage collection occuring
-whilst appending a value to a list would result in this invariant
-being broken, and resulted in my being stuck for some time before I
-realised what the issue was. I then decided to enforce this as a
-precondition of the collector.
+there are no inter-semispace pointers. Due to a bug in the test
+mutator code (which has since been remedied), a garbage collection
+occuring whilst appending a value to a list would result in this
+invariant being broken, and resulted in some confusion before the
+issue became apparent: this was then enforced as a precondition of the
+collector.
 
 \begin{lstlisting}[language=C,caption={Fenichel/Yochelson Preconditions}]
 cell *sspace = (cons_space == FIRST) ? semispace1 : semispace2;
@@ -196,8 +189,8 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
 \subsubsection{Postconditions}
 \label{sec:results-impl-c-post}
 
-As a postcondition I again checked the live cell invariant, and also
-asserted that all allocated cells are reachable.
+As a postcondition the live cell invariant was again checked, and also
+it was asserted that all allocated cells are reachable.
 
 \begin{lstlisting}[language=C,caption={Fenichel/Yochelson Postconditions}]
 cell* sspace = (cons_space == FIRST) ? semispace1 : semispace2;
@@ -214,13 +207,13 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
 \subsubsection{Invariants}
 \label{sec:results-impl-c-invariants}
 
-The invariant I decided to check is that, after collecting every root,
-all pointers in cells reachable from that root have been
-updated. Actually, I went for the weaker property that pointers
-pointed into the correct semispace. Unfortunately, proving the
-stronger property would require having access to the pre-state of the
-heap, which would require copying it before initiating a garbage
-collection.
+The invariant chosen to be verified is that, after collecting every
+root, all pointers in cells reachable from that root have been
+updated; however, this proved too strong to implement concisely, and
+so the weaker property that pointers pointed into the correct
+semispace was verified. Unfortunately, proving the stronger property
+would require having access to the pre-state of the heap, which would
+require copying it before initiating a garbage collection.
 
 \begin{lstlisting}[language=C,caption={Fenichel/Yochelson GC Loop}]
 for(unsigned int i = 0; i < NUM_ROOTS; i ++)
@@ -264,20 +257,20 @@ static void check_pointers_updated(const cell* root, const cell* cur)
 \section{Generalised Garbage Collection Correctness}
 \label{sec:results-correctness}
 
-Having produced two proofs of correctness, I then attempted to extract
-a more general formalism from them, however, I discovered that my
+Having produced two proofs of correctness, it was then attempted to
+extract a more general formalism, however, it became apparent that the
 formalism for copying collectors was general enough to cover both of
-the cases already. Rather than conclude that I was done, I generalised
-in a different direction, by allowing the garbage collector to mutate
-metadata in cells.
+the cases already. Rather than conclude that the project was done, I
+generalised in a different direction, by allowing the garbage
+collector to mutate metadata in cells.
 
 Whilst initially appearing to only be a small change, this actually
-allows a much larger class of garbage collectors to be reasoned
-about, and an example is provided below. I then split up a general
-garbage collector into a series of abstract stages, which can be
-reasoned about separately, and which I think aids proof. I also showed
-how these could be specialised to the cases of the mark-sweep and
-copying collectors already considered.
+allows a much larger class of garbage collectors to be reasoned about,
+and an example is provided below. A general garbage collector was then
+split up into a series of abstract stages, which can be reasoned about
+separately, and which aids proof. It was also shown how these could be
+specialised to the cases of the mark-sweep and copying collectors
+already considered.
 
 \begin{example}
   Consider a simple generational garbage collector, which tracks what
@@ -289,7 +282,7 @@ copying collectors already considered.
   generation by incrementing this tag in the collector, whereas in the
   copying formalism we would be unable to do this, as only pointers
   can be mutated. This would have to happen outside of the garbage
-  collector, in some separate ``generation incrementer'', but
+  collector, in some separate `generation incrementer', but
   separating these two things does not appear to make much sense, and
   is just an inconvenience imposed by an overly-strict formalism.
 \end{example}
@@ -304,8 +297,8 @@ my initial goal.
 \section{Summary}
 \label{sec:results-summary}
 
-To summarise my results, I have produced proofs of correctness for two
-garbage collectors, in the process formalising everything needed to
-achieve this. I then generalised the formalism to cover an even
-greater range of collectors. Finally, I implemented the two
-collectors, with pre- and post-conditions checked throughout.
+To summarise the results, proofs of correctness for two garbage
+collectors were produced, in the process formalising everything needed
+to achieve this. The formalisms were then generalised to cover an even
+greater range of collectors. Finally, the two collectors were
+implemented, with pre- and post-conditions checked throughout.

@@ -3,6 +3,13 @@
 
 \lstset{language=C}
 
+The following code is written in C99, and has been tested with both
+clang 3.4 and gcc 4.8.2. It should work under any standards-compliant
+compiler, but this has not been verified.
+
+In addition to being provided here, the code can be downloaded from
+\url{https://github.com/barrucadu/meng-project}.
+
 \section{Armstrong/Virding}
 \label{sec:gc-impl-armstrong-virding}
 
@@ -15,8 +22,6 @@ and \texttt{cell\_id} are used solely in assertions, and are not
 necessary for a non-instrumented implementation of the collector. The
 allocator calls the garbage collector upon running out of space, and
 the user cannot call the garbage collector directly.
-
-\vspace{1cm}
 
 \lstset{caption={Implementation of Armstrong/Virding in C}}
 \lstset{label=lst:armstrong-virding-c}
