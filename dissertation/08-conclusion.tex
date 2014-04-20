@@ -1,9 +1,9 @@
 \chapter{Conclusion}
 \label{sec:conclusion}
 
-In this chapter I shall discuss further work suggested to me by
-undertaking this project, and close with some final thoughts on the
-matter.
+This chapter shall discuss further work suggested to me by undertaking
+this project, briefly review the prior chapters, and close with some
+final thoughts on the matter.
 
 \section{Related Work}
 \label{sec:conclusion-related}
@@ -28,6 +28,11 @@ independent verification. My approach does not do this, and so
 verification of a mutator necessarily is collector-specific, as
 different collectors will have different invariants and preconditions.
 
+\section{Review}
+\label{sec:conclusion-review}
+
+% TODO
+
 \section{Further Work}
 \label{sec:conclusion-further}
 
@@ -35,7 +40,7 @@ different collectors will have different invariants and preconditions.
 \label{sec:conclusion-further-machineverification}
 
 Whilst it would have been desirable to produce machine-verified
-proofs, I did not do so for two reasons: firstly, learning to use a
+proofs, this was not done for two reasons: firstly, learning to use a
 proof assistant would have been a significant amount of work to add to
 the project, and secondly I believe the proofs are good enough in
 their current form. Parts of the proofs may be amenable to automation,
@@ -44,11 +49,10 @@ making it more rigorous.
 
 Given the two proofs in the current forms, however, it would not be
 infeasible to translate them into a form suitable for machine
-verification, and to ``fill in the blanks'', resulting in completely
+verification, and to fill in the blanks, resulting in completely
 machine-verified proofs. This endeavour would also highlight any
-assumptions I have unknowingly made in this project, and bring to
-light any further obligations, particularly those on the mutator or
-allocator.
+assumptions unknowingly made in this project, and bring to light any
+further obligations, particularly those on the mutator or allocator.
 
 \subsection{Run-time Invariant Checking}
 \label{sec:conclusion-further-invariants}
@@ -83,7 +87,7 @@ collectors are very common, especially in systems with need for rapid
 response to input, and my formalism cannot reason about them at
 all.
 
-It would be desirably to extend the formalism to be able to cope with
+It would be desirable to extend the formalism to be able to cope with
 incremental collectors, perhaps by modelling the system as a
 mutate/collect loop, and determining what invariants are needed for
 the collector to not interfere with the mutator and vice versa, whilst
@@ -108,7 +112,7 @@ memory. It may even be the case that the collector and mutator run on
 separate processor cores continuously, which results in this not just
 being a special case of incremental collection.
 
-As I have assumed that collectors are of the stop-the-world type,
+As it was assumed that collectors are of the stop-the-world type,
 there is no scope for reasoning about this in the current
 formalism. In order to show correctness, it would be necessary to show
 that, for all possible interleavings, the collector and mutator could
@@ -120,7 +124,7 @@ garbage collection.
 However, this would be a very difficult problem to approach in
 general, and could possibly be attacked by making the problem more
 similar to incremental collection by constraining where collection and
-mutation occurs, allowing a large class of ``dangerous'' states to be
+mutation occurs, allowing a large class of dangerous states to be
 avoided at the cost of some concurrency.
 
 \section{Final Thoughts}
