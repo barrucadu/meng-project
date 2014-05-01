@@ -1,21 +1,20 @@
 \chapter{Literature Review}
 \label{sec:lit}
 
-This chapter shall review the work that has already been done in both
-the fields of garbage collection in Section \ref{sec:lit-gc}, and
+This chapter reviews the work that has already been done in both the
+fields of garbage collection in Section \ref{sec:lit-gc}, and
 algorithm verification in Section \ref{sec:lit-verification}, and then
-consider in more detail some instances of verified collectors in
+considers in more detail some instances of verified collectors in
 Section \ref{sec:lit-verifiedgc}.
 
-The review shall largely be restricted to stop-the-world,
-non-concurrent, non-hybrid\footnote{A garbage collector which just
-  uses one method to collect the heap, such as mark-sweep, rather than
-  combining multiple methods} collectors, this is because the project
-shall only directly involve such simple collectors, as considering
-more complex situations would significantly complicate the work. A
-brief mention shall be given to generational collectors, which are
-arguably hybrid, but shall not be rigorously proving things about
-them.
+The review is largely restricted to stop-the-world, non-concurrent,
+non-hybrid\footnote{A garbage collector which just uses one method to
+  collect the heap, such as mark-sweep, rather than combining multiple
+  methods} collectors, as the project only directly involved such
+simple collectors, as considering more complex situations would
+significantly complicate the work. A brief mention is given to
+generational collectors, which are arguably hybrid, but they are
+not considered further.
 
 Understanding the dissertation will require some understanding of
 mark-sweep and copying collectors, Hoare logic, and array
