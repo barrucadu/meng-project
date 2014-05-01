@@ -176,6 +176,10 @@
     identifierstyle= %plain identifiers for make
 }
 
+\makeatletter
+\renewcommand\l@lstlisting[2]{\@dottedtocline{1}{1.5em}{2.75em}{#1}{#2}}
+\makeatother
+
 \title{%
 {\normalsize\scshape University of York}\\
 \vspace{2em}
