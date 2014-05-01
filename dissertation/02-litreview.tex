@@ -57,7 +57,7 @@ the reachable cells), red are garbage, and white are free.
   \centering
   \includegraphics[width=\textwidth]{lit-gc-before}
   \captionsetup{format=default}
-  \caption{Heap with garbage}
+  \caption{Heap with garbage.}
   \label{fig:lit-gc-before}
 \end{figure}
 
@@ -67,7 +67,7 @@ the reachable cells), red are garbage, and white are free.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{lit-gc-refcount}
-  \caption{Heap after reference counting}
+  \caption{Heap after reference counting.}
   \label{fig:lit-gc-refcount}
 \end{figure}
 
@@ -103,7 +103,7 @@ on the programmer and so loses some of the convenience of the system.
   \centering
   \includegraphics[width=\textwidth]{lit-gc-marksweep}
   \captionsetup{format=default}
-  \caption{Heap after mark-sweep collection}
+  \caption{Heap after mark-sweep collection.}
   \label{fig:lit-gc-marksweep}
 \end{figure}
 
@@ -138,7 +138,7 @@ pause happens when the heap needs to be marked.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{lit-gc-copying}
-  \caption{Heap after copying collection}
+  \caption{Heap after copying collection.}
   \label{fig:lit-gc-copying}
 \end{figure}
 
@@ -160,7 +160,7 @@ cost of a half of the heap space\cite{GarbageCollection}.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{lit-gc-markcompact}
-  \caption{Heap after mark-compact collection}
+  \caption{Heap after mark-compact collection.}
   \label{fig:lit-gc-markcompact}
 \end{figure}
 
@@ -304,7 +304,7 @@ while j < len xs do
 
       \BinaryInfC{$\htriple{\len xs > 0}{P}{xs[i] = \min xs}$}
     \end{prooftree}
-    \caption{Proof tree for the embedding example}
+    \caption{Proof tree for the embedding example.}
     \label{fig:exmpl:lit-embedding-tree}
   \end{figure}
 
@@ -380,7 +380,7 @@ program to be considered independently, and then combined later on.
       \AxiomC{$I[1/j][0/i] \iff L$}
       \BinaryInfC{$\htriple{L}{i := 0; j := 1}{I}$}
   \end{prooftree}
-  \caption{Sequencing of statements in Hoare logic}
+  \caption{Sequencing of statements in Hoare logic.}
   \label{fig:exmpl:lit-embedding-sequencing}
 \end{figure}
 
@@ -433,7 +433,7 @@ proof for the property we wish to establish.
     \BinaryInfC{$\htriple{R(j) \land I}{if \ldots; j := j + 1}{I}$}
     \UnaryInfC{$\htriple{I}{while \ldots}{\lnot R(j) \land I}$}
   \end{prooftree}
-  \caption{Loop invariants in Hoare logic}
+  \caption{Loop invariants in Hoare logic.}
   \label{fig:exmpl:lit-embedding-loop}
 \end{figure}
 
