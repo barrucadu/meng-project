@@ -353,11 +353,11 @@ can progress inwards from both ends, meeting in the middle. If the two
 proof efforts cannot be unified, then there is a flaw in the code.
 
 Common to many proof systems is the ability to strengthen
-preconditions and weaken postconditions\cite{Hoare69}, this is legal
-because if precondition $P'$ implies $P$, then by using the
+preconditions and weaken postconditions\cite{Hoare69}. This rule is
+legal because if we have $P' \implies P$, then by using the
 precondition $P'$ instead of $P$, we know that $P$ is guaranteed to
-hold. Similarly, if postcondition $Q$ implies $Q'$, then we know that
-$Q'$ is guaranteed to hold. The ability to do this is expressed by the
+hold. Similarly, if $Q \implies Q'$, then we know the postcondition
+$Q'$ holds if $Q$ does. The ability to do this is expressed by the
 Hoare consequence rule:
 
 \begin{prooftree}
