@@ -39,33 +39,30 @@ unfortunate that verification has received little attention, as
 garbage collection bugs can be a very difficult problem to detect
 through testing alone.
 
-This project will explore the route of using generic and flexible
+This dissertation explores the route of using generic and flexible
 formalisms, not tied to any particular class of collector, and which
 can be used for proving a particular collector correct, or extracting
-a new collector from the formalism. In this project, I intend to
-accomplish the following,
+a new collector from the formalism. This dissertation presents the
+following contributions,
 
 \begin{enumerate}
-  \item Formalise a notion of partial correctness for mark-sweep
-    collectors, making as few assumptions as possible; and then to prove
+  \item A formalism for a notion of partial correctness for mark-sweep
+    collectors, making as few assumptions as possible; and a proof for
     an established collector correct with respect to the formalism.
 
-  \item Formalise a notion of partial correctness for copying
+  \item A formalism for a notion of partial correctness for copying
     collectors, reusing as much as possible from the mark-sweep
-    formalism, but diverging where necessary; and then to prove an
+    formalism, but diverging where necessary; and a proof for an
     established collector correct with respect to the formalism.
 
-  \item From these two formalisms, extract a common formalism
+  \item From these two formalisms, an extraction of a common formalism
     applicable to both mark-sweep, copying, and some other types of
-    collectors, and to provide some guidance to aid proof.
+    collectors, and some guidance to aid proof.
 
-  \item To implement the two proven collectors, and to verify key
-    assertions at runtime whilst inducing a large number of collection
-    cycles.
+  \item An implementation of the two proven collectors, with key
+    assertions verified at runtime whilst inducing a large number of
+    collection cycles.
 \end{enumerate}
-
-Furthermore, at the end of the dissertation, I shall discuss how well
-I succeeded in meeting these goals.
 
 \subsection{Development Methodology}
 \label{sec:intro-goals-development}
