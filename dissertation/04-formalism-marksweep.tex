@@ -239,11 +239,12 @@ Armstrong and Virding\cite{Armstrong95} introduced a simple mark-sweep
 collector for Erlang, making use of the immutability of the language
 in order to combine the mark and sweep stages. The collector operates
 on a heap of cons cells, and uses a pointer named \texttt{SCAV} to
-keep track of the current position of the collector in the heap.
+keep track of the current position of the collector in the heap. The
+algorithm is presented in Figure \ref{fig:marksweep-example-algo}.
 
-The algorithm is as follows:
-
-\begin{lstlisting}
+\begin{figure}[t]
+  \centering
+  \begin{lstlisting}
 last = current
 SCAV = hist(last)
 while (SCAV != first) {
@@ -260,7 +261,11 @@ while (SCAV != first) {
         free_cons(tmp);
     }
 }
-\end{lstlisting}
+  \end{lstlisting}
+  \captionsetup{format=default}
+  \caption{The Armstrong/Virding garbage collector.}
+  \label{fig:marksweep-example-algo}
+\end{figure}
 
 The \texttt{possibly\_mark} function follows and marks its argument if
 it is a pointer; \texttt{first} and \texttt{current} point to the
