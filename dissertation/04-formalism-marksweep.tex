@@ -683,22 +683,19 @@ The two cases are as follows,
 \section{Summary}
 \label{sec:marksweep-summary}
 
-This chapter has defined the heap, cells, pointers, word preservation,
-and reachability (defns.  \ref{def:ms-heap}, \ref{def:ms-cell},
-\ref{def:ms-pointer}, \ref{def:ms-word-preservation}, and
-\ref{def:ms-reachable}), and used these to then define correct marking
-and sweeping (defns.  \ref{def:ms-correct-marking} and
-\ref{def:ms-correct-sweeping}), giving some thought to the correctness
-of interleaved marking and sweeping (defn. \ref{def:ms-interleaved}).
+This chapter has defined (in Section \ref{sec:marksweep-defns}) the
+heap, cells, pointers, word preservation, and reachability, and used
+these to then define correct marking and sweeping, giving some thought
+to the correctness of interleaved marking and sweeping.
 
 It has been argued that correctness for a mark-sweep collector comes
-down to marking all (and only) of the reachable cells, freeing all
+down to marking all of---and only---the reachable cells, freeing all
 others, and then unmarking. And, furthermore, that no words should be
-modified in non-garbage cells after garbage collection.
+modified in non-garbage cells after garbage collection. Then the
+Armstrong/Virding\cite{Armstrong95} collector was used as an example
+of the developed formalism, with proofs of its partial and total
+correctness provided.
 
-Then the Armstrong/Virding\cite{Armstrong95} collector was used as an
-example of the developed formalism, with proofs of its partial and
-total correctness provided. These proofs shall not be referenced in
-future chapters, and merely serve as an illustration of the utility
-of the definition of correctness presented here. Definitions, however,
-will be reused.
+These proofs shall not be referenced in future chapters, and merely
+serve as an illustration of the utility of the definition of
+correctness presented here. Definitions, however, will be reused.
