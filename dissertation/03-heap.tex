@@ -6,6 +6,14 @@ array, and introduces a specific formalism for reasoning about
 array-based programs, along with some examples of its use. This
 formalism will be used in later chapters.
 
+Section \ref{sec:heap-why} justifies the use of modelling the heap as
+a simple array, with Section \ref{sec:heap-separation} presenting an
+alternative model. Section \ref{sec:heap-arrays} then introduces Gries
+array formalism\cite{Gries87}.
+
+\section{Why Arrays?}
+\label{sec:heap-why}
+
 In a physical computer, the heap lives in virtual memory, where
 virtual memory consists of an integer-indexed collection of machine
 words. In the case of x86 computers, these words are bytes, and the
