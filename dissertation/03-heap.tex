@@ -105,7 +105,7 @@ $A.upper$, leading to a definition of the domain of an array $\dom~A =
   Assigning an array member to a variable is exactly the same as
   normal assignment, with the additional precondition that the array
   subscript be in range.
-  \[\htriple{P\left[A[n]/x\right] \land n \in \dom~A}{x := A[n]}{P}\]
+  \[\htriplem{P\left[A[n]/x\right] \land n \in \dom~A}{x := A[n]}{P}\]
 \end{definition}
 
 \begin{example}[Summing a list]
@@ -168,7 +168,7 @@ while i <= A.upper do
   Assignment to an array is modelled as functional override,
 
   \begin{align*}
-    \htriple{P[(A; i : e)/A] \land i \in \dom~A}{A[i] = e}{P}
+    \htriplem{P[(A; i : e)/A] \land i \in \dom~A}{A[i] = e}{P}
   \end{align*}
 
   Where $(A; i : e)[j]$ evaluates to $e$ if $i = j$, and $A[j]$
