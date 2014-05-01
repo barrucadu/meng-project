@@ -15,10 +15,12 @@ the Armstrong/Virding\cite{Armstrong95} collector in Section
 
 The following terms are used throughout the dissertation: $h$, a heap;
 $h'$ the state of a heap $h$ before garbage collection; $r$, the root
-set; $\free{c}$, true iff the cell $c$ is on the free list;
-$\reach{h}{r}$, the set of cells reachable from $r$ in $h$. The
-definitions of $\free{c}$ and $\reach{h}{r}$ are expressed more
-formally later on.
+set; $\free{c}$, true iff the cell $c$ is on the free list; and
+$\reach{h}{r}$, the set of cells reachable from $r$ in
+$h$. Furthermore, quantifiers are used as follows: $\forall c \in h$
+ranges over pointers to cells in the heap $h$; and $\forall w \in c$
+ranges over addresses within a cell $c$. The definitions of $\free{c}$
+and $\reach{h}{r}$ are expressed more formally later on.
 
 \begin{definition}[Heap]
   \label{def:ms-heap}
@@ -82,10 +84,6 @@ metadata.
   After garbage collection, no allocated cells have been mutated.
    \[\forall c \in h,\ \forall w \in c,\ \lnot\free{c} \implies h[w] =
    h'[w]\]
-
-   Here $h'$ refers to the state of $h$ before garbage collection
-   began, and $\forall w \in c$ ranges $w$ over the indices of the
-   non-header words in the cell.
 \end{definition}
 
 A short word needs to be said on what it means for a cell to be
