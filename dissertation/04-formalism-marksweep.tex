@@ -78,7 +78,6 @@ which will be of use later on: given a pointer, $p$, let $\gchead{p}$
 return the heap index for the start of the garbage collection
 metadata.
 
-
 \begin{definition}[Word Preservation]
   \label{def:ms-word-preservation}
   After garbage collection, no allocated cells have been mutated.
@@ -102,7 +101,7 @@ definitions of correctness in the following two sections, but it is
 still essential.
 
 Finally, in order to ensure that pointers only point to sane
-locations, we require that the live cells and the free cells are
+locations, we must show that the live cells and the free cells are
 disjoint,
 
 \begin{definition}[Live Cell Invariant]
