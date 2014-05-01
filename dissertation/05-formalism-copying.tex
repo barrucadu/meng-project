@@ -56,13 +56,12 @@ we also need to be able to find old $w$ values.
 \label{sec:copying-address}
 
 In the definition of correct copying, a function $f$ was invoked to
-update addresses. Unfortunately, not every function will do
-here. Trivially, we can see that the constant function won't work, as
-then everything would be moved to the same place, resulting in data
-corruption. The function needs to preserve uniqueness of
-addresses. Furthermore, in order to reason about words in the original
-heap, $h'$, we need to be able to go backwards: the function must be
-invertible.
+update addresses. Unfortunately, not every function will do here. We
+can see that the constant function won't work, as then everything
+would be moved to the same place, resulting in data corruption. The
+function needs to preserve uniqueness of addresses. Furthermore, in
+order to reason about words in the original heap, $h'$, we need to be
+able to go backwards: the function must be invertible.
 
 \begin{definition}[Address Translation Function]
   \label{def:c-address-translation-function}
@@ -306,12 +305,12 @@ terminates we have $k = \len \mathtt{roots}$.
   \texttt{collect}(car($p$)) and \texttt{collect}(cdr($p$))
   respectively]
   \label{lem:c-example-update}
-  Trivially by inspection.
+  By inspection.
 \end{lemma}
 
 \begin{lemma}[\texttt{collect} does not copy any unreachable cells]
   \label{lem:c-example-unreach}
-  Trivial: we can see that \texttt{gc} only calls \texttt{collect} on
+  We can see that \texttt{gc} only calls \texttt{collect} on
   cells pointed to by roots, which are reachable by definition;
   furthermore we can see that \texttt{collect} only calls
   \texttt{collect} on cells which are either the car or cdr of a cell
@@ -417,7 +416,7 @@ and so a more realistic model of the heap was desirable.
   \begin{proof}
     Myreen's $f$ is only defined for cell start addresses, as his heap
     is a partial function from addresses to cells, but the function
-    can be trivially expanded to what we need by filling in the
+    can be easily expanded to what we need by filling in the
     blanks. Having done that, let's rearrange to get $h$ and $r$ from
     his definition,
 
