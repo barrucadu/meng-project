@@ -71,12 +71,13 @@ the reachable cells), red are garbage, and white are free.
   \label{fig:lit-gc-refcount}
 \end{figure}
 
-Reference counting is a very simple scheme where each cell contains a
-\textit{reference count}, some integer field which keeps track of the
-number of references to the cell. In the most basic form of the
-algorithm, the compiler maintains a write barrier, which increments
-and decrements the count immediately as references are created or
-destroyed. Furthermore, as soon as the count reaches zero, the cell is
+Reference counting (see Figure \ref{fig:lit-gc-refcount}) is a very
+simple scheme where each cell contains a \textit{reference count},
+some integer field which keeps track of the number of references to
+the cell. In the most basic form of the algorithm, the compiler
+maintains a write barrier, which increments and decrements the count
+immediately as references are created or destroyed. Furthermore, as
+soon as the count reaches zero, the cell is
 deallocated\cite{Collins60}.
 
 This strategy seems good, as it distributes the load of memory
@@ -107,13 +108,13 @@ on the programmer and so loses some of the convenience of the system.
   \label{fig:lit-gc-marksweep}
 \end{figure}
 
-The mark-sweep method was invented for the early Lisp
-systems\cite{McCarthy60}, and it functions by giving every cell a
-\textit{mark bit}, which is initially unset. Upon running out of
-memory, all cells reachable from the roots are marked (this can be
-done recursively quite simply), and then all cells in the heap are
-examined: those which are unmarked are freed, and those which are
-marked are unmarked, ready for the next
+The mark-sweep method (see Figure \ref{fig:lit-gc-marksweep}) was
+invented for the early Lisp systems\cite{McCarthy60}, and it functions
+by giving every cell a \textit{mark bit}, which is initially
+unset. Upon running out of memory, all cells reachable from the roots
+are marked (this can be done recursively quite simply), and then all
+cells in the heap are examined: those which are unmarked are freed,
+and those which are marked are unmarked, ready for the next
 collection\cite{GarbageCollection}.
 
 Compared to reference counting, mark-sweep is a very different beast:
@@ -142,13 +143,14 @@ pause happens when the heap needs to be marked.
   \label{fig:lit-gc-copying}
 \end{figure}
 
-Copying collectors divide the heap into two \textit{semispaces}, where
-allocation is only done in one of them at a time. In garbage
-collection, all live cell are copied to the other semispace (in the
-example this has been shown by shifting the addresses up by 8), and
-the roles of the semispaces are swapped\cite{Fenichel69}. Unlike
-mark-sweep collectors, the pause time of a copying collector is
-proportional only to the number of live cells\cite{Appel87}.
+Copying collectors (see Figure \ref{fig:lit-gc-copying}) divide the
+heap into two \textit{semispaces}, where allocation is only done in
+one of them at a time. In garbage collection, all live cell are copied
+to the other semispace (in the example this has been shown by shifting
+the addresses up by 8), and the roles of the semispaces are
+swapped\cite{Fenichel69}. Unlike mark-sweep collectors, the pause time
+of a copying collector is proportional only to the number of live
+cells\cite{Appel87}.
 
 Copying collectors have become fairly popular due to the low cost of
 allocation and reduction of fragmentation, however they have a space
@@ -170,14 +172,15 @@ do so. Furthermore, high fragmentation can increase the rate of page
 faults and cache misses, reducing the performance of the
 mutator\cite{Zorn90}.
 
-Thus, we come to the mark-compact collectors. These first mark the
-live portion of the heap, and then copy marked cells over garbage
-ones, moving everything towards one end of the heap in order to remove
+Thus, we come to the mark-compact collectors (see Figure
+\ref{fig:lit-gc-markcompact}). These first mark the live portion of
+the heap, and then copy marked cells over garbage ones, moving
+everything towards one end of the heap in order to remove
 fragmentation\cite{GarbageCollection}. There are three ways of
 performing this compacting: cells can be moved without regard for
 their original order; cells which point to each other can be placed
-next to each other; and cells can simply `slide' towards one end of the
-heap\cite{Cohen81}.
+next to each other; and cells can simply `slide' towards one end of
+the heap\cite{Cohen81}.
 
 Unfortunately, these collectors require multiple traversals over the
 heap, and so are potentially even slower than mark-sweep
