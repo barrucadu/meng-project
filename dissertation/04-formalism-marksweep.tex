@@ -375,6 +375,11 @@ garbage collector: \[\forall c \in h',\ \forall w \in c,\
 h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
 \begin{lemma}[Loop Invariant]
+  \label{lem:li}
+  The loop invariant holds.
+\end{lemma}
+
+\begin{proof}
   \begin{figure}[t]
     \centering
     \begin{align*}
@@ -435,7 +440,6 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   The sufficiency of the loop invariant is shown in Figure
   \ref{fig:marksweep-example-partial-sufficient}, and now it remains
   to be shown that the invariant holds,
-
   \begin{prooftree}
     \AxiomC{$\htriple{I \land C \land M}{\ldots}{I}$}
     \AxiomC{$\htriple{I \land C \land \lnot M}{\ldots}{I}$}
@@ -448,10 +452,14 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   The proof naturally separates into two cases, one for each branch of
   the if statement. These are proven separately in Lemmas
   \ref{lem:lia} and \ref{lem:lib}.
-  \label{lem:li}
-\end{lemma}
+\end{proof}
 
 \begin{lemma}[Loop Invariant (first branch)]
+  \label{lem:lia}
+  The loop invariant holds in the marked case of the loop.
+\end{lemma}
+
+\begin{proof}
   Knowing that nothing in this branch deallocates cells, the proof
   goals can immediately be simplified to these three conditions:
   \begin{enumerate}
@@ -460,6 +468,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
       \lnot\marked{h}{\mathtt{SCAV}}$
     \item $\forall \mathtt{SCAV} \pointsto x,\ \marked{h}{x}$
   \end{enumerate}
+
   Firstly, let's look at the two expansions of
   \texttt{possibly\_mark}, as they are almost identical. Let's refer
   to the variable holding the possible pointer as $x$, and let $X
@@ -473,6 +482,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
     \BinaryInfC{$\htriple{P}{if(type(x) == pointer) \{ \ldots \} else \{
           skip \}}{Q}$}
   \end{prooftree}
+
   The desired postcondition, of course, is \[(type(x) = pointer \land
   \id~x < \id~SCAV) \implies \marked{h}{x}\]
 
@@ -489,6 +499,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
     P &\equiv type(x) = pointer \implies \marked{(h; \gchead{x}:1)}{x}\\
     Q &\equiv type(x) = pointer \implies \marked{h}{x}
   \end{align*}
+
   Now it must just be shown that the assignment works:
   \begin{align*}
     (X \land P)[h/(h; \gchead{x}:1)] &\iff (type(x) = pointer\\
@@ -501,6 +512,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
 %
     &\implies Q
   \end{align*}
+
   It can now be seen that by simply combining lines 5 to 18, we end up
   in the state, \[(type(car) = pointer \implies \marked{h}{car}) \land
   (type(cdr) = pointer \implies \marked{h}{cdr})\] which is exactly
@@ -510,19 +522,20 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   trivially see that part (1) holds. Finally, it can be seen that we
   never assign to anything other than the mark flags, and the mark
   flag of \texttt{SCAV} is unset on line 20, and so part (2) holds.
-  \label{lem:lia}
-\end{lemma}
+\end{proof}
 
 \begin{lemma}[Loop Invariant (second branch)]
+  \label{lem:lib}
+  The loop invariant holds in the unmarked case of the loop.
+\end{lemma}
+
+\begin{proof}
   Informally, as we have assumed correct marking, we know that this
   cell is not reachable from the roots. The invariant is broken on
   line 26, as an unreachable cell is left in the list ahead of
   \texttt{SCAV}, but then it is restored in lines 27 and 28, as the
   cell is removed and deallocated. Thus, the invariant still holds.
-  \label{lem:lib}
-\end{lemma}
 
-\begin{proof}
   Knowing that the loop invariant holds and is sufficient for
   correctness, as established by Lemma \ref{lem:li}, it only remains
   to be shown that it holds at the start of the loop.
@@ -537,7 +550,6 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   original heap (being a ghost variable), and as the heap has not been
   mutated yet, $h = h'$, which allows further simplifications to be
   made.
-
 
   \begin{align*}
     I' &= I[h[\gchead{last} + 1] / \mathtt{SCAV}]\\
