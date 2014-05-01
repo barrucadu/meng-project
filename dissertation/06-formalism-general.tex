@@ -84,10 +84,10 @@ of mutated metadata words (defn. \ref{def:g-preservation}).
   invariants or postconditions, of course).
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-    \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\right.\\
-    &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+    \left(\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\right.\\
+    &\quad\quad\quad\quad \lor \type{w} = \tydata
     \iff h[w] = h'[f^{-1}(w)]\\
-    &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) = \mathrm{gc}\right)\\
+    &\quad\quad\quad\quad \left.\lor \type{w} = \tygc\right)\\
     &\land \lnot\free{c} \iff c \in \reach{h'}{r'}
   \end{align*}
 \end{definition}
@@ -199,12 +199,12 @@ Thus, it needs to be shown,
 
 \begin{align*}
   \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \lnot\free{c} \land 
-  \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
+  \left(\type{w} = \typointer \iff h[w] =
     f(h'[f^{-1}(w)])\right.\\
-  &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+  &\quad\quad\quad\quad \lor \type{w} = \tydata
   \iff h[w] = h'[f^{-1}(w)]\\
-  &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
-    \mathrm{gc}\right)\\
+  &\quad\quad\quad\quad \left.\lor \type{w} =
+    \tygc\right)\\
   \forall c \in \mathrm{gcgarbage(h)},\ & \free{c}
 \end{align*}
 
@@ -228,7 +228,7 @@ identity.
 \label{sec:gc-framework-obligations-clean}
 
 Finally, any mutated metadata must be reset to some state which is
-acceptable to the invariants of the particular collector being
+acceptable to the invariants of the particular collector bein
 used. For instance, for mark-sweep collectors, mark flags must be
 unset. As this is heavily dependent on the individual collector, no
 simple symbolic obligation can be provided.
@@ -246,28 +246,28 @@ in.
 \begin{proof}
   \begin{align*}
     \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \lnot\free{c}
-      \land \left(\mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
+      \land \left(\type{w} = \typointer \iff h[w] =
       f(h'[f^{-1}(w)])\right.\\
-    &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+    &\quad\quad\quad\quad \lor \type{w} = \tydata
     \iff h[w] = h'[f^{-1}(w)]\\
-    &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
-      \mathrm{gc}\right)\\
+    &\quad\quad\quad\quad \left.\lor \type{w} =
+      \tygc\right)\\
 %
     \forall c \in \reach{h}{\mathrm{gcroots}},\ \forall w \in c,\ &
-      \lnot\free{c} \land \left(\mathrm{type}(w) = \mathrm{pointer} \iff
+      \lnot\free{c} \land \left(\type{w} = \typointer \iff
       h[w] = f(h'[f^{-1}(w)])\right.\\
-    &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+    &\quad\quad\quad\quad \lor \type{w} = \tydata
       \iff h[w] = h'[f^{-1}(w)]\\
-    &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
-      \mathrm{gc}\right)\\
+    &\quad\quad\quad\quad \left.\lor \type{w} =
+      \tygc\right)\\
 %
     \forall c \in \reach{h}{r},\ \forall w \in c,\ & \lnot\free{c} \land
-      \left(\mathrm{type}(w) = \mathrm{pointer} \iff
+      \left(\type{w} = \typointer \iff
       h[w] = f(h'[f^{-1}(w)])\right.\\
-    &\quad\quad\quad\quad \lor \mathrm{type}(w) = \mathrm{data}
+    &\quad\quad\quad\quad \lor \type{w} = \tydata
       \iff h[w] = h'[f^{-1}(w)]\\
-    &\quad\quad\quad\quad \left.\lor \mathrm{type}(w) =
-      \mathrm{gc}\right)
+    &\quad\quad\quad\quad \left.\lor \type{w} =
+      \tygc\right)
 \end{align*}
 \end{proof}
 

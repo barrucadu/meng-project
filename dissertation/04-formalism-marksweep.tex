@@ -17,12 +17,12 @@ the Armstrong/Virding\cite{Armstrong95} collector in Section
 The following terms are used throughout the dissertation: $h$, a heap;
 $h'$ the state of a heap $h$ before garbage collection; $r$, the root
 set; $a \pointsto b$, the cell $a$ contains a pointer to the cell $b$;
-$\free{c}$, true iff the cell $c$ is on the free list; and
-$\reach{h}{r}$, the set of cells reachable from $r$ in
-$h$. Furthermore, quantifiers are used as follows: $\forall c \in h$
-ranges over pointers to cells in the heap $h$; and $\forall w \in c$
-ranges over addresses within a cell $c$. The definitions of $\free{c}$
-and $\reach{h}{r}$ are expressed more formally later on.
+$\free{c}$, true iff the cell $c$ is on the free list; $\reach{h}{r}$,
+the set of cells reachable from $r$ in $h$; and $\type{w}$, the type
+of a word. Furthermore, quantifiers are used as follows: $\forall c
+\in h$ ranges over pointers to cells in the heap $h$; and $\forall w
+\in c$ ranges over addresses within a cell $c$. The definitions of
+$\free{c}$ and $\reach{h}{r}$ are expressed more formally later on.
 
 \begin{definition}[Heap]
   \label{def:ms-heap}
@@ -472,56 +472,60 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   Firstly, let's look at the two expansions of
   \texttt{possibly\_mark}, as they are almost identical. Let's refer
   to the variable holding the possible pointer as $x$, and let $X
-  \equiv type(x) = pointer$.
+  \equiv \type{x} = \typointer$.
   \begin{prooftree}
     \AxiomC{$\htriple{X \land P}{h[gchead(x)] = 1}{Q}$}
 
     \AxiomC{$\lnot X \land P \implies Q$}
     \UnaryInfC{$\htriple{\lnot X \land
         P}{skip}{Q}$}
-    \BinaryInfC{$\htriple{P}{if(type(x) == pointer) \{ \ldots \} else \{
-          skip \}}{Q}$}
+    \BinaryInfC{$\htriple{P}{if(type(x) == pointer)
+        \{\ldots\} else \{skip\}}{Q}$}
   \end{prooftree}
 
-  The desired postcondition, of course, is \[(type(x) = pointer \land
-  \id~x < \id~SCAV) \implies \marked{h}{x}\]
+  The desired postcondition, of course, is \[(\type{x} =
+  \typointer \land \id~x < \id~SCAV) \implies \marked{h}{x}\]
 
   Fortunately, we know that if $x$ is a pointer, then the allocation
   ID of its cell must be lower than that of the current cell because
   of the constraint over the entire system: data is immutable. Thus,
   only backward pointers are possible, and so we can simplify the
-  postcondition to just \[type(x) = pointer \implies \marked{h}{x}\]
+  postcondition to just \[\type{x} = \typointer \implies
+  \marked{h}{x}\]
 
   If $x$ is a pointer, then the cell it points to gets marked. If the
   gaps in the proof tree are filled in as follows, then this can be
   achieved:
   \begin{align*}
-    P &\equiv type(x) = pointer \implies \marked{(h; \gchead{x}:1)}{x}\\
-    Q &\equiv type(x) = pointer \implies \marked{h}{x}
+    P &\equiv \type{x} = \typointer \implies \marked{(h;
+      \gchead{x}:1)}{x}\\
+    Q &\equiv \type{x} = \typointer \implies \marked{h}{x}
   \end{align*}
 
   Now it must just be shown that the assignment works:
   \begin{align*}
-    (X \land P)[h/(h; \gchead{x}:1)] &\iff (type(x) = pointer\\
-    &\quad\land (type(x) = pointer \implies \marked{(h;
-      \gchead{x}:1)}{x}))\\
+    (X \land P)[h/(h; \gchead{x}:1)] &\iff (\type{x} =
+      \typointer\\
+    &\quad\land (\type{x} = \typointer \implies
+      \marked{(h;\gchead{x}:1)}{x}))\\
     &\quad[h/(h; \gchead{x}:1)]\\
 %
-    &\iff type(x) = pointer \land (type(x) = pointer \implies
-    \marked{h}{x})\\
+    &\iff \type{x} = \typointer \land (\type{x} =
+    \typointer \implies \marked{h}{x})\\
 %
     &\implies Q
   \end{align*}
 
   It can now be seen that by simply combining lines 5 to 18, we end up
-  in the state, \[(type(car) = pointer \implies \marked{h}{car}) \land
-  (type(cdr) = pointer \implies \marked{h}{cdr})\] which is exactly
-  what is wanted. Part (3) of the invariant has now been handled. This
-  result can now be inductively applied, combined with the
-  precondition of this entire block, $\marked{h}{\mathtt{SCAV}}$ to
-  trivially see that part (1) holds. Finally, it can be seen that we
-  never assign to anything other than the mark flags, and the mark
-  flag of \texttt{SCAV} is unset on line 20, and so part (2) holds.
+  in the state, \[(\type{car} = \typointer \implies
+  \marked{h}{car}) \land (\type{cdr} = \typointer \implies
+  \marked{h}{cdr})\] which is exactly what is wanted. Part (3) of the
+  invariant has now been handled. This result can now be inductively
+  applied, combined with the precondition of this entire block,
+  $\marked{h}{\mathtt{SCAV}}$ to trivially see that part (1)
+  holds. Finally, it can be seen that we never assign to anything
+  other than the mark flags, and the mark flag of \texttt{SCAV} is
+  unset on line 20, and so part (2) holds.
 \end{proof}
 
 \begin{lemma}[Loop Invariant (second branch)]

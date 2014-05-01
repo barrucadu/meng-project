@@ -45,8 +45,8 @@ we also need to be able to find old $w$ values.
 
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \type{w} \neq \typointer
     \iff h[w] = h'[f^{-1}(w)])\\
     &\land \lnot\free{c} \iff f^{-1}(c) \in \reach{h'}{r'}
   \end{align*}
@@ -183,8 +183,8 @@ terminates we have $k = \len \mathtt{roots}$.
   \centering
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \type{w} \neq \typointer
     \iff h[w] = h'[f^{-1}(w)])\\
     &\land \lnot\free{c} \iff c \in
     \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}
@@ -198,15 +198,15 @@ terminates we have $k = \len \mathtt{roots}$.
   \centering
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \type{w} \neq \typointer
     \iff h[w] = h'[f^{-1}(w)])\\
     &\land \lnot\free{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
       0 \leq i < \len\mathtt{roots}\}}\\
 %
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \type{w} \neq \typointer
     \iff h[w] = h'[f^{-1}(w)])\\
     &\land \lnot\free{c} \iff c \in \reach{h'}{r'}
   \end{align*}
@@ -239,7 +239,7 @@ terminates we have $k = \len \mathtt{roots}$.
   By (1) and (5), we have $\forall c \in h,\ \lnot\free{c} \iff c \in
   \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}$. By (2),
   (3), and (4) we have $\forall c \in h,\ \forall w \in c,\ \lnot\free{c}
-  \implies \mathrm{type}(w) = \mathrm{pointer} \iff h[w] =
+  \implies \type{w} = \typointer \iff h[w] =
   f(h'[f^{-1}(w)])$
 
   As the collector does not deal with non-pointer values (atoms), we
@@ -248,13 +248,13 @@ terminates we have $k = \len \mathtt{roots}$.
   justifiable as the collector explicitly sets aside atoms, and hands
   them over to another collector. And so, by assumption, we have
   $\forall c \in h,\ \forall w \in c,\ \lnot\free{c} \implies
-  \mathrm{type}(w) \neq \mathrm{pointer} \iff h'[f^{-1}(w)]$, giving
+  \type{w} \neq \typointer \iff h'[f^{-1}(w)]$, giving
   us,
 
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-    (\mathrm{type}(w) = \mathrm{pointer} \iff h[w] = f(h'[f^{-1}(w)])\\
-    &\quad\quad\quad\quad \land \mathrm{type}(w) \neq \mathrm{pointer}
+    (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \type{w} \neq \typointer
     \iff h[w] = h'[f^{-1}(w)])\\
     &\land \lnot\free{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall
       0 \leq i < \len\mathtt{roots}\}}
@@ -440,12 +440,12 @@ and so a more realistic model of the heap was desirable.
     \end{align*}
 
     Myreen's definition requires that non-pointer words are
-    untouched, \[\forall c \in h,\ \forall w \in c,\ \mathrm{type}(w)
-    \neq \mathrm{pointer} \iff h[w] = h'[f^{-1}(w)]\]
+    untouched, \[\forall c \in h,\ \forall w \in c,\ \type{w}
+    \neq \typointer \iff h[w] = h'[f^{-1}(w)]\]
 
     And we can expand the definition of rename to ensure that pointers
     are appropriately modified, \[\rename{f}{h} \implies \forall c \in
-    w, \forall w \in h,\ \mathrm{type}(w) = \mathrm{pointer} \iff h[w]
+    w, \forall w \in h,\ \type{w} = \typointer \iff h[w]
     = f(h'[f^{-1}(w)])\]
 
     Thus, Myreen Correctness implies both Correct Copying and Root
