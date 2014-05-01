@@ -267,12 +267,15 @@ while (SCAV != first) {
   \label{fig:marksweep-example-algo}
 \end{figure}
 
-The \texttt{possibly\_mark} function follows and marks its argument if
-it is a pointer; \texttt{first} and \texttt{current} point to the
-first allocated cell and the head of the free list, respectively; and
-the \texttt{hist} function returns a pointer to the cell allocated
-before its argument. It is assumed that all cells pointed to by roots
-have been marked before calling the collector.
+The \texttt{possibly\_mark}\footnote{Notational aside: variable and
+  function names lifted directly from the algorithms are typeset in
+  \texttt{typewriter font}, even in proofs, to distinguish them.}
+function follows and marks its argument if it is a pointer;
+\texttt{first} and \texttt{current} point to the first allocated cell
+and the head of the free list, respectively; and the \texttt{hist}
+function returns a pointer to the cell allocated before its
+argument. It is assumed that all cells pointed to by roots have been
+marked before calling the collector.
 
 This collector works because the history fields form a linked list of
 allocated cells, going back to the beginning of time. As the language
