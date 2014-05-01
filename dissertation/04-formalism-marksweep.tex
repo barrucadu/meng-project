@@ -517,15 +517,14 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   \end{align*}
 
   It can now be seen that by simply combining lines 5 to 18, we end up
-  in the state, \[(\type{car} = \typointer \implies
-  \marked{h}{car}) \land (\type{cdr} = \typointer \implies
-  \marked{h}{cdr})\] which is exactly what is wanted. Part (3) of the
-  invariant has now been handled. This result can now be inductively
-  applied, combined with the precondition of this entire block,
-  $\marked{h}{\mathtt{SCAV}}$ to trivially see that part (1)
-  holds. Finally, it can be seen that we never assign to anything
-  other than the mark flags, and the mark flag of \texttt{SCAV} is
-  unset on line 20, and so part (2) holds.
+  in the state, \[(\type{car} = \typointer \implies \marked{h}{car})
+  \land (\type{cdr} = \typointer \implies \marked{h}{cdr})\] which is
+  exactly what is wanted. Part (3) of the invariant has now been
+  handled. This result can now be inductively applied, combined with
+  the precondition of this entire block, $\marked{h}{\mathtt{SCAV}}$
+  to see that part (1) holds. Finally, it can be seen that we never
+  assign to anything other than the mark flags, and the mark flag of
+  \texttt{SCAV} is unset on line 20, and so part (2) holds.
 \end{proof}
 
 \begin{lemma}[Loop Invariant (second branch)]
@@ -664,7 +663,7 @@ while (SCAV != first) {
 }
 \end{lstlisting}
 
-Trivially, we can now see that there are two cases:
+The two cases are as follows,
 
 \begin{description}
   \item[Case 1, $\mathtt{SCAV} = \mathrm{first}$] In this case,
