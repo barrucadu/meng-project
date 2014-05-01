@@ -708,12 +708,12 @@ Similarly to Myreen, they defined correctness in terms of a heap
 isomorphism modulo garbage cells, and in particular, that the
 resultant heap has no garbage cells whatsoever.
 
-The motivation of this paper is to be a stepping stone towards
-programming logics which incorporate garbage collection, and so being
-able to prove the correctness of the combination of a program and a
-language runtime, which has thus far not been feasible.
+Their motivation is to be a stepping stone towards programming logics
+which incorporate garbage collection, and so being able to prove the
+correctness of the combination of a program and a language runtime,
+which has thus far not been feasible.
 
-This paper contributes to the field an extension of separation logic
+The paper contributes to the field an extension of separation logic
 with semantics for more types of assertion over finite sets, which is
 used to express the isomorphism property of the algorithm. Needless to
 say, this is an essential property of any garbage collector which
@@ -721,10 +721,10 @@ moves data around in the heap.
 
 The major difference between these two verified garbage collectors is
 that Myreen used extraction whereas Birkedal \textit{et al.} used
-embedding. Thus, this proof cannot really be generalised to other
-collectors, although the definition of correctness and logic developed
-can, whereas Myreen's proofs are much more applicable to copying
-collectors in general.
+embedding. Thus, Birkedal's proof cannot really be generalised to
+other collectors, although the definition of correctness and logic
+developed can, whereas Myreen's proofs are much more applicable to
+copying collectors in general.
 
 \subsection{A General Framework for Certifying Garbage Collectors and Their Mutators}
 \label{sec:lit-verifying-mccreight}
