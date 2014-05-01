@@ -1,12 +1,24 @@
 \chapter{Correctness of Mark-Sweep Collectors}
 \label{sec:marksweep}
 
-This chapter shall talk about the necessary formalisms and proof
-obligations for mark-sweep collectors, by firstly considering marking
-and sweeping independently in Sections \ref{sec:marksweep-marking} and
-\ref{sec:marksweep-sweeping}, and secondly building up to a proof of
+This chapter talks about the necessary formalisms and proof
+obligations for mark-sweep collectors. Firstly, we define the basic
+language necessary for talking about garbage collection in Section
+\ref{sec:marksweep-defns}. The problem of correctness is decomposed
+into marking and sweeping in Sections \ref{sec:marksweep-marking} and
+\ref{sec:marksweep-sweeping}, and finally we build up to a proof of
 the Armstrong/Virding\cite{Armstrong95} collector in Section
 \ref{sec:marksweep-example}.
+
+\section{Preliminary Definitions}
+\label{sec:marksweep-defns}
+
+The following terms are used throughout the dissertation: $h$, a heap;
+$h'$ the state of a heap $h$ before garbage collection; $r$, the root
+set; $\free{c}$, true iff the cell $c$ is on the free list;
+$\reach{h}{r}$, the set of cells reachable from $r$ in $h$. The
+definitions of $\free{c}$ and $\reach{h}{r}$ are expressed more
+formally later on.
 
 \begin{definition}[Heap]
   \label{def:ms-heap}
