@@ -15,7 +15,8 @@ the Armstrong/Virding\cite{Armstrong95} collector in Section
 
 The following terms are used throughout the dissertation: $h$, a heap;
 $h'$ the state of a heap $h$ before garbage collection; $r$, the root
-set; $\free{c}$, true iff the cell $c$ is on the free list; and
+set; $a \pointsto b$, the cell $a$ contains a pointer to the cell $b$;
+$\free{c}$, true iff the cell $c$ is on the free list; and
 $\reach{h}{r}$, the set of cells reachable from $r$ in
 $h$. Furthermore, quantifiers are used as follows: $\forall c \in h$
 ranges over pointers to cells in the heap $h$; and $\forall w \in c$
@@ -140,8 +141,6 @@ not been marked, and any other value if it has.
       \BinaryInfC{$b \in \reach{h}{roots}$}
     \end{prooftree}
   \end{minipage}
-
-  The notation $a \pointsto b$ means that $a$ points to the cell $b$.
 \end{definition}
 
 If we abandon our array-based interpretation of memory for the moment,
