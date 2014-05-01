@@ -23,13 +23,13 @@ necessary for a non-instrumented implementation of the collector. The
 allocator calls the garbage collector upon running out of space, and
 the user cannot call the garbage collector directly.
 
-\lstset{caption={Implementation of Armstrong/Virding in C}}
-\lstset{label=lst:armstrong-virding-c}
-\lstinputlisting{../code/armstrong-virding.c}
-
 \lstset{caption={Header file for the Armstrong/Virding C implementation}}
 \lstset{label=lst:armstrong-virding-h}
 \lstinputlisting{../code/armstrong-virding.h}
+
+\lstset{caption={Implementation of Armstrong/Virding in C}}
+\lstset{label=lst:armstrong-virding-c}
+\lstinputlisting{../code/armstrong-virding.c}
 
 \section{Fenichel/Yochelson}
 \label{sec:gc-impl-fenichel-yochelson}
@@ -44,13 +44,15 @@ checking. As with the mark-sweep collector, the allocator calls the
 garbage collector directly, and no interface to the collector is
 exposed to the user programmer.
 
-\lstset{caption={Implementation of Fenichel/Yochelson in C}}
-\lstset{label=lst:fenichel-yochelson-c}
-\lstinputlisting{../code/fenichel-yochelson.c}
-
 \lstset{caption={Header file for the Fenichel/Yochelson C implementation}}
 \lstset{label=lst:fenichel-yochelson-h}
 \lstinputlisting{../code/fenichel-yochelson.h}
+
+\vspace{1cm}
+
+\lstset{caption={Implementation of Fenichel/Yochelson in C}}
+\lstset{label=lst:fenichel-yochelson-c}
+\lstinputlisting{../code/fenichel-yochelson.c}
 
 \section{Test Program}
 \label{sec:gc-impl-test-program}
@@ -74,13 +76,13 @@ code being a little more complex than it would be if the garbage
 collector were hidden away in the language runtime, but it should
 remain fairly clear.
 
-\lstset{caption={Linked list utilities with swappable GC}}
-\lstset{label=lst:lists-c}
-\lstinputlisting{../code/lists.c}
-
 \lstset{caption={Header file for the linked list utilities}}
 \lstset{label=lst:lists-h}
 \lstinputlisting{../code/lists.h}
+
+\lstset{caption={Linked list utilities with swappable GC}}
+\lstset{label=lst:lists-c}
+\lstinputlisting{../code/lists.c}
 
 This Makefile (tested with GNU Make) can be used to compile the two
 test programs.
@@ -99,10 +101,12 @@ which would give constant pointers. These utility functions maintain
 an array of pointers to roots, available to both the mutator and
 collectors.
 
-\lstset{caption={Shared root-management code}}
-\lstset{label=lst:shared-c}
-\lstinputlisting{../code/shared.c}
+\vspace{1cm}
 
 \lstset{caption={Definition of cells and shared prototypes}}
 \lstset{label=lst:shared-h}
 \lstinputlisting{../code/shared.h}
+
+\lstset{caption={Shared root-management code}}
+\lstset{label=lst:shared-c}
+\lstinputlisting{../code/shared.c}
