@@ -68,6 +68,14 @@
     \gls{cell}}
 }
 
+\newglossaryentry{internal pointer}
+{
+  name=internal pointer,
+  plural=internal pointers,
+  description={a \gls{pointer} which points to a location inside a
+    \gls{cell}, rather than to the beginning}
+}
+
 \newglossaryentry{reference counting}
 {
   name=reference counting,
