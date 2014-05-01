@@ -700,13 +700,24 @@ steps taken.
 Birkedal, Torp-Smith, and Reynolds\cite{Birkedal04} took a very
 different approach to Myreen, they took an existing garbage collector
 (Cheney's copying collector) and proved it correct, using a variant of
-separation logic, in a Hoare-style proof, \[\htriple{(\exists y.\ e
-  \mapsto y \land A) \land x = e'}{x := [e]}{e[e'/x] \mapsto x \land
-  A[x/y]}\]
+separation logic, in a Hoare-style proof.
 
 Similarly to Myreen, they defined correctness in terms of a heap
 isomorphism modulo garbage cells, and in particular, that the
-resultant heap has no garbage cells whatsoever.
+resultant heap has no garbage cells whatsoever. Specifically, they
+define a function $f$ being an isomorphism between two heaps $m_{1}$
+and $m_{2}$ as follows,
+\begin{align*}
+  \textrm{iso}(f, m_{1}, m_{2})&\equiv \forall p_{1} \in M_{1},\
+  \exists ! p_{2} \in M_{2},\ (p_{1},\ p_{2}) \in \phi\\
+  &\land \forall p_{2} \in M_{2},\ \exists ! p_{1} \in M_{1},\
+  (p_{1},\ p_{2}) \in \phi\\
+  &\land \forall(p_{1}, p_{2}) \in \phi,\ p_{1} \in M_{1} \land p_{2}
+  \in M_{2}
+\end{align*}
+where $M_{1}$, $M_{2}$, and $\phi$ are $m_{1}$, $m_{2}$, and $f$
+instantiated over all possible stacks, and $p_{1}$ and $p_{2}$ are
+pointers.
 
 Their motivation is to be a stepping stone towards programming logics
 which incorporate garbage collection, and so being able to prove the
