@@ -115,13 +115,13 @@ $A.upper$, leading to a definition of the domain of an array $\dom~A =
   all the elements in it, and now we want to prove the following
   program correctly computes this value.
 
-\begin{verbatim}
+\begin{lstlisting}
 i   := A.lower;
 sum := 0;
 while i <= A.upper do
     sum := sum + A[i];
     i := i + 1
-\end{verbatim}
+\end{lstlisting}
 
   \begin{figure}[t]
     \centering
@@ -181,13 +181,13 @@ while i <= A.upper do
   We want to prove that the following program doubles the value of
   every element of the array $A$, storing the result in $B$,
 
-\begin{verbatim}
+\begin{lstlisting}
 i := A.lower;
 B := A;
 while i <= A.upper do
     B[i] = B[i] * 2;
     i := i + 1
-\end{verbatim}
+\end{lstlisting}
 
   \begin{figure}[t]
     \centering
