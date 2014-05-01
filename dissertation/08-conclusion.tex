@@ -1,32 +1,9 @@
-\chapter{Conclusion}
+\chapter{Conclusions, Related and Future Work}
 \label{sec:conclusion}
 
 This chapter shall discuss further work suggested to me by undertaking
 this project, briefly review the prior chapters, and close with some
 final thoughts on the matter.
-
-\section{Related Work}
-\label{sec:conclusion-related}
-
-In 2007, McCreight, Shao, Lin, and Li produced their paper, \textit{A
-  General Framework for Certifying Garbage Collectors and Their
-  Mutators}\cite{McCreight07}, which models garbage collection
-correctness by defining an interface between the mutator and the
-collector, where the mutator accesses an abstract heap, and the
-collector a concrete heap. The two are related by an invariant, and
-the garbage collector is defined as a step relation, and by
-parameterising the mutator proof by these two predicates, a mutator
-may be verified independently of a collector. This is machine
-verified and proofs for three separate collectors have been
-produced.
-
-My work was produced independently of this, and by the time I found
-the paper the majority of the work in Chapters \ref{sec:marksweep},
-\ref{sec:copying}, and \ref{sec:gc} was done. The key difference is in
-separating the heaps as seen by the mutator and collector, allowing
-independent verification. My approach does not do this, and so
-verification of a mutator necessarily is collector-specific, as
-different collectors will have different invariants and preconditions.
 
 \section{Review}
 \label{sec:conclusion-review}
@@ -60,6 +37,29 @@ standard for garbage collection correctness, which has been used,
 indirectly, to verify two extant garbage collectors: the
 Armstrong/Virding mark-sweep collector for languages with immutable
 state, and the Fenichel/Yochelson copying collector for LISP systems.
+
+\section{Related Work}
+\label{sec:conclusion-related}
+
+In 2007, McCreight, Shao, Lin, and Li produced their paper, \textit{A
+  General Framework for Certifying Garbage Collectors and Their
+  Mutators}\cite{McCreight07}, which models garbage collection
+correctness by defining an interface between the mutator and the
+collector, where the mutator accesses an abstract heap, and the
+collector a concrete heap. The two are related by an invariant, and
+the garbage collector is defined as a step relation, and by
+parameterising the mutator proof by these two predicates, a mutator
+may be verified independently of a collector. This is machine
+verified and proofs for three separate collectors have been
+produced.
+
+My work was produced independently of this, and by the time I found
+the paper the majority of the work in Chapters \ref{sec:marksweep},
+\ref{sec:copying}, and \ref{sec:gc} was done. The key difference is in
+separating the heaps as seen by the mutator and collector, allowing
+independent verification. My approach does not do this, and so
+verification of a mutator necessarily is collector-specific, as
+different collectors will have different invariants and preconditions.
 
 \section{Further Work}
 \label{sec:conclusion-further}
