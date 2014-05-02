@@ -274,6 +274,9 @@ terminates we have $k = \len \mathtt{roots}$.
 \begin{lemma}[After \texttt{collect}($p$) terminates, both $p$ and all
   cells reachable from $p$ have been collected]
   \label{lem:c-example-reach}
+\end{lemma}
+
+\begin{proof}
   There are three cases to consider for $p$,
 
   \begin{description}
@@ -287,17 +290,23 @@ terminates we have $k = \len \mathtt{roots}$.
     semispace, and $p$ updated to point to this, then the car and cdr
     of $p$ are recursively \texttt{collect}ed
   \end{description}
-\end{lemma}
+\end{proof}
 
 \begin{lemma}[If a cell has been collected, then collecting it again
   returns a pointer to the previously copied version]
   \label{lem:c-example-duplication}
-  By corollary of Lemma \ref{lem:c-example-ret}.
 \end{lemma}
+
+\begin{proof}
+  By corollary of Lemma \ref{lem:c-example-ret}.
+\end{proof}
 
 \begin{lemma}[\texttt{collect}($p$) returns a pointer to a copied
   version of $p$]
   \label{lem:c-example-ret}
+\end{lemma}
+
+\begin{proof}
   There are three cases:
 
   \begin{description}
@@ -310,23 +319,29 @@ terminates we have $k = \len \mathtt{roots}$.
   \item[otherwise] The car is set to \texttt{ALREADYCOPIED}, the old
     cell is copied, and the cdr set to its new address.
   \end{description}
-\end{lemma}
+\end{proof}
 
 \begin{lemma}[\texttt{collect}($p$) updates the car and cdr of $p$ to
   \texttt{collect}(car($p$)) and \texttt{collect}(cdr($p$))
   respectively]
   \label{lem:c-example-update}
-  By inspection.
 \end{lemma}
+
+\begin{proof}
+  By inspection.
+\end{proof}
 
 \begin{lemma}[\texttt{collect} does not copy any unreachable cells]
   \label{lem:c-example-unreach}
+\end{lemma}
+
+\begin{proof}
   We can see that \texttt{gc} only calls \texttt{collect} on
   cells pointed to by roots, which are reachable by definition;
   furthermore we can see that \texttt{collect} only calls
   \texttt{collect} on cells which are either the car or cdr of a cell
   it is currently examining.
-\end{lemma}
+\end{proof}
 
 \subsection{Total Correctness}
 \label{sec:copying-example-total}
