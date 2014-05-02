@@ -290,16 +290,17 @@ reachable from a cell in the considered region are marked.
 \subsubsection{Partial Correctness}
 \label{sec:marksweep-example-partial}
 
-Let $\id~x$ be the \textit{allocation ID} of a cell $x$. The first
-cell has an ID of zero, and the ID of every other cell is one greater
-than the ID of the previously allocated cell: we can then express the
-loop invariant as in Figure
+Let $\id~x$ be the \textit{allocation ID} of a cell $x$. The
+\texttt{first} cell has an ID of zero, and the ID of every other cell
+is one greater than the ID of the previously allocated cell: we can
+then express the loop invariant as in Figure
 \ref{fig:marksweep-example-partial-invariant}.
 
 \begin{figure}[t]
   \centering
   \begin{align*}
-    \forall c \in h',\ \forall w \in c,\ &first \in \reach{h'}{roots}\\
+    \forall c \in h',\ \forall w \in c,\ &\mathtt{first} \in
+      \reach{h'}{roots}\\
 %
     &\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
       \iff c \notin \reach{h'}{roots})\\
@@ -385,8 +386,8 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   \begin{figure}[t]
     \centering
     \begin{align*}
-      \forall c \in h',\ \forall w \in c,\ &\mathtt{SCAV} = first \land
-        first \in \reach{h'}{roots}\\
+      \forall c \in h',\ \forall w \in c,\ &\mathtt{SCAV} =
+        \mathtt{first} \land \mathtt{first} \in \reach{h'}{roots}\\
 %
       &\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
         \iff c \notin \reach{h'}{roots})\\
@@ -403,18 +404,19 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
         \lnot\marked{h}{c}\\\\
 %
 %
-      \forall c \in h',\ \forall w \in c,\ & \id~c > \id~first \implies
-        (\free{c} \iff c \notin \reach{h'}{roots})\\
+      \forall c \in h',\ \forall w \in c,\ & \id~c >
+        \id~\mathtt{first} \implies (\free{c} \iff c \notin
+        \reach{h'}{roots})\\
 %
-      &\land \id~c > \id~first \land \lnot\free{c}
+      &\land \id~c > \id~\mathtt{first} \land \lnot\free{c}
         \implies h[w] = h'[w] \land \lnot \marked{h}{c}\\
 %
-      &\land \id~c > \id~first \land \lnot\free{c}
-        \implies (\forall c \pointsto x,\ \id~x < \id~first
+      &\land \id~c > \id~\mathtt{first} \land \lnot\free{c}
+        \implies (\forall c \pointsto x,\ \id~x < \id~\mathtt{first}
         \implies \marked{h}{x})\\
 %
-      &\land \left(\id~c < \id~first \land \nexists x \pointsto
-        c,\ \id~x > \id~first\right) \implies
+      &\land \left(\id~c < \id~\mathtt{first} \land \nexists x \pointsto
+        c,\ \id~x > \id~\mathtt{first}\right) \implies
         \lnot\marked{h}{c}\\\\
 %
 %
@@ -427,7 +429,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
         \lfalse \implies \marked{h}{x})\\
 %
       &\land \left(\lfalse \land \nexists x \pointsto
-        c,\ \id~x > \id~first\right) \implies
+        c,\ \id~x > \id~\mathtt{first}\right) \implies
         \lnot\marked{h}{c}\\\\
 %
 %
@@ -448,7 +450,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
     \BinaryInfC{$\htriple{I \land C}{if(marked(h, SCAV)) \ldots}{I}$}
     \UnaryInfC{$\htriple{I}{while \ldots}{I \land \lnot C}$}
   \end{prooftree}
-  where $C = \mathtt{SCAV} \neq first$ and $M =
+  where $C = \mathtt{SCAV} \neq \mathtt{first}$ and $M =
   \marked{h}{\mathtt{SCAV}}$.
 
   The proof naturally separates into two cases, one for each branch of
@@ -546,9 +548,10 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   remains to be shown that it holds at the start of the loop.
 
   \begin{prooftree}
-    \AxiomC{$\htriple{I''}{last = current}{I'}$}
+    \AxiomC{$\htriple{I''}{\texttt{last} = \texttt{current}}{I'}$}
     \AxiomC{$\htriple{I'}{\texttt{SCAV} = h[gchead(last) + 1]}{I}$}
-    \BinaryInfC{$\htriple{I''}{last = current; \texttt{SCAV} = h[gchead(last) + 1]}{I}$}
+    \BinaryInfC{$\htriple{I''}{\texttt{last} = \texttt{current};
+        \texttt{SCAV} = h[gchead(\texttt{last}) + 1]}{I}$}
   \end{prooftree}
 
   Furthermore, as $h$ refers to the current heap and $h'$ to the
@@ -557,36 +560,36 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   made.
 
   \begin{align*}
-    I' &= I[h[\gchead{last} + 1] / \mathtt{SCAV}]\\
+    I' &= I[h[\gchead{\mathtt{last}} + 1] / \mathtt{SCAV}]\\
     &=\forall c \in h,\ \forall w \in c,\\
-    &\quad\quad first \in \reach{h}{roots}\\
-    &\quad\quad \land \id~c > \id~h[\gchead{last} + 1] \implies
+    &\quad\quad \mathtt{first} \in \reach{h}{roots}\\
+    &\quad\quad \land \id~c > \id~h[\gchead{\mathtt{last}} + 1] \implies
     (\free{c} \iff c \notin \reach{h}{roots})\\
-    &\quad\quad \land \id~c > \id~h[\gchead{last} + 1] \land
+    &\quad\quad \land \id~c > \id~h[\gchead{\mathtt{last}} + 1] \land
     \lnot\free{c} \implies h[w] = h[w] \land \lnot \marked{h}{c}\\
-    &\quad\quad \land \id~c > \id~h[\gchead{last} + 1] \land
+    &\quad\quad \land \id~c > \id~h[\gchead{\mathtt{last}} + 1] \land
     \lnot\free{c} \implies (\forall c \pointsto x,\ \id~x <
-    \id~h[\gchead{last} + 1]\\&\quad\quad\quad\quad\implies \marked{h}{x})\\
-    &\quad\quad \land \left(\id~c < \id~h[\gchead{last} + 1] \land
-    \nexists x \pointsto c,\ \id~x > \id~h[\gchead{last} + 1]\right)
+    \id~h[\gchead{\mathtt{last}} + 1]\\&\quad\quad\quad\quad\implies \marked{h}{x})\\
+    &\quad\quad \land \left(\id~c < \id~h[\gchead{\mathtt{last}} + 1] \land
+    \nexists x \pointsto c,\ \id~x > \id~h[\gchead{\mathtt{last}} + 1]\right)
     \implies \lnot\marked{h}{c}\\\\
 %
-    I'' &= I'[current / last]\\
+    I'' &= I'[\mathtt{current} / \mathtt{last}]\\
     &=\forall c \in h,\ \forall w \in c,\\
-    &\quad\quad first \in \reach{h}{roots}\\
-    &\quad\quad \land \id~c > \id~h[\gchead{current} + 1] \implies
+    &\quad\quad \mathtt{first} \in \reach{h}{roots}\\
+    &\quad\quad \land \id~c > \id~h[\gchead{\mathtt{current}} + 1] \implies
     (\free{c} \iff c \notin \reach{h}{roots})\\
-    &\quad\quad \land \id~c > \id~h[\gchead{current} + 1] \land
+    &\quad\quad \land \id~c > \id~h[\gchead{\mathtt{current}} + 1] \land
     \lnot\free{c} \implies h[w] = h[w] \land \lnot \marked{h}{c}\\
-    &\quad\quad \land \id~c > \id~h[\gchead{current} + 1] \land
+    &\quad\quad \land \id~c > \id~h[\gchead{\mathtt{current}} + 1] \land
     \lnot\free{c} \implies (\forall c \pointsto x,\ \id~x <
-    \id~h[\gchead{current} + 1]\\&\quad\quad\quad\quad\implies \marked{h}{x})\\
-    &\quad\quad \land \left(\id~c < \id~h[\gchead{current} + 1] \land
-    \nexists x \pointsto c,\ \id~x > \id~h[\gchead{current} + 1]\right)
+    \id~h[\gchead{\mathtt{current}} + 1]\\&\quad\quad\quad\quad\implies \marked{h}{x})\\
+    &\quad\quad \land \left(\id~c < \id~h[\gchead{\mathtt{current}} + 1] \land
+    \nexists x \pointsto c,\ \id~x > \id~h[\gchead{\mathtt{current}} + 1]\right)
     \\&\quad\quad\quad\quad\implies \lnot\marked{h}{c}\\
 %
     &=\forall c \in h,\ \forall w \in c,\\
-    &\quad\quad first \in \reach{h}{roots}\\
+    &\quad\quad \mathtt{first} \in \reach{h}{roots}\\
     &\quad\quad \land \lfalse \implies (\free{c} \iff c \notin
     \reach{h}{roots})\\
     &\quad\quad \land \lfalse \land \lnot\free{c} \implies
@@ -597,7 +600,7 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
     &\quad\quad \land \left(\ltrue \land \nexists x \pointsto
     c,\ \lfalse\right) \implies \lnot\marked{h}{c}\\
 %
-    &= \forall c \in h,\ first \in \reach{h}{r} \land (\lnot\free{c}
+    &= \forall c \in h,\ \mathtt{first} \in \reach{h}{r} \land (\lnot\free{c}
     \implies \lnot \marked{h}{c})
   \end{align*}
 
@@ -622,14 +625,14 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
 We can use allocation IDs to express that the history list forms an
 unbroken chain of cells, all the way back to the first cell, as
 follows:
-\[\forall x,\ \left(x = \mathrm{first} \implies x =
-  \mathrm{hist}(x)\right) \land \left(x \neq \mathrm{first} \implies
+\[\forall x,\ \left(x = \mathtt{first} \implies x =
+  \mathrm{hist}(x)\right) \land \left(x \neq \mathtt{first} \implies
   \exists n \in \mathbb N_{1},\ \id~x = n +
   \id~\mathrm{hist}(x)\right)\]
 
 The loop condition can be restated as $\id~\mathtt{SCAV} \neq 0$. As
-there are no IDs below 0 ($\mathrm{hist}(\mathrm{first}) =
-\mathrm{first}$), that can be further rewritten to $\id~\mathtt{SCAV}
+there are no IDs below 0 ($\mathrm{hist}(\mathtt{first}) =
+\mathtt{first}$), that can be further rewritten to $\id~\mathtt{SCAV}
 > 0$. \texttt{SCAV} starts out as the last-allocated cell, and so has
 an ID $\geq 0$. Now, in order to prove termination, we simply need to
 show that $\id~\mathtt{SCAV}$ decreases at every iteration of the
@@ -672,12 +675,12 @@ while (SCAV != first) {
 The two cases are as follows,
 
 \begin{description}
-  \item[Case 1, $\mathtt{SCAV} = \mathrm{first}$] In this case,
+  \item[Case 1, $\mathtt{SCAV} = \mathtt{first}$] In this case,
     $\mathrm{hist}(\mathtt{SCAV}) = \mathtt{SCAV}$, and so
     $\id~\mathtt{SCAV}$ does not decrease, but this situation is
     precisely the loop termination condition.
 
-  \item[Case 2, $\mathtt{SCAV} \neq \mathrm{first}$] In this case, we
+  \item[Case 2, $\mathtt{SCAV} \neq \mathtt{first}$] In this case, we
     know by the history list assumption that
     $\id~\mathrm{hist}(\mathtt{SCAV})$ $<\id~\mathtt{SCAV}$, and so
     $\id~\mathtt{SCAV}$ does decrease. Furthermore, we know that the
