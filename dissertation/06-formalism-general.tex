@@ -86,7 +86,7 @@ of mutated metadata words (defn. \ref{def:g-preservation}).
     \left(\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\right.\\
     &\quad\quad\quad\quad \lor \type{w} = \tydata
     \iff h[w] = h'[f^{-1}(w)]\\
-    &\quad\quad\quad\quad \left.\lor \type{w} = \tygc\right)\\
+    &\quad\quad\quad\quad \left.\lor\thinspace\type{w} = \tygc\right)\\
     &\land \lnot\free{c} \iff c \in \reach{h'}{r'}
   \end{align*}
 \end{definition}
@@ -202,7 +202,7 @@ Thus, it needs to be shown,
     f(h'[f^{-1}(w)])\right.\\
   &\quad\quad\quad\quad \lor \type{w} = \tydata
   \iff h[w] = h'[f^{-1}(w)]\\
-  &\quad\quad\quad\quad \left.\lor \type{w} =
+  &\quad\quad\quad\quad \left.\lor\thinspace\type{w} =
     \tygc\right)\\
   \forall c \in \mathrm{gcgarbage(h)},\ & \free{c}
 \end{align*}
@@ -249,7 +249,7 @@ in.
       f(h'[f^{-1}(w)])\right.\\
     &\quad\quad\quad\quad \lor \type{w} = \tydata
     \iff h[w] = h'[f^{-1}(w)]\\
-    &\quad\quad\quad\quad \left.\lor \type{w} =
+    &\quad\quad\quad\quad \left.\lor\thinspace\type{w} =
       \tygc\right)\\
 %
     \forall c \in \reach{h}{\mathrm{gcroots}},\ \forall w \in c,\ &
@@ -257,7 +257,7 @@ in.
       h[w] = f(h'[f^{-1}(w)])\right.\\
     &\quad\quad\quad\quad \lor \type{w} = \tydata
       \iff h[w] = h'[f^{-1}(w)]\\
-    &\quad\quad\quad\quad \left.\lor \type{w} =
+    &\quad\quad\quad\quad \left.\lor\thinspace\type{w} =
       \tygc\right)\\
 %
     \forall c \in \reach{h}{r},\ \forall w \in c,\ & \lnot\free{c} \land
@@ -265,7 +265,7 @@ in.
       h[w] = f(h'[f^{-1}(w)])\right.\\
     &\quad\quad\quad\quad \lor \type{w} = \tydata
       \iff h[w] = h'[f^{-1}(w)]\\
-    &\quad\quad\quad\quad \left.\lor \type{w} =
+    &\quad\quad\quad\quad \left.\lor\thinspace\type{w} =
       \tygc\right)
 \end{align*}
 \end{proof}
