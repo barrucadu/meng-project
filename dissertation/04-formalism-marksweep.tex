@@ -376,6 +376,7 @@ garbage collector: \[\forall c \in h',\ \forall w \in c,\
 h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
 \begin{theorem}[Partial Correctness]
+  \label{thm:ms-part}
   The loop invariant both holds, and is sufficient for correct
   collection.
 \end{theorem}
@@ -541,8 +542,8 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
   cell is removed and deallocated. Thus, the invariant still holds.
 
   Knowing that the loop invariant holds and is sufficient for
-  correctness, as established by Lemma \ref{lem:li}, it only remains
-  to be shown that it holds at the start of the loop.
+  correctness, as established by Theorem \ref{thm:ms-part}, it only
+  remains to be shown that it holds at the start of the loop.
 
   \begin{prooftree}
     \AxiomC{$\htriple{I''}{last = current}{I'}$}
