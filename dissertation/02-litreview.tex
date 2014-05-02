@@ -289,11 +289,6 @@ while j < len xs do
   assertion $P$ holds before executing a statement $S$, then the
   assertion $Q$ holds afterwards.
 
-  A condensed proof tree is presented in Figure
-  \ref{fig:exmpl:lit-embedding-tree}, with further proofs in Figures
-  \ref{fig:exmpl:lit-embedding-sequencing} and
-  \ref{fig:exmpl:lit-embedding-loop}.
-
   \begin{figure}[t]
     \centering
     \begin{prooftree}
@@ -311,8 +306,11 @@ while j < len xs do
     \label{fig:exmpl:lit-embedding-tree}
   \end{figure}
 
-  Some definitions used in the proof trees are as follows,
-
+  A condensed proof tree is presented in Figure
+  \ref{fig:exmpl:lit-embedding-tree}, with further proofs in Figures
+  \ref{fig:exmpl:lit-embedding-sequencing} and
+  \ref{fig:exmpl:lit-embedding-loop}. Some definitions used in the
+  proof trees are as follows,
   \begin{align*}
     R(x) &\equiv x < \len xs\\
     C    &\equiv xs[i] = \min xs\\
@@ -516,7 +514,7 @@ Proof is by induction.
     the witness $m_{k}$.
     \begin{description}
       \item[If $x \leq xs_{m_k}$] Then $m = 1$ is a witness, by
-        transitivity of $\leq$.
+        transitivity and reflexivity of $\leq$.
 
       \item[If $xs_{m_k} < x$] Then $m = m_{k} + 1$ is a witness, as
         $xs_{1}$ is actually as position 2 in the original sequence
