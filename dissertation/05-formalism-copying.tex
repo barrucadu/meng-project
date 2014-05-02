@@ -222,7 +222,8 @@ terminates we have $k = \len \mathtt{roots}$.
   \label{fig:copying-example-partial-sufficient}
 \end{figure}
 
-\begin{proof}
+\begin{lemma}[Partial Correctness]
+\label{lem:fyc}
   Showing the correctness of \texttt{collect} consists of showing the
   following:
 
@@ -242,7 +243,9 @@ terminates we have $k = \len \mathtt{roots}$.
 
   \item \texttt{collect} does not copy any unreachable cells
   \end{enumerate}
+\end{lemma}
 
+\begin{proof}
   By (1) and (5), we have $\forall c \in h,\ \lnot\free{c} \iff c \in
   \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}$. By (2),
   (3), and (4) we have $\forall c \in h,\ \forall w \in c,\ \lnot\free{c}
