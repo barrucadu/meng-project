@@ -110,9 +110,12 @@ copying garbage collector for lists in Lisp systems, and assume the
 existence of a correct collector for atoms. The collector works by
 storing in the car of each cell a flag indicating that it has been
 copied, and a forwarding pointer in the cdr, permitting a very simple
-algorithm which has been recast in a Hoare-like form below:
+algorithm which has been recast in a Hoare-like form in Figure
+\ref{fig:copying-example-algo}.
 
-\begin{lstlisting}
+\begin{figure}[t]
+  \centering
+  \begin{lstlisting}
 gc():
     flipconsspace()
     for k = 0; k < len roots; k ++:
@@ -136,7 +139,10 @@ collect(p):
         nrplacd(q, collect(b))
 
         return q
-\end{lstlisting}
+  \end{lstlisting}
+  \caption{Imperative version of the Fenichel/Yochelson garbage collector.}
+  \label{fig:copying-example-algo}
+\end{figure}
 
 Firstly, it must be noted that pointers are interpreted relative to
 the semispaces. A pointer $p$ refers to the location $p$ in the
