@@ -355,6 +355,10 @@ soon as we hit the else case we do that. Thus, even if we were to
 encounter a cyclic structure, reaching again the point at which we
 entered it would end the recursion.
 
+\begin{lemma}[Total Correctness]
+  The Fenichel/Yochelson collector terminates on all possible heaps.
+\end{lemma}
+
 \begin{proof}
   By induction on the number of uncopied and non-atomic cells in the
   semispace we are copying from.
