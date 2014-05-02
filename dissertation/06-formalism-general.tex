@@ -232,13 +232,26 @@ simple symbolic obligation can be provided.
 \label{sec:gc-framework-sufficiency}
 
 The framework can be trivially shown correct by substituting values in
-to the obligations.
+to the obligations. Figures
+\ref{fig:gc-framework-sufficiency-reachable} and
+\ref{fig:gc-framework-sufficiency-unreachable} show the sufficiency
+for reachable and unreachable cells, respectively, and it can be
+simply shown that by taking $\mathrm{gcroots} = roots$ that the
+framework is also sufficient for roots,
+\begin{align*}
+  \mathrm{gcroots} &= \map{f}{\mathrm{gcroots'}}\\
+  \therefore roots &= \map{f}{roots'}
+\end{align*}
 
-\begin{lemma}[Reachable cells]
-  The framework is sufficient for reachable (live) cells.
-\end{lemma}
+\section{Summary}
+\label{sec:gc-summary}
 
-\begin{proof}
+This chapter has combined the definitions of mark-sweep and copying
+correctness from Chapters \ref{sec:marksweep} and \ref{sec:copying} to
+produce a more general formalism in Section \ref{sec:gc-correct}. This
+formalism is
+
+\begin{figure}[H]
   \begin{align*}
     \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \lnot\free{c}
       \land \left(\type{w} = \typointer \iff h[w] =
@@ -263,14 +276,12 @@ to the obligations.
       \iff h[w] = h'[f^{-1}(w)]\\
     &\quad\quad\quad\quad \left.\lor\thinspace\type{w} =
       \tygc\right)
-\end{align*}
-\end{proof}
-
-\begin{lemma}[Unreachable cells]
-  The framework is sufficient for unreachable (garbage) cells.
-\end{lemma}
-
-\begin{proof}
+  \end{align*}
+  \captionsetup{format=default}
+  \caption{Sufficiency of framework for reachable cells.}
+  \label{fig:gc-framework-sufficiency-reachable}
+\end{figure}
+\begin{figure}[H]
   \begin{align*}
     \forall c \in \mathrm{gcgarbage(h')},\ & \free{c}\\
     \forall c \in \left\{c~|~c \in h' \land c \notin
@@ -286,26 +297,11 @@ to the obligations.
   The jump from $c \in h'$ to $c \in h$ is allowable, as all cells are
   in both heaps, it's just that some may have changed state between
   them.
-\end{proof}
+  \caption{Sufficiency of framework for unreachable cells.}
+  \label{fig:gc-framework-sufficiency-unreachable}
+\end{figure}
 
-\begin{lemma}[Roots]
-  The framework is sufficient for roots.
-\end{lemma}
-
-\begin{proof}
-  \begin{align*}
-    \mathrm{gcroots} &= \map{f}{\mathrm{gcroots'}}\\
-    roots &= \map{f}{roots'}
-  \end{align*}
-\end{proof}
-
-\section{Summary}
-\label{sec:gc-summary}
-
-This chapter has combined the definitions of mark-sweep and copying
-correctness from Chapters \ref{sec:marksweep} and \ref{sec:copying} to
-produce a more general formalism in Section \ref{sec:gc-correct}. This
-formalism is a strict generalisation as it allows reasoning about
+\noindent a strict generalisation as it allows reasoning about
 collectors which mutate the garbage collection metadata, which neither
 of the two prior formalisms permit. Furthermore, a series of smaller
 proof obligations were provided, in order to ease proof of correctness
