@@ -442,8 +442,9 @@ and so a more realistic model of the heap was desirable.
   We would like to show that Myreen Correctness implies both Correct
   Copying and Root Translation, in which case we know that Myreen
   Correctness is at least as strong as my formalism.
+\end{theorem}
 
-  \begin{proof}
+\begin{proof}
     Myreen's $f$ is only defined for cell start addresses, as his heap
     is a partial function from addresses to cells, but the function
     can be easily expanded to what we need by filling in the
@@ -479,16 +480,16 @@ and so a more realistic model of the heap was desirable.
 
     Thus, Myreen Correctness implies both Correct Copying and Root
     Translation.
-  \end{proof}
-\end{theorem}
+\end{proof}
 
 \begin{theorem}[Correct Copying and Root Translation are weaker]
   We would like to show that Correct Copying and Root Translation, if
   and only if $f$ is an involution, imply Myreen Correctness, in which
   case Correct Copying and Root Translation alone are weaker than
   Myreen Correctness.
+\end{theorem}
 
-  \begin{proof}
+\begin{proof}
     As shown in the prior proof, the roots after collection in Myreen
     are exactly what is required by Root Translation, thus we only
     need to worry about the heap.
@@ -500,8 +501,7 @@ and so a more realistic model of the heap was desirable.
 
     Thus, Correct Copying and Root Translation, if and only if we also
     mandate that $f$ is an involution, imply Myreen Correctness.
-  \end{proof}
-\end{theorem}
+\end{proof}
 
 Having shown both of these, we can conclude that my formalism is
 strictly weaker than Myreen's, but with the additional requirement
