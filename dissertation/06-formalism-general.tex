@@ -79,8 +79,8 @@ of mutated metadata words (defn. \ref{def:g-preservation}).
   \label{def:g-preservation}
   After garbage collection, data words have not been mutated, pointers
   have been remapped consistently, and garbage collection metadata may
-  have been mutated (but in a way which still obeys any other
-  invariants or postconditions, of course).
+  have been mutated, but in a way which still obeys any other
+  invariants or postconditions of the specific collector.
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
     \left(\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\right.\\
