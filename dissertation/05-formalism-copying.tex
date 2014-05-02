@@ -222,7 +222,7 @@ terminates we have $k = \len \mathtt{roots}$.
   \label{fig:copying-example-partial-sufficient}
 \end{figure}
 
-\begin{lemma}[Partial Correctness]
+\begin{theorem}[Partial Correctness]
 \label{lem:fyc}
   Showing the correctness of \texttt{collect} consists of showing the
   following:
@@ -243,7 +243,7 @@ terminates we have $k = \len \mathtt{roots}$.
 
   \item \texttt{collect} does not copy any unreachable cells
   \end{enumerate}
-\end{lemma}
+\end{theorem}
 
 \begin{proof}
   By (1) and (5), we have $\forall c \in h,\ \lnot\free{c} \iff c \in
@@ -355,9 +355,9 @@ soon as we hit the else case we do that. Thus, even if we were to
 encounter a cyclic structure, reaching again the point at which we
 entered it would end the recursion.
 
-\begin{lemma}[Total Correctness]
+\begin{theorem}[Total Correctness]
   The Fenichel/Yochelson collector terminates on all possible heaps.
-\end{lemma}
+\end{theorem}
 
 \begin{proof}
   By induction on the number of uncopied and non-atomic cells in the

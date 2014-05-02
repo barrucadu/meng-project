@@ -374,10 +374,10 @@ garbage collector: \[\forall c \in h',\ \forall w \in c,\
 (\free{c} \iff c \notin \reach{h'}{roots}) \land (\lnot\free{c} \implies
 h[w] = h'[w] \land \lnot\marked{h}{c})\]
 
-\begin{lemma}[Loop Invariant]
-  \label{lem:li}
-  The loop invariant holds.
-\end{lemma}
+\begin{theorem}[Partial Correctness]
+  The loop invariant both holds, and is sufficient for correct
+  collection.
+\end{theorem}
 
 \begin{proof}
   \begin{figure}[t]
@@ -612,6 +612,11 @@ h[w] = h'[w] \land \lnot\marked{h}{c})\]
 \subsubsection{Total Correctness}
 \label{sec:marksweep-example-total}
 
+\begin{theorem}[Total Correctness]
+  The Armstrong/Virding collector terminates on all possible heaps.
+\end{theorem}
+
+\begin{proof}
 We can use allocation IDs to express that the history list forms an
 unbroken chain of cells, all the way back to the first cell, as
 follows:
@@ -673,12 +678,13 @@ The two cases are as follows,
 
   \item[Case 2, $\mathtt{SCAV} \neq \mathrm{first}$] In this case, we
     know by the history list assumption that
-    $\id~\mathrm{hist}(\mathtt{SCAV}) < \id~\mathtt{SCAV}$, and so
+    $\id~\mathrm{hist}(\mathtt{SCAV})$ $<\id~\mathtt{SCAV}$, and so
     $\id~\mathtt{SCAV}$ does decrease. Furthermore, we know that the
     ID cannot decrease below zero, and so we get a strictly decreasing
     sequence of positive natural numbers. Clearly, this sequence is
     not infinite, and so the loop terminates.
 \end{description}
+\end{proof}
 
 \section{Summary}
 \label{sec:marksweep-summary}
