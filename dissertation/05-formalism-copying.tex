@@ -37,14 +37,10 @@ this makes no sense, as $w$ is an index into the heap, and so $w$ in
 the new heap is not necessarily the same as $w$ in the old heap. Thus,
 we also need to be able to find old $w$ values.
 
-\pagebreak
-
 \begin{definition}[Correct Copying]
   \label{def:c-correct-copying}
-  After garbage collection, no allocated cells have been mutated,
-  except in the pointer fields, in which case we apply an address
-  translation function $f$.
-
+  After garbage collection, no allocated cells are mutated, except by
+  applying an address translation function $f$ to pointer fields,
   \begin{align*}
     \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
     (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
