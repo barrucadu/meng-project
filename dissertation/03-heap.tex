@@ -58,15 +58,13 @@ predicates to reason about the heap,
 
 In addition to these operators, there is an additional deduction rule,
 the frame rule, allowing modular reasoning about program components,
-
 \begin{prooftree}
   \AxiomC{$\htriple{P}{C}{Q}$}
   \UnaryInfC{$\htriple{P \sepc R}{C}{Q \sepc R}$}
 \end{prooftree}
-
-The frame rule is valid if no free variables in $R$ are modified in
-$C$, it states that a proof of a program in a small context can be
-reused in a larger context.
+which is valid if no free variables in $R$ are modified in $C$, it
+states that a proof of a program in a small context can be reused in a
+larger context.
 
 In this formalism pointers are parameters to the partial function
 which is the heap, where the heap can consist of anything. For
