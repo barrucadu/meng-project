@@ -3,16 +3,15 @@
 
 This chapter produces a general correctness criteria for garbage
 collection, and shows how it can be applied: by comparing the
-mark-sweep and copying formalisms, and abstracting the commonalities
-from both. Definitions are reused, but specifics of the proofs are
-not.
+mark-sweep and copying formalisms in Section \ref{sec:gc-comparison},
+and abstracting the commonalities from both in Section
+\ref{sec:gc-correct}. Definitions are reused, but specifics of the
+proofs are not.
 
 As proving a very abstract correctness criteria holds for a concrete
-implementation may be difficult, a framework for proof is provided: a
-collection of simpler obligations which, together, are sufficient for
-correctness. Finally, it is briefly discussed how the formalism could
-possibly be extended to apply to collectors other than the
-stop-the-world type.
+implementation may be difficult, a framework for proof is provided in
+Section \ref{sec:gc-framework}: a collection of simpler obligations
+which, together, are sufficient for correctness.
 
 \section{Comparison of Mark-Sweep and Copying Correctness}
 \label{sec:gc-comparison}
