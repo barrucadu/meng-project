@@ -113,11 +113,11 @@ where errors were introduced into the system.
 \subsection{Incremental Garbage Collectors}
 \label{sec:conclusion-further-incremental}
 
-I have assumed that all garbage collectors are of the stop-the-world
-type, but this is often not the case in practice. Incremental garbage
-collectors are very common, especially in systems with need for rapid
-response to input, and my formalism cannot reason about them at
-all.
+It has been assumed that all garbage collectors are of the
+stop-the-world type, but this is often not the case in
+practice. Incremental garbage collectors are very common, especially
+in systems with need for rapid response to input, and my formalism
+cannot reason about them at all.
 
 It would be desirable to extend the formalism to be able to cope with
 incremental collectors, perhaps by modelling the system as a
