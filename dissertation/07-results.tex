@@ -104,12 +104,12 @@ for(unsigned int i = 0; i < NUM_ROOTS; i++)
 \subsubsection{Postconditions}
 \label{sec:results-impl-ms-post}
 
-The postcondition express simply the correct mark-sweep postcondition:
-after collection, all cells which are allocated (not on the free list)
-are reachable from the roots. Furthermore, the live cell invariant is
-checked here as a postcondition, although arguably it should be
-checked with the rest of the invariants, in the garbage collection
-loop.
+The postconditions express simply the correct mark-sweep
+postcondition: after collection, all cells which are allocated (not on
+the free list) are reachable from the roots. Furthermore, the live
+cell invariant is checked here as a postcondition, although arguably
+it should be checked with the rest of the invariants, in the garbage
+collection loop.
 
 \begin{figure}[H]
   \begin{lstlisting}[language=C]
