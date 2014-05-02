@@ -153,7 +153,6 @@ important, as it were, to get right than others.
 A garbage collector determines what is live and what is garbage by
 traversing the heap from the roots, and so these must necessarily be
 the correct roots,
-
 \begin{align*}
   \mathrm{gcroots} &= roots
 \end{align*}
@@ -172,7 +171,6 @@ necessary.
 Next, the garbage collector must partition all allocated cells into
 either live or garbage. For correctness, these must be the same as the
 reachable and non-reachable allocated cells,
-
 \begin{align*}
   \mathrm{gclive}(h) &= \reach{h}{\mathrm{gcroots}}\\
   \mathrm{gcgarbage}(h) &= \left\{c~|~c \in h \land c \notin
@@ -195,7 +193,6 @@ garbage cells, and can think about them one at a time in the form of a
 loop invariant, it should be simpler to prove.
 
 Thus, it needs to be shown,
-
 \begin{align*}
   \forall c \in \mathrm{gclive}(h),\ \forall w \in c,\ & \lnot\free{c} \land 
   \left(\type{w} = \typointer \iff h[w] =
@@ -218,7 +215,6 @@ form of preservation.
 Now, the roots must be updated by the same function which was applied
 to the cells, if any. In a non-moving collector, this is imply the
 identity.
-
 \begin{align*}
   \mathrm{gcroots} &= \map{f}{\mathrm{gcroots'}}
 \end{align*}
