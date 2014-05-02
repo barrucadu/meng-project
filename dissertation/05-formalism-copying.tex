@@ -17,11 +17,11 @@ the prior chapter. Unfortunately, the definition of word preservation
 (defn. \ref{def:ms-word-preservation}) will have to change, because a
 copying collector renames addresses.
 
-$\free{c}$ is a bit subtle in the copying collector, as there is no
-explicit free list. However, as there is a \textit{free pointer}, or
-equivalent, indicating the start of the free region of the active
-semispace, we can consider there to be an implicit free list,
-consisting of all cells after that point, and all cells in the
+The definition of $\free{c}$ is a bit subtle in the copying collector,
+as there is no explicit free list. However, as there is a \textit{free
+  pointer}, or equivalent, indicating the start of the free region of
+the active semispace, we can consider there to be an implicit free
+list, consisting of all cells after that point, and all cells in the
 inactive semispace.
 
 \section{Copying}
