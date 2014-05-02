@@ -188,7 +188,7 @@ interleaved marking and sweeping, such as happens in some incremental
 and other special-case collectors.
 
 What is meant when it is said that a sweeper is correct? After a
-little thought, we will realise that we mean it doesn't deallocate any
+little thought, we realise that we mean it doesn't deallocate any
 cells which were marked, and it unmarks all of the cells. In the case
 of a correct marker, this is equivalent to preserving and unmarking
 exactly the reachable cells, which (with the additional constraint of
