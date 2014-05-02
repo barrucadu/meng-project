@@ -15,14 +15,15 @@ the Armstrong/Virding\cite{Armstrong95} collector in Section
 
 \paragraph{Preliminary Definitions}
 The following terms are used throughout the dissertation: $h$, a heap;
-$h'$ the state of a heap $h$ before garbage collection; $r$, the root
-set; $a \pointsto b$, the cell $a$ contains a pointer to the cell $b$;
-$\free{c}$, true iff the cell $c$ is on the free list; $\reach{h}{r}$,
-the set of cells reachable from $r$ in $h$; and $\type{w}$, the type
-of a word. Furthermore, quantifiers are used as follows: $\forall c
-\in h$ ranges over pointers to cells in the heap $h$; and $\forall w
-\in c$ ranges over addresses within a cell $c$. The definitions of
-$\free{c}$ and $\reach{h}{r}$ are expressed more formally later on.
+$h'$ the state of a heap $h$ before garbage collection; $roots$, the
+root set; $a \pointsto b$, the cell $a$ contains a pointer to the cell
+$b$; $\free{c}$, true iff the cell $c$ is on the free list;
+$\reach{h}{roots}$, the set of cells reachable from $roots$ in $h$;
+and $\type{w}$, the type of a word. Furthermore, quantifiers are used
+as follows: $\forall c \in h$ ranges over pointers to cells in the
+heap $h$; and $\forall w \in c$ ranges over addresses within a cell
+$c$. The definitions of $\free{c}$ and $\reach{h}{r}$ are expressed
+more formally later on.
 
 \begin{definition}[Heap]
   \label{def:ms-heap}
