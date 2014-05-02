@@ -47,16 +47,16 @@
   name=heap,
   plural=heaps,
   description={the sum total of memory available to the program which
-    is not in the \gls{call stack}, or, a digraph of cells, connected
+    is not in the \gls{stack}, or, a digraph of cells, connected
     by \glspl{pointer}}
 }
 
-\newglossaryentry{call stack}
+\newglossaryentry{stack}
 {
-  name=call stack,
-  plural=call stacks,
+  name=stack,
+  plural=stacks,
   description={a stack containing all variables in scope and function
-    return addresses, calling a function pushes more entries to the
+    return addresses: calling a function pushes more entries to the
     stack, and returning pops}
 }
 
