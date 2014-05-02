@@ -20,6 +20,7 @@
 }
 
 % Figures
+\usepackage{float}
 \usepackage{caption}
 \DeclareCaptionFormat{default}{#1#2#3}
 \DeclareCaptionFormat{underlined}{#1#2#3\hrulefill}
@@ -114,6 +115,8 @@
 }
 
 % Logic & Maths
+\usepackage{savesym}
+\savesymbol{listof}
 \usepackage{bussproofs}
 
 \newcommand{\htriple}[3]{\left\{#1\right\}\ \mbox{#2}\ \left\{#3\right\}}
@@ -253,9 +256,9 @@ such there are no specific ethical implications.
 \setcounter{page}{1}
 \tableofcontents
 
-%\listoffigures
+\listoffigures
 %\listoftables
-\lstlistoflistings
+%\lstlistoflistings
 
 \glsaddall
 \printglossaries

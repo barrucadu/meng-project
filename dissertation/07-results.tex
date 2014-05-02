@@ -89,13 +89,17 @@ garbage, and due to it never being freed, garbage would survive a
 collection. Furthermore, it is assumed that when the collector is
 called, all cells pointed to by roots have been marked.
 
-\begin{lstlisting}[language=C,caption={Armstrong/Virding Preconditions}]
+\begin{figure}[H]
+  \begin{lstlisting}[language=C]
 assert(reachable(gchead(first)));
 
 for(unsigned int i = 0; i < NUM_ROOTS; i++)
   if(roots[i] != NULL)
     gchead(roots[i])->mark = MARKED;
-\end{lstlisting}
+  \end{lstlisting}
+  \captionsetup{format=default}
+  \caption{Armstrong/Virding Preconditions}
+\end{figure}
 
 \subsubsection{Postconditions}
 \label{sec:results-impl-ms-post}
@@ -107,7 +111,8 @@ checked here as a postcondition, although arguably it should be
 checked with the rest of the invariants, in the garbage collection
 loop.
 
-\begin{lstlisting}[language=C,caption={Armstrong/Virding Postconditions}]
+\begin{figure}[H]
+  \begin{lstlisting}[language=C]
 for(unsigned int i = 0; i < NUM_CELLS; i++)
   if(reachable(&heap[i]))
     assert(!on_free_list(&heap[i]));
@@ -115,7 +120,10 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
 for(unsigned int i = 0; i < NUM_CELLS; i++)
   if(!on_free_list(&heap[i]))
     assert(reachable(&heap[i]));
-\end{lstlisting}
+  \end{lstlisting}
+  \captionsetup{format=default}
+  \caption{Armstrong/Virding Postconditions}
+\end{figure}
 
 \subsubsection{Invariants}
 \label{sec:results-impl-ms-invariants}
@@ -129,7 +137,8 @@ been marked. The latter two express the simpler properties that all
 allocated cells in the collected region are live, and all allocated
 cells in the collected region are unmarked.
 
-\begin{lstlisting}[language=C,caption={Armstrong/Virding Invariants}]
+\begin{figure}[H]
+  \begin{lstlisting}[language=C]
 for(unsigned int i = 0; i < NUM_CELLS; i++)
   if(reachable(&heap[i]) && cell_id(&heap[i]) > cell_id(gchead(SCAV)))
     {
@@ -151,7 +160,10 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
 for(unsigned int i = 0; i < NUM_CELLS; i++)
   if(reachable(&heap[i]) && cell_id(&heap[i]) > cell_id(gchead(SCAV)))
     assert(heap[i].mark == UNMARKED);
-\end{lstlisting}
+  \end{lstlisting}
+  \captionsetup{format=default}
+  \caption{Armstrong/Virding Invariants}
+\end{figure}
 
 \subsection{Fenichel/Yochelson}
 \label{sec:results-impl-c}
@@ -168,7 +180,8 @@ invariant being broken, and resulted in some confusion before the
 issue became apparent: this was then enforced as a precondition of the
 collector.
 
-\begin{lstlisting}[language=C,caption={Fenichel/Yochelson Preconditions}]
+\begin{figure}[H]
+  \begin{lstlisting}[language=C]
 cell *sspace = (cons_space == FIRST) ? semispace1 : semispace2;
 
 for(unsigned int i = 0; i < NUM_CELLS; i++)
@@ -184,7 +197,10 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
         assert(sspace[i].cdr.val.ptr >= sspace &&
                sspace[i].cdr.val.ptr <= &sspace[NUM_CELLS]);
     }
-\end{lstlisting}
+  \end{lstlisting}
+  \captionsetup{format=default}
+  \caption{Fenichel/Yochelson Preconditions}
+\end{figure}
 
 \subsubsection{Postconditions}
 \label{sec:results-impl-c-post}
@@ -192,7 +208,8 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
 As a postcondition the live cell invariant was again checked, and also
 it was asserted that all allocated cells are reachable.
 
-\begin{lstlisting}[language=C,caption={Fenichel/Yochelson Postconditions}]
+\begin{figure}[H]
+  \begin{lstlisting}[language=C]
 cell* sspace = (cons_space == FIRST) ? semispace1 : semispace2;
 
 for(unsigned int i = 0; i < NUM_CELLS; i++)
@@ -202,7 +219,10 @@ for(unsigned int i = 0; i < NUM_CELLS; i++)
 for(unsigned int i = 0; i < NUM_CELLS; i++)
   if(!on_free_list(&sspace[i]))
     assert(reachable(&sspace[i]));
-\end{lstlisting}
+  \end{lstlisting}
+  \captionsetup{format=default}
+  \caption{Fenichel/Yochelson Postconditions}
+\end{figure}
 
 \subsubsection{Invariants}
 \label{sec:results-impl-c-invariants}
@@ -215,16 +235,21 @@ semispace was verified. Unfortunately, proving the stronger property
 would require having access to the pre-state of the heap, which would
 require copying it before initiating a garbage collection.
 
-\begin{lstlisting}[language=C,caption={Fenichel/Yochelson GC Loop}]
+\begin{figure}[H]
+  \begin{lstlisting}[language=C]
 for(unsigned int i = 0; i < NUM_ROOTS; i ++)
   if(roots[i] != NULL)
     {
       roots[i] = collect(roots[i]);
       check_pointers_updated(roots[i], NULL);
     }
-\end{lstlisting}
+  \end{lstlisting}
+  \captionsetup{format=default}
+  \caption{Fenichel/Yochelson GC Loop}
+\end{figure}
 
-\begin{lstlisting}[language=C,caption={Fenichel/Yochelson Pointer Checking}]
+\begin{figure}[H]
+  \begin{lstlisting}[language=C]
 static void check_pointers_updated(const cell* root, const cell* cur)
 {
   if(root == cur)
@@ -252,7 +277,10 @@ static void check_pointers_updated(const cell* root, const cell* cur)
       check_pointers_updated(root, cur->cdr.val.ptr);
     }
 }
-\end{lstlisting}
+  \end{lstlisting}
+  \captionsetup{format=default}
+  \caption{Fenichel/Yochelson Pointer Checking}
+\end{figure}
 
 \section{Generalised Garbage Collection Correctness}
 \label{sec:results-correctness}

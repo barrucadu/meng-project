@@ -23,13 +23,21 @@ necessary for a non-instrumented implementation of the collector. The
 allocator calls the garbage collector upon running out of space, and
 the user cannot call the garbage collector directly.
 
-\lstset{caption={Header file for the Armstrong/Virding C implementation}}
-\lstset{label=lst:armstrong-virding-h}
 \lstinputlisting{../code/armstrong-virding.h}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Header file for the Armstrong/Virding C implementation.}
+  \label{fig:armstrong-virding-h}
+\end{figure}
 
-\lstset{caption={Implementation of Armstrong/Virding in C}}
-\lstset{label=lst:armstrong-virding-c}
 \lstinputlisting{../code/armstrong-virding.c}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Implementation of Armstrong/Virding in C.}
+  \label{fig:armstrong-virding-c}
+\end{figure}
+
+\vfill
 
 \section{Fenichel/Yochelson}
 \label{sec:gc-impl-fenichel-yochelson}
@@ -44,15 +52,19 @@ checking. As with the mark-sweep collector, the allocator calls the
 garbage collector directly, and no interface to the collector is
 exposed to the user programmer.
 
-\lstset{caption={Header file for the Fenichel/Yochelson C implementation}}
-\lstset{label=lst:fenichel-yochelson-h}
 \lstinputlisting{../code/fenichel-yochelson.h}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Header file for the Fenichel/Yochelson C implementation.}
+  \label{fig:fenichel-yochelson-h}
+\end{figure}
 
-\vspace{1cm}
-
-\lstset{caption={Implementation of Fenichel/Yochelson in C}}
-\lstset{label=lst:fenichel-yochelson-c}
 \lstinputlisting{../code/fenichel-yochelson.c}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Implementation of Fenichel/Yochelson in C.}
+  \label{fig:fenichel-yochelson-c}
+\end{figure}
 
 \section{Test Program}
 \label{sec:gc-impl-test-program}
@@ -64,9 +76,12 @@ causing over two-hundred garbage collections in the very constrained
 heap given to it. This single mutator, when combined with the two
 provided collectors, results in two test programs.
 
-\lstset{caption={Test program}}
-\lstset{label=lst:main-c}
 \lstinputlisting{../code/main.c}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Test program.}
+  \label{fig:main-c}
+\end{figure}
 
 This implements a small set of functions for manipulating linked lists
 in C with potential garbage collection happening in the midst of
@@ -76,20 +91,29 @@ code being a little more complex than it would be if the garbage
 collector were hidden away in the language runtime, but it should
 remain fairly clear.
 
-\lstset{caption={Header file for the linked list utilities}}
-\lstset{label=lst:lists-h}
 \lstinputlisting{../code/lists.h}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Header file for the linked list utilities.}
+  \label{fig:lists-h}
+\end{figure}
 
-\lstset{caption={Linked list utilities with swappable GC}}
-\lstset{label=lst:lists-c}
 \lstinputlisting{../code/lists.c}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Linked list utilities with swappable GC.}
+  \label{fig:lists-h}
+\end{figure}
 
 This Makefile (tested with GNU Make) can be used to compile the two
 test programs.
 
-\lstset{caption={Makefile}}
-\lstset{label=lst:makefile}
 \lstinputlisting[style=makefile]{../code/Makefile}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Makefile}
+  \label{fig:makefile}
+\end{figure}
 
 \section{Shared Code}
 \label{sec:gc-impl-shared}
@@ -103,10 +127,16 @@ collectors.
 
 \vspace{1cm}
 
-\lstset{caption={Definition of cells and shared prototypes}}
-\lstset{label=lst:shared-h}
 \lstinputlisting{../code/shared.h}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Definition of cells and shared prototypes.}
+  \label{fig:shared-h}
+\end{figure}
 
-\lstset{caption={Shared root-management code}}
-\lstset{label=lst:shared-c}
 \lstinputlisting{../code/shared.c}
+\begin{figure}[H]
+  \captionsetup{format=default}
+  \caption{Shared root management code.}
+  \label{fig:shared-c}
+\end{figure}
