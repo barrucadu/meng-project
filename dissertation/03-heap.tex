@@ -164,12 +164,8 @@ while i <= A.upper do
 
 \begin{definition}[Array Assignment Triple]
   Assignment to an array is modelled as functional override,
-
-  \begin{align*}
-    \htriplem{P[(A; i : e)/A] \land i \in \dom~A}{A[i] = e}{P}
-  \end{align*}
-
-  Where $(A; i : e)[j]$ evaluates to $e$ if $i = j$, and $A[j]$
+  \[\htriplem{P[(A; i : e)/A] \land i \in \dom~A}{A[i] = e}{P}\]
+  where $(A; i : e)[j]$ evaluates to $e$ if $i = j$, and $A[j]$
   otherwise.
 \end{definition}
 
