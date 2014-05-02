@@ -29,8 +29,8 @@ However, the mark-sweep correctness very naturally decomposes into
 correct marking and correct sweeping, whereas there was no such
 similar decomposition for the copying correctness. This decomposition
 showed in the proofs, where the loop invariant for the mark-sweep
-collector dealt with both cases, but the invariant for the copying
-collector had to consider the entire state at once.
+collector dealt with both cases separately, but the invariant for the
+copying collector had to consider the entire state at once.
 
 Despite this apparent difference, as the decomposition arises from
 combining the domain-specific knowledge of how a mark-sweep collector
