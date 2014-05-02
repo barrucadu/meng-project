@@ -518,13 +518,10 @@ obvious statement of correctness.
 \section{Summary}
 \label{sec:copying-summary}
 
-This chapter highlighted the differences between the formalisms
+This chapter has highlighted the differences between the formalisms
 suitable for mark-sweep and copying collectors: correct copying
-(defn. \ref{def:c-correct-copying}) replacing word preservation, and
-the introduction of address translation
-(defns. \ref{def:c-address-translation-function} and
-\ref{def:c-root-translation}) for pointer mutation during garbage
-collection.
+replacing word preservation, and the introduction of address
+translation for pointer mutation during garbage collection.
 
 It was argued that correctness for a copying collector comes down to
 copying exactly the live cells and updating all pointers consistently.
