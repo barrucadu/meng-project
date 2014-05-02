@@ -227,11 +227,11 @@ terminates we have $k = \len \mathtt{roots}$.
   \item after \texttt{collect}($p$) terminates, both $p$ and all cells
     reachable from $p$ have been collected
 
-  \item if a cell has been collected, then collecting it again returns
-    a pointer to the previously copied version
-
   \item \texttt{collect}($p$) returns a pointer to a copied version of
     $p$
+
+  \item if a cell has been collected, then collecting it again returns
+    a pointer to the previously copied version
 
   \item \texttt{collect}($p$) updates the car and cdr of $p$ to
     \texttt{collect}(car($p$)) and \texttt{collect}(cdr($p$))
@@ -287,15 +287,6 @@ terminates we have $k = \len \mathtt{roots}$.
   \end{description}
 \end{proof}
 
-\begin{lemma}[If a cell has been collected, then collecting it again
-  returns a pointer to the previously copied version]
-  \label{lem:c-example-duplication}
-\end{lemma}
-
-\begin{proof}
-  By corollary of Lemma \ref{lem:c-example-ret}.
-\end{proof}
-
 \begin{lemma}[\texttt{collect}($p$) returns a pointer to a copied
   version of $p$]
   \label{lem:c-example-ret}
@@ -314,6 +305,15 @@ terminates we have $k = \len \mathtt{roots}$.
   \item[otherwise] The car is set to \texttt{ALREADYCOPIED}, the old
     cell is copied, and the cdr set to its new address.
   \end{description}
+\end{proof}
+
+\begin{lemma}[If a cell has been collected, then collecting it again
+  returns a pointer to the previously copied version]
+  \label{lem:c-example-duplication}
+\end{lemma}
+
+\begin{proof}
+  By corollary of Lemma \ref{lem:c-example-ret}.
 \end{proof}
 
 \begin{lemma}[\texttt{collect}($p$) updates the car and cdr of $p$ to
