@@ -8,7 +8,7 @@ typedef cell list;
 /**
  * Allocate a singleton list
  */
-list* singleton(unsigned int data);
+list* singleton(uint data);
 
 /**
  * Reverse a list
@@ -16,15 +16,17 @@ list* singleton(unsigned int data);
 list* reverse(list* xs);
 
 /**
- * Create a new list by appending ys to xs. This allocates a totally
- * new xs, to avoid mutating cdrs.
+ * Create a new list by appending ys to xs. This
+ * allocates a totally new xs, to avoid mutating
+ * cdrs.
  */
 list* append(list* xs, list** ys);
 
 /**
- * Special-case of append for appending data to a list.
+ * Special-case of append for appending data to
+ * a list.
  */
-list* append_data(unsigned int data, list** xs);
+list* append_data(uint data, list** xs);
 
 /**
  * Get the head of a list, as a singleton list

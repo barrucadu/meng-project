@@ -12,12 +12,12 @@ cell* roots[NUM_ROOTS] = { NULL };
 cell** add_root(cell* root)
 {
   // Don't add the same root twice
-  for(unsigned int i = 0; i < NUM_ROOTS; i++)
+  for(uint i = 0; i < NUM_ROOTS; i++)
     if(roots[i] == root)
       return &roots[i];
 
   // Add to the first free slot
-  for(unsigned int i = 0; i < NUM_ROOTS; i++)
+  for(uint i = 0; i < NUM_ROOTS; i++)
     if(roots[i] == NULL)
       {
         roots[i] = root;
@@ -32,7 +32,7 @@ cell** add_root(cell* root)
  */
 void remove_root(cell* root)
 {
-  for(unsigned int i = 0; i < NUM_ROOTS; i++)
+  for(uint i = 0; i < NUM_ROOTS; i++)
     if(roots[i] == root)
       roots[i] = NULL;
 }

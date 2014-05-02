@@ -16,8 +16,9 @@ int main(void)
   // Initialise the Armstrong-Virding collector
   initialise();
 #else
-  // Armstrong/Virding has a one cell overhead, so allocate one more
-  // for Fenichel/Yochelson so we get the same behaviour.
+  // Armstrong/Virding has a one cell overhead,
+  // so allocate one more for Fenichel/Yochelson
+  // so we get the same behaviour.
   add_root(singleton(0));
 #endif
 
@@ -25,9 +26,12 @@ int main(void)
 
   // Try to allocate a bunch of cells
   list** xs = NULL;
-  for(unsigned int i = 0; i < NUM_CELLS - 2; i++)
+  for(unsigned int i = 0;
+      i < NUM_CELLS - 2;
+      i++)
     {
-      list** newxs = add_root(append_data(i, (xs == NULL) ? NULL : xs));
+      list* new = append_data(i, xs);
+      list** newxs = add_root(new);
 
       assert(*newxs != NULL);
 
@@ -39,7 +43,8 @@ int main(void)
   // Try allocating one more cell
   assert(singleton(0) == NULL);
 
-  // Chop off the head of the list and allocate a few more cells
+  // Chop off the head of the list and allocate
+  // a few more cells
   list** txs = add_root(tail(tail(tail(*xs))));
   remove_root(*xs);
   list** sing1 = add_root(singleton(0));
