@@ -145,9 +145,9 @@ pause happens when the heap needs to be marked.
 
 Copying collectors (see Figure \ref{fig:lit-gc-copying}) divide the
 heap into two \textit{semispaces}, where allocation is only done in
-one of them at a time. In garbage collection, all live cell are copied
-to the other semispace (in the example this has been shown by shifting
-the addresses up by 8), and the roles of the semispaces are
+one of them at a time. In garbage collection, all live cells are
+copied to the other semispace (in the example this has been shown by
+shifting the addresses up by 8), and the roles of the semispaces are
 swapped\cite{Fenichel69}. Unlike mark-sweep collectors, the pause time
 of a copying collector is proportional only to the number of live
 cells\cite{Appel87}.
