@@ -1,4 +1,4 @@
-CC       := clang
+CC       := gcc
 FLAGS    := -DNUM_CELLS=10 -DNUM_ROOTS=100 \
 	        -std=c99
 CPPFLAGS :=
