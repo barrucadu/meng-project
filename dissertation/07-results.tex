@@ -288,9 +288,9 @@ static void check_pointers_updated(const cell* root, const cell* cur)
 Having produced two proofs of correctness, it was then attempted to
 extract a more general formalism, however, it became apparent that the
 formalism for copying collectors was general enough to cover both of
-the cases already. Rather than conclude that the project was done, I
-generalised in a different direction, by allowing the garbage
-collector to mutate metadata in cells.
+the cases already. Rather than conclude that the project was done,
+generalisation was pursued in a different direction, by allowing the
+garbage collector to mutate metadata in cells.
 
 Whilst initially appearing to only be a small change, this actually
 allows a much larger class of garbage collectors to be reasoned about,
@@ -315,12 +315,12 @@ already considered.
   is just an inconvenience imposed by an overly-strict formalism.
 \end{example}
 
-I believe that, whilst I had hoped to produce a general formalism by
-showing that the mark-sweep and copying collectors were rather
-different (but still sharing a common theme), this generalisation is
-still worthwhile and interesting, as it allows more collectors to be
-reasoned about than perhaps would have been possible if I had stuck to
-my initial goal.
+We can see here that, whilst the intent was to produce a general
+formalism by showing that the mark-sweep and copying collectors were
+rather different (but still sharing a common theme), this
+generalisation is still worthwhile and interesting, as it allows more
+collectors to be reasoned about than perhaps would have been possible
+if the initial goal had been pursued.
 
 \section{Summary}
 \label{sec:results-summary}

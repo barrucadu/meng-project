@@ -4,10 +4,10 @@
 This chapter discusses what has been achieved in the project in
 Section \ref{sec:conclusion-review}, reviews the related work of
 McCreight, Shao, Lin and Li\cite{McCreight07} in Section
-\ref{sec:conclusion-related}, and then introduces some further work
-suggested to me whilst undertaking this project in Section
-\ref{sec:conclusion-further}. Finally, we close with some thoughts on
-the project as a whole in Section \ref{sec:conclusion-thoughts}.
+\ref{sec:conclusion-related}, and then introduces some possibilities
+for further work in Section \ref{sec:conclusion-further}. Finally, we
+close with some thoughts on the project as a whole in Section
+\ref{sec:conclusion-thoughts}.
 
 \section{A Summary of What Has Been Achieved}
 \label{sec:conclusion-review}
@@ -57,13 +57,14 @@ may be verified independently of a collector. This is machine
 verified and proofs for three separate collectors have been
 produced.
 
-My work was produced independently of this, and by the time I found
-the paper the majority of the work in Chapters \ref{sec:marksweep},
-\ref{sec:copying}, and \ref{sec:gc} was done. The key difference is in
-separating the heaps as seen by the mutator and collector, allowing
-independent verification. My approach does not do this, and so
-verification of a mutator necessarily is collector-specific, as
-different collectors will have different invariants and preconditions.
+This project was produced independently of this, and by the time
+McCreight \tetit{et al}'s paper was found, the majority of the work in
+Chapters \ref{sec:marksweep}, \ref{sec:copying}, and \ref{sec:gc} was
+done. The key difference is in separating the heaps as seen by the
+mutator and collector, allowing independent verification. The approach
+taken in this project does not do this, and so verification of a
+mutator necessarily is collector-specific, as different collectors
+will have different invariants and preconditions.
 
 \section{Further Work}
 \label{sec:conclusion-further}
@@ -74,10 +75,10 @@ different collectors will have different invariants and preconditions.
 Whilst it would have been desirable to produce machine-verified
 proofs, this was not done for two reasons: firstly, learning to use a
 proof assistant would have been a significant amount of work to add to
-the project, and secondly I believe the proofs are good enough in
-their current form. Parts of the proofs may be amenable to automation,
-however, which would have simplified the work whilst simultaneously
-making it more rigorous.
+the project, and secondly the proofs are convincing in their current
+form. Parts of the proofs may be amenable to automation, however,
+which would have simplified the work whilst simultaneously making it
+more rigorous.
 
 Given the two proofs in the current forms, however, it would not be
 infeasible to translate them into a form suitable for machine
@@ -116,8 +117,8 @@ where errors were introduced into the system.
 It has been assumed that all garbage collectors are of the
 stop-the-world type, but this is often not the case in
 practice. Incremental garbage collectors are very common, especially
-in systems with need for rapid response to input, and my formalism
-cannot reason about them at all.
+in systems with need for rapid response to input, and the formalism
+developed in this project cannot reason about them at all.
 
 It would be desirable to extend the formalism to be able to cope with
 incremental collectors, perhaps by modelling the system as a
