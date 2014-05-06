@@ -428,15 +428,15 @@ of cell addresses compared with the use of word addresses, and the
 choice comes down to the different approaches taken. Myreen's
 formalism was intended to be used to produce a collector by
 refinement, and so a higher-level and simpler specification was a
-desirable starting point; whereas my formalism was more motivated by a
-desire to prove existing collectors correct, in which case a necessity
-to easily reason about individual words arose, and so a more realistic
-model of the heap was desirable.
+desirable starting point; whereas this formalism was more motivated by
+a desire to prove existing collectors correct, in which case a
+necessity to easily reason about individual words arose, and so a more
+realistic model of the heap was desirable.
 
 \begin{theorem}[Myreen Correctness is at least as strong]
   We would like to show that Myreen Correctness implies both Correct
   Copying and Root Translation, in which case we know that Myreen
-  Correctness is at least as strong as my formalism.
+  Correctness is at least as strong as this formalism.
 \end{theorem}
 
 \begin{proof}
@@ -498,7 +498,7 @@ model of the heap was desirable.
     mandate that $f$ is an involution, imply Myreen Correctness.
 \end{proof}
 
-Having shown both of these, we can conclude that my formalism is
+Having shown both of these, we can conclude that this formalism is
 strictly weaker than Myreen's, but with the additional requirement
 that $f$ be an involution, they are equivalent.
 
@@ -506,7 +506,7 @@ Myreen agreed that his requirement of $f \of f = \id$ is probably
 unnecessarily strict, and said that he used this property as \quot{it
   also works, it was simpler to state and doesn't require thinking
   whether one has to apply $f$ or the inverse of
-  $f$}{MyreenEmail}. This is certainly true as my formalism requires
+  $f$}{MyreenEmail}. This is certainly true as this formalism requires
 applying $f$ or $f^{-1}$ in the appropriate places, and results in a
 possibly less obvious statement of correctness.
 
