@@ -1,5 +1,62 @@
-\documentclass{beamer}
+\documentclass[usenames,dvipsnames]{beamer}
 \usetheme{default}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{listings}
+
+\newcommand{\htriple}[3]{\left\{#1\right\}\ \mbox{#2}\ \left\{#3\right\}}
+\newcommand{\htriplem}[3]{\left\{#1\right\}\ #2\ \left\{#3\right\}}
+\newcommand{\len}{\mathrm{len}~}
+\renewcommand{\iff}{\Leftrightarrow}
+\renewcommand{\implies}{\Rightarrow}
+
+\DeclareMathOperator{\sepc}{\ast}
+\DeclareMathOperator{\sepi}{---\!\ast}
+
+\newcommand{\encarmap}{\rightharpoonup}
+\newcommand{\pointsto}{\hookrightarrow}
+\newcommand{\restrict}{\downharpoonright}
+\newcommand{\addr}{\mathrm{Addr}}
+\newcommand{\data}{\mathrm{Data}}
+\newcommand{\nullp}{\mathit{null}}
+\newcommand{\listof}[1]{#1\ \mathbf{list}}
+\newcommand{\x}{\times}
+\newcommand{\of}{\circ}
+\newcommand{\reach}[2]{\mathrm{reach}\left(#1, #2\right)}
+\newcommand{\garbage}[2]{\mathrm{garbage}\left(#1, #2\right)}
+\newcommand{\keep}[2]{\mathrm{keep}\left(#1, #2\right)}
+\newcommand{\markset}[2]{\mathrm{mark}\left(#1, #2\right)}
+\newcommand{\map}[2]{\mathrm{map}\left(#1, #2\right)}
+\newcommand{\rename}[2]{\mathrm{rename}\left(#1, #2\right)}
+\newcommand{\filter}[2]{\mathrm{filter}\left(#1, #2\right)}
+\newcommand{\gc}{\xrightarrow{gc}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\dom}{\mathrm{dom}}
+\newcommand{\gchead}[1]{\mathrm{gchead}\left(#1\right)}
+\newcommand{\free}[1]{\mathrm{free}\left(#1\right)}
+\newcommand{\marked}[2]{\mathrm{marked}\left(#1, #2\right)}
+\newcommand{\type}[1]{\mathrm{type}\left(#1\right)}
+\newcommand{\typointer}{\mathrm{pointer}}
+\newcommand{\tydata}{\mathrm{data}}
+\newcommand{\tygc}{\mathrm{gc}}
+
+\newcommand{\ltrue}{\mathcal T}
+\newcommand{\lfalse}{\mathcal F}
+
+\definecolor{LightGray}{rgb}{0.9,0.9,0.9}
+
+\lstset{basicstyle=\footnotesize\ttfamily}
+\lstset{showstringspaces=false}
+\lstset{numbers=none}
+\lstset{keywordstyle=\color{MidnightBlue}\bfseries}
+\lstset{commentstyle=\color{JungleGreen}}
+\lstset{identifierstyle=\color{OliveGreen}}
+\lstset{stringstyle=\color{Red}}
+\lstset{backgroundcolor=\color{LightGray}}
+\lstset{breaklines=true}
+\lstset{captionpos=b}
 
 \author{Michael Walker}
 \title{A verified memory-management system for dynamic languages}
@@ -227,21 +284,255 @@
 \subsection{Correctness of Garbage Collectors}
 
 \begin{frame}{Correctness of Garbage Collectors}
+  \begin{itemize}
+  \item Cells can have some garbage collection metadata associated
+    with them.
+  \item After garbage collection, the heap only contains live cells.
+  \item The live portion of the heap is the same `shape' as it was
+    before.
+  \item Nothing has been mutated that shouldn't have been.
+  \end{itemize}
+
+% I defined a cell as a contiguous sequence of words, some initial
+% portion of which can be reserved for the use of the garbage
+% collector. I then defined pointers as the index of the start of the
+% data portion of a cell. This metadata is necessary to model
+% mark-sweep collectors, but we don't want to give programmers access
+% to it: hence the restriction on pointers.
+
+% When the garbage collector terminates, we want a heap which is
+% isomorphic to the live portion of the original heap, with no
+% unreachable cells.
 \end{frame}
 
 \subsubsection{Mark-Sweep}
 
 \begin{frame}{Mark-Sweep}
+  \begin{description}
+  \item[Correct Marking] After marking, for all allocated cells, the
+    mark flag is unset if and only if the cell is not
+    reachable.
+
+  \item[Correct Sweeping] All cells which are marked are preserved and
+    unmarked, no garbage cells are preserved, and nothing other than
+    the garbage collector metadata gets mutated.
+  \end{description}
+
+  \begin{align*}
+    \forall c \in h',\ \forall w \in c,\ &(\free{c} \iff c \notin
+    \reach{h'}{roots}) \land\\
+    &(\lnot\free{c} \implies h[w] = h'[w] \land
+    \lnot\marked{h}{c}) 
+  \end{align*}
+
+% Garbage collection correctness is expressed here as "For all
+% cells, the cell is on the free list if and only if it was not
+% reachable in the original heap, and if the cell is not on the free
+% list then all of the words within it are the same as before garbage
+% collection, and it's not marked." This does not allow pointer
+% mutation, but that's ok, as we don't need that yet.
+
+% In the dissertation, correct marking and correct sweeping are
+% defined more precisely.
+
+% Now we'll have a look at the case study I used for mark-sweep
+% collectors, the Armstrong/Virding collector.
+\end{frame}
+
+\begin{frame}[fragile]{Case Study: Armstrong/Virding}
+  \begin{itemize}
+  \item Mark-sweep collector for languages with immutable state.
+  \item Cells form a linked ``history list'', which is traversed in
+    GC.
+  \item Makes use of immutability to combine marking and sweeping
+    into one pass.
+  \item Paper uses cons-cells, but could be generalised to any type
+    of data structure.
+  \item Proven correct using a loop invariant to show the ``marker''
+    is always ahead of the ``sweeper''.
+  \item Proof tactic: assign the first allocated cell an ID of 0, and
+    every subsequently allocated cell the next integer.
+  \end{itemize}
+
+% The Armstrong/Virding collector is a fairly simple mark-sweep
+% collector where pointers in a cell can only point to cells allocated
+% before it, and it uses this property to combine the marking and the
+% sweeping into a single pass.
+
+% Furthermore, cells have a history pointer, which forms a linked list
+% back to the first allocated cell, which is used by the collector.
+
+% Proving this correct necessitated showing that the "marker" was
+% always ahead of the "sweeper", and so I formalised the notion of
+% cells being older or younger than each other by giving to each cell
+% an ID number, set at allocation time. The first cell has an ID of
+% zero, and then other cells take the next available positive integer,
+% so more recently allocated cells have higher IDs.
+\end{frame}
+
+\begin{frame}[fragile]{Case Study: Armstrong/Virding}
+  \begin{lstlisting}
+last = current
+SCAV = hist(last)
+while (SCAV != first) {
+    if (marked(SCAV)) {
+        possibly_mark(car(SCAV));
+        possibly_mark(cdr(SCAV));
+        unmark(SCAV);
+        last = SCAV;
+        SCAV = hist(last);
+    } else {
+        tmp = SCAV;
+        SCAV = hist(SCAV);
+        set_history(last, SCAV);
+        free_cons(tmp);
+    }
+}
+  \end{lstlisting}
+
+  Assumption: all cells pointed to by roots have been marked before
+  calling this.
+
+% "current" is the head of the free list; "hist" gets the cell before
+% its argument in the history list; and "possibly_mark" follows and
+% marks its argument if it is a pointer. Everything else is fairly
+% self-explanatory.
+
+% So, the collector simply walks the history list, freeing or
+% preserving cells as it goes, and because pointers will always point
+% back in time, we can be certain that the marker is always ahead of
+% the sweeper. But it's not quite that simple.
+\end{frame}
+
+\begin{frame}[fragile]{Case Study: Armstrong/Virding}
+  \begin{align*}
+    &\forall c \in h',\ \forall w \in c,\\
+    &\quad\mathtt{first} \in\reach{h'}{roots}\\
+%
+    &\quad\land \id~c > \id~\mathtt{SCAV} \implies (\free{c}
+      \iff c \notin \reach{h'}{roots})\\
+%
+    &\quad\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+      \implies (h[w] = h'[w] \land \lnot \marked{h}{c})\\
+%
+    &\quad\land \id~c > \id~\mathtt{SCAV} \land \lnot\free{c}
+      \implies\\
+      &\quad\quad\quad\quad(\forall c \pointsto x,\ \id~x <
+      \id~\mathtt{SCAV} \implies \marked{h}{x})\\
+%
+    &\quad\land \left(\id~c < \id~\mathtt{SCAV} \land \nexists x \pointsto
+      c,\ \id~x > \id~\mathtt{SCAV}\right) \implies \lnot\marked{h}{c}
+  \end{align*}
+
+% The loop invariant largely formalises what I just said, but there's
+% an extra bit, "first is reachable in the original heap". Why's that
+% there? Well, if we go back to the code,
+%% FLIP BACK TO PRIOR SLIDE
+% we can see that the collector terminates when it gets to the first
+% cell, and so that cell can never be freed.
+%% FLIP BACK TO THIS CELL
+% Thus, if we want the collector to remove all garbage, it must be the
+% case that the first cell isn't garbage. This arose as I worked
+% backwards from the desired postcondition, and it just dropped out as
+% a precondition of the collector, which was rather satisfying.
+\end{frame}
+
+\begin{frame}[fragile]{Case Study: Armstrong/Virding}
+  \begin{itemize}
+  \item Total correctness: the while loop can't go forever.
+  \item Use the ID of \texttt{SCAV} as a loop variant.
+  \item Decreases at every iteration, cannot go below 0.
+  \item Termination guaranteed.
+  \end{itemize}
+
+  \begin{lstlisting}
+while (SCAV != first) {
+    SCAV = hist(SCAV);
+}
+  \end{lstlisting}
+
+% Total correctness also makes use of the cell IDs, specifically it
+% uses the ID of SCAV as a loop variant: that is, a strictly
+% decreasing sequence of values with a minimum, so it can't continue
+% forever. I could greatly simplify this by firstly throwing away all
+% of the code which didn't mutate SCAV, and then by eliminating
+% redundancies, resulting in this one-line loop body.
 \end{frame}
 
 \subsubsection{Copying}
 
 \begin{frame}{Copying}
+  \begin{description}
+  \item[Correct Copying] After garbage collection, no allocated cells
+    are mutated, except by applying an address translation function
+    $f$ to pointer fields.
+
+  \item[Address Translation] The address translation function, $f$, is
+    defined across the entire heap (total), preserves uniqueness
+    (injective), and is invertible (surjective). Furthermore, $f$
+    preserves relative placement of words within the same cell.
+
+  \item[Root Translation] The roots have the same $f$ applied to them.
+  \end{description}
+
+% Copying correctness is pretty much the same as mark-sweep
+% correctness, except we can update pointers as well. I did this by
+% defining what an allowable address translation function is, and then
+% just using that everywhere. Here I borrowed from Myreen's 2010 paper
+% on copying collectors, but use a slightly weaker definition for the
+% function: he requires it to be an involution, whereas I merely
+% require a total endofunction. This does make the correctness
+% property a bit more awkward to state, but it results in this
+% definition being applicable to more than just copying collectors, as
+% I later discovered.
 \end{frame}
 
 \subsection{Generalising Correctness}
 
 \begin{frame}{Generalising Correctness}
+  \begin{itemize}
+  \item Mark-Sweep Correctness doesn't allow any mutation.
+  \item Copying Correctness allows mutation of pointers.
+  \item Can modify Mark-Sweep Correctness to be Non-Moving
+    Correctness, and Copying Correctness to be Moving Correctness.
+  \item What's left? Mutation.
+  \end{itemize}
+
+% Originally, the plan was to compare the mark-sweep and copying
+% correctness definitions, and abstract from them a common definition,
+% but I realised they were actually much more general than I thought.
+
+% The mark-sweep correctness can apply to any non-moving collector, as
+% they share the same postcondition. Similarly, the copying
+% correctness can apply to any moving collector, due to the generality
+% in the definition of the address translation function. Clearly a
+% non-moving collector is a special case of a moving collector, and so
+% my copying correctness covered what I initially wanted to do.
+
+% So I generalised in a different direction. I decided to allow
+% mutation of the garbage collector metadata associated with a
+% cell. Whilst this appears to be a small change at first glance, it
+% actually allows far more types of collector to be reasoned about.
+
+% Generational garbage collectors are a type of garbage collector
+% where the cells in the heap are partitioned into a number of
+% generations, ordered from youngest to oldest.
+
+% Consider a simple generational garbage collector, which tracks what
+% generation a cell belongs to by giving it an integer tag, numbered 0
+% for the younger generation, 1 for the next youngest, and so on, up
+% to some oldest generation n.
+
+% If we can mutate the metadata, we can promote a cell to the next
+% generation by incrementing this tag in the collector, whereas in the
+% copying formalism we would be unable to do this, as only pointers
+% can be mutated. This would have to happen outside of the garbage
+% collector, in some separate `generation incrementer', but
+% separating these two things doesn't appear to make much sense, and
+% is just an inconvenience imposed by an overly-strict formalism. By
+% relaxing this restriction, we can reason about this behaviour in the
+% same way as we reason about the rest of the garbage collection
+% behaviour.
 \end{frame}
 
 %% Results
@@ -260,7 +551,14 @@
 %% Presentation proper ends
 
 \begin{frame}{Questions?}
-  \centering \huge Questions?
+  \begin{center}
+    \huge Questions?
+  \end{center}
+
+  \bibliographystyle{IEEEtran}
+  \nocite{Myreen10}
+  \footnotesize
+  \bibliography{../../dissertation/references.bib}
 \end{frame}
 
 \end{document}
