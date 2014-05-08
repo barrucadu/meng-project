@@ -541,11 +541,61 @@ while (SCAV != first) {
 \subsection{Evaluation}
 
 \begin{frame}{Evaluation}
+  \begin{itemize}
+  \item Hand proofs of collectors, but still convincing.
+  \item Implementation of collectors in C, with checked assertions.
+  \item Generalised correctness is only a small modification on
+    copying correctness, but allows much more.
+  \end{itemize}
+
+% To evaluate the work, I firstly considered the proofs. Whilst they
+% are hand proofs, with no automation or machine verification, I
+% believe they remain convincing, especially as I chose very simple
+% collectors to use for the case studies. However, given what I have
+% done, it wouldn't be infeasible to produce machine-verified proofs,
+% which would have the advantage of bringing to light any assumptions
+% I may have unwittingly made.
+
+% Rather than just assume the proofs were done and perfect, I
+% implemented the two collectors in C and checked a variety of
+% assertions, under a heavy garbage collection load. I found an
+% invariant for copying correctness due to a bug in my initial
+% implementation: specifically, that there should be no
+% inter-semispace pointers. With the addition of this invariant,
+% copying correctness does become a bit more specialised, but it can
+% simply be ignored to work with other moving collectors. Sadly, the
+% properties checked aren't quite what I used in my proofs, as doing
+% that would have required making a copy of the heap before garbage
+% collection and then comparing the two heaps. I did not do this,
+% however it would have been possible, as I deliberately restricted
+% the size of the heap in order to force a large number of garbage
+% collections.
+
+% Finally, the generalised correctness is just a very small
+% modification on copying correctness, and despite that adds a large
+% class of collectors we can now reason about, such as the
+% generational collector example I gave. I believe that this
+% additional power from such a simple modification shows that this was
+% a good way to generalise.
 \end{frame}
 
 \subsection{Contributions}
 
 \begin{frame}{Contributions}
+  \begin{itemize}
+  \item Formalism for mark-sweep correctness, with a case study of the
+    Armstrong/Virding collector.
+  \item Formalism of copying correctness, with a case study of the
+    Fenichel/Yochelson collector.
+  \item Generalised notion of garbage collection correctness.
+  \end{itemize}
+
+% To summarise, this project contributes independently produced
+% formalisms for mark-sweep, copying, and generalised garbage
+% collection correctness. Sadly I discovered quite late on that there
+% had been very similar work on this topic by McCreight et al in 2007,
+% but the majority of my work was completed before this came to
+% light.
 \end{frame}
 
 %% Presentation proper ends
@@ -556,7 +606,7 @@ while (SCAV != first) {
   \end{center}
 
   \bibliographystyle{IEEEtran}
-  \nocite{Myreen10}
+  \nocite{Myreen10,McCreight07}
   \footnotesize
   \bibliography{../../dissertation/references.bib}
 \end{frame}
