@@ -437,28 +437,6 @@ while (SCAV != first) {
 % a precondition of the collector, which was rather satisfying.
 \end{frame}
 
-\begin{frame}[fragile]{Case Study: Armstrong/Virding}
-  \begin{itemize}
-  \item Total correctness: the while loop can't go forever.
-  \item Use the ID of \texttt{SCAV} as a loop variant.
-  \item Decreases at every iteration, cannot go below 0.
-  \item Termination guaranteed.
-  \end{itemize}
-
-  \begin{lstlisting}
-while (SCAV != first) {
-    SCAV = hist(SCAV);
-}
-  \end{lstlisting}
-
-% Total correctness also makes use of the cell IDs, specifically it
-% uses the ID of SCAV as a loop variant: that is, a strictly
-% decreasing sequence of values with a minimum, so it can't continue
-% forever. I could greatly simplify this by firstly throwing away all
-% of the code which didn't mutate SCAV, and then by eliminating
-% redundancies, resulting in this one-line loop body.
-\end{frame}
-
 \subsubsection{Copying}
 
 \begin{frame}{Copying}
@@ -610,5 +588,30 @@ while (SCAV != first) {
   \footnotesize
   \bibliography{../../dissertation/references.bib}
 \end{frame}
+
+%% Extra slides, for if there is time (unlikely)
+
+\begin{frame}[fragile]{Case Study: Armstrong/Virding}
+  \begin{itemize}
+  \item Total correctness: the while loop can't go forever.
+  \item Use the ID of \texttt{SCAV} as a loop variant.
+  \item Decreases at every iteration, cannot go below 0.
+  \item Termination guaranteed.
+  \end{itemize}
+
+  \begin{lstlisting}
+while (SCAV != first) {
+    SCAV = hist(SCAV);
+}
+  \end{lstlisting}
+
+% Total correctness also makes use of the cell IDs, specifically it
+% uses the ID of SCAV as a loop variant: that is, a strictly
+% decreasing sequence of values with a minimum, so it can't continue
+% forever. I could greatly simplify this by firstly throwing away all
+% of the code which didn't mutate SCAV, and then by eliminating
+% redundancies, resulting in this one-line loop body.
+\end{frame}
+
 
 \end{document}
