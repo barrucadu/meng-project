@@ -15,6 +15,8 @@
 \newcommand{\gchead}[1]{\mathrm{gchead}\left(#1\right)}
 \newcommand{\free}[1]{\mathrm{free}\left(#1\right)}
 \newcommand{\marked}[2]{\mathrm{marked}\left(#1, #2\right)}
+\newcommand{\type}[1]{\mathrm{type}\left(#1\right)}
+\newcommand{\typointer}{\mathrm{pointer}}
 
 \definecolor{LightGray}{rgb}{0.9,0.9,0.9}
 
@@ -369,12 +371,11 @@ while (SCAV != first) {
   Assumption: all cells pointed to by roots have been marked before
   calling this.
 
-% "current" is the head of the free list; "hist" gets the cell before
-% its argument in the history list; and "possibly_mark" follows and
-% marks its argument if it is a pointer. Everything else is fairly
+% "current" is the head of the free list; and "possibly_mark" follows
+% and marks its argument if it is a pointer. Everything else is fairly
 % self-explanatory.
 
-% So, the collector simply walks the history list, freeing or
+% So, the collector simply walks down the history list, freeing or
 % preserving cells as it goes, and because pointers will always point
 % back in time, we can be certain that the marker is always ahead of
 % the sweeper. But it's not quite that simple.
@@ -596,5 +597,95 @@ while (SCAV != first) {
 % redundancies, resulting in this one-line loop body.
 \end{frame}
 
+\begin{frame}[fragile]{Case Study: Fenichel/Yochelson}
+  \begin{itemize}
+  \item Copying collector for Lisp-likes.
+  \item Only handles lists.
+  \item Assumes the existence of a collector for atoms.
+  \end{itemize}
+
+% The Fenichel/Yochelson collector is another simple collector, but
+% this one is definitely for Lisp. It only collects lists, assuming
+% the existence of a collector (which it calls) for atoms, which
+% simplified the proof as I didn't need to consider the non-mutation
+% of data at all.
+\end{frame}
+
+\begin{frame}[fragile]{Case Study: Fenichel/Yochelson}
+  \begin{lstlisting}
+gc():
+    flipconsspace()
+    for k = 0; k < len roots; k ++:
+        roots[k] = collect(roots[i])
+    flipsemispace()
+
+collect(p):
+    if p is atomic:
+        return collectatom(p)
+    else if car(p) = ALREADYCOPIED:
+        return cdr(p)
+    else:
+        a = car(p)
+        b = cdr(p)
+        q = cons(NIL, NIL)
+
+        rplaca(p, ALREADYCOPIED)
+        rplacd(p, q)
+
+        nrplaca(q, collect(a))
+        nrplacd(q, collect(b))
+
+        return q
+  \end{lstlisting}
+
+  Original algorithm is presented as Lisp, this was recast into an
+  imperative form to allow Hoare logic to be used.
+
+% Pointers are interpreted relative to semispaces: flipconsspace
+% changes which semispace cons cells are allocated in, and
+% flipsemispace changes which semispace pointers are interpreted
+% in. Furthermore, nrplaca and nrplacd are like rplaca and rplacd, but
+% interpret their argument as a pointer to the other semispace. For
+% those unfamiliar with Lisp, rplaca replaces the car of a cell, and
+% rplacd replaces the cdr.
+
+% The collector works by storing a flag in the car of copied cells,
+% with a forwarding pointer in the cdr.
+\end{frame}
+
+\begin{frame}[fragile]{Case Study: Fenichel/Yochelson}
+  \begin{align*}
+    \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
+    (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\quad\quad\quad \land \type{w} \neq \typointer
+    \iff h[w] = h'[f^{-1}(w)])\\
+    &\land \lnot\free{c} \iff c \in
+    \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}
+  \end{align*}
+
+% The loop invariant I considered is for the loop in gc, and states
+% that each call to collect copies all the cells reachable from the
+% root under consideration.
+\end{frame}
+
+\begin{frame}[fragile]{Case Study: Fenichel/Yochelson}
+  \begin{itemize}
+  \item Total correctness: \texttt{collect} can't keep going.
+  \item Uses induction on the number of non-copied non-atomic cells,
+    as that is the only case where recursion occurs.
+  \item \texttt{gc} only iterates over a fixed-side list, and so
+    clearly terminates.
+  \end{itemize}
+
+% The only place where nontermination could arise is the recursive
+% call of collect, as the loop in gc is over a fixed-size
+% list. However, we can see that it must terminate, as the number of
+% non-copied non-atomic cells will decrease after each call. In
+% particular, collect must terminate if there are none, and for each
+% recursive call it'll either see an atom or a copied cell, and so
+% immediately terminate, or decrease the number of non-copied
+% non-atomic cells remaining. This can't go on forever, and so collect
+% terminates.
+\end{frame}
 
 \end{document}
