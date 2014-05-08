@@ -40,15 +40,19 @@
 
 \begin{frame}[plain]
   \only<1>{\titlepage}
+
   % Hello, I'm Michael Walker, and my project was originally entitled
   % "A verified memory-management system for dynamic languages", but
   % it actually ended up just being about
+
   \only<2>{\centering \huge Verified Garbage Collection}
+
   % verified garbage collection in general.
 \end{frame}
 
 \begin{frame}{Overview}
   \tableofcontents
+
   % So I'll start by giving the motivation, and quickly introducing
   % the topics of garbage collection and software verification; and
   % then I'll go through what I did in this project: specifically,
@@ -71,20 +75,17 @@
     \item The recent Heartbleed exploit in OpenSSL is a good (or bad)
       example of this.
     \end{itemize}
-
-% Memory is hard to get right, and getting it wrong can have dire
-% consequences. The recent Heartbleed exploit in OpenSSL is a good
-% example of this: where a malicious user could request large amounts
-% of encrypted text and an affected server would just happily hand it
-% over, regardless of whether it should do or not. This isn't a
-% garbage collection problem, but it did arise from a hard-to-find bug
-% in an unverified memory management system. Naturally, we don't like
-% this sort of thing happening.
-
   \item Can be hard to track down by hand.
   \item \textit{``testing shows the presence, not the absence of
       bugs''}
   \item Typically no formal verification, only testing.
+  \end{itemize}
+
+% Memory is hard to get right, and getting it wrong can have dire
+% consequences. The recent Heartbleed exploit in OpenSSL is a good
+% example of this. That wasn't a garbage collection problem, but it
+% did arise from a hard-to-find bug in an unverified memory management
+% system.
 
 % In a garbage collected program, the sorts of errors that could arise
 % include freeing some memory whilst it is still needed, which could
@@ -101,7 +102,6 @@
 % isn't enough to guarantee correctness. The only way to be sure that
 % there are no bugs is to construct a proof that the collector does do
 % what it is supposed to do.
-  \end{itemize}
 \end{frame}
 
 \subsection{Garbage Collection}
@@ -175,6 +175,7 @@
     \item Removes all garbage
     \item Takes time proportional to the size of the heap
     \end{itemize}
+  }
 
 % Mark-sweep collectors date from the early days of Lisp, and work by
 % assigning to every cell a mark bit, which is initially unset. Upon
@@ -185,7 +186,6 @@
 % of all garbage, it's nice and simple to implement, but takes time
 % proportional to the size of the heap, regardless of how many cells
 % actually survive.
-  }
 
   \only<3>{
     \begin{figure}[h]
@@ -205,6 +205,7 @@
     \item Has a space cost of half the heap
     \item Potentially reduces cache misses and page faults.
     \end{itemize}
+  }
 
 % Copying collectors are pretty different, they work by dividing the
 % heap into two equal-sized pieces, in only one of which allocation
@@ -216,7 +217,6 @@
 % compacting the heap it improves locality of reference, and so can
 % potentially have a side effect of reducing cache misses and page
 % faults.
-  }
 \end{frame}
 
 \subsection{Software Verification}
@@ -254,6 +254,12 @@
 \section{Contributions}
 \subsection{Correctness of Garbage Collectors}
 
+\begin{frame}{Contributions}
+  \centering \huge Contributions
+
+% Now I'll move on to the contributions of the project.
+\end{frame}
+
 \begin{frame}{Correctness of Garbage Collectors}
   \begin{itemize}
   \item Cells can have some garbage collection metadata associated
@@ -264,16 +270,16 @@
   \item Nothing has been mutated that shouldn't have been.
   \end{itemize}
 
-% I defined a cell as a contiguous sequence of words, some initial
-% portion of which can be reserved for the use of the garbage
-% collector. I then defined pointers as the index of the start of the
-% data portion of a cell. This metadata is necessary to model
-% mark-sweep collectors, but we don't want to give programmers access
-% to it: hence the restriction on pointers.
-
 % When the garbage collector terminates, we want a heap which is
 % isomorphic to the live portion of the original heap, with no
 % unreachable cells.
+
+% I defined a cell as a contiguous sequence of words, some initial
+% portion of which can be reserved for the use of the garbage
+% collector. I then defined pointers as pointing to the start of the
+% data portion of a cell. This metadata is necessary to model
+% mark-sweep collectors, but we don't want to give programmers access
+% to it: hence the restriction on pointers.
 \end{frame}
 
 \subsubsection{Mark-Sweep}
@@ -289,6 +295,8 @@
     the garbage collector metadata gets mutated.
   \end{description}
 
+  Case Study: Armstrong/Virding collector
+
   \begin{align*}
     \forall c \in h',\ \forall w \in c,\ &(\free{c} \iff c \notin
     \reach{h'}{roots}) \land\\
@@ -302,9 +310,6 @@
 % list then all of the words within it are the same as before garbage
 % collection, and it's not marked." This does not allow pointer
 % mutation, but that's ok, as we don't need that yet.
-
-% In the dissertation, correct marking and correct sweeping are
-% defined more precisely.
 
 % Now we'll have a look at the case study I used for mark-sweep
 % collectors, the Armstrong/Virding collector.
@@ -398,10 +403,14 @@ while (SCAV != first) {
 % The loop invariant largely formalises what I just said, but there's
 % an extra bit, "first is reachable in the original heap". Why's that
 % there? Well, if we go back to the code,
+
 %% FLIP BACK TO PRIOR SLIDE
+
 % we can see that the collector terminates when it gets to the first
 % cell, and so that cell can never be freed.
-%% FLIP BACK TO THIS CELL
+
+%% FLIP BACK TO THIS SLIDE
+
 % Thus, if we want the collector to remove all garbage, it must be the
 % case that the first cell isn't garbage. This arose as I worked
 % backwards from the desired postcondition, and it just dropped out as
@@ -423,6 +432,8 @@ while (SCAV != first) {
 
   \item[Root Translation] The roots have the same $f$ applied to them.
   \end{description}
+
+  Case Study: Fenichel/Yochelson Collector
 
 % Copying correctness is pretty much the same as mark-sweep
 % correctness, except we can update pointers as well. I did this by
@@ -463,14 +474,12 @@ while (SCAV != first) {
 % cell. Whilst this appears to be a small change at first glance, it
 % actually allows far more types of collector to be reasoned about.
 
-% Generational garbage collectors are a type of garbage collector
-% where the cells in the heap are partitioned into a number of
-% generations, ordered from youngest to oldest.
-
-% Consider a simple generational garbage collector, which tracks what
-% generation a cell belongs to by giving it an integer tag, numbered 0
-% for the younger generation, 1 for the next youngest, and so on, up
-% to some oldest generation n.
+% To illustrate why, consider the following example: there is a class
+% of garbage collector called generational garbage collectors, where
+% the cells in the heap are partitioned into a number of generations
+% based on age. Consider such a collector, where which generation a
+% cell belongs to is stored in an integer tag, with 0 being the
+% youngest generation and n being the oldest.
 
 % If we can mutate the metadata, we can promote a cell to the next
 % generation by incrementing this tag in the collector, whereas in the
@@ -510,15 +519,14 @@ while (SCAV != first) {
 % assertions, under a heavy garbage collection load. I found an
 % invariant for copying correctness due to a bug in my initial
 % implementation: specifically, that there should be no
-% inter-semispace pointers. With the addition of this invariant,
-% copying correctness does become a bit more specialised, but it can
-% simply be ignored to work with other moving collectors. Sadly, the
-% properties checked aren't quite what I used in my proofs, as doing
-% that would have required making a copy of the heap before garbage
-% collection and then comparing the two heaps. I did not do this,
-% however it would have been possible, as I deliberately restricted
-% the size of the heap in order to force a large number of garbage
-% collections.
+% inter-semispace pointers.
+
+% Sadly, the properties checked aren't quite what I used in my proofs,
+% as doing that would have required making a copy of the heap before
+% garbage collection and then comparing the two heaps. I did not do
+% this, however it would have been possible, as I deliberately
+% restricted the size of the heap in order to force a large number of
+% garbage collections.
 
 % Finally, the generalised correctness is just a very small
 % modification on copying correctness, and despite that adds a large
@@ -558,6 +566,10 @@ while (SCAV != first) {
   \nocite{Myreen10,McCreight07}
   \footnotesize
   \bibliography{../../dissertation/references.bib}
+
+% Are there any questions? There are some further slides, not part of
+% the presentation proper, giving further information about the case
+% studies if anyone would be interested.
 \end{frame}
 
 %% Extra slides, for if there is time (unlikely)
