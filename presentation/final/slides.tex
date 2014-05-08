@@ -72,7 +72,8 @@
 
 \begin{frame}{Motivation}
   \begin{itemize}
-  \item Memory bugs can produce incorrect program results.
+  \item Memory bugs can produce incorrect program results, or result
+    in security flaws.
     \begin{itemize}
     \item The recent Heartbleed exploit in OpenSSL is a good (or bad)
       example of this.
@@ -84,10 +85,7 @@
   \end{itemize}
 
 % Memory is hard to get right, and getting it wrong can have dire
-% consequences. The recent Heartbleed exploit in OpenSSL is a good
-% example of this. That wasn't a garbage collection problem, but it
-% did arise from a hard-to-find bug in an unverified memory management
-% system.
+% consequences.
 
 % In a garbage collected program, the sorts of errors that could arise
 % include freeing some memory whilst it is still needed, which could
@@ -96,14 +94,8 @@
 % it is to handle all of your memory yourself, and so garbage
 % collectors have become a staple feature of modern programming
 % languages, freeing the programmer to worry about more high-level
-% concerns.
-
-% Because memory is hard to get right, memory managers, like garbage
-% collectors, tend to be complex, and it's often difficult to be sure
-% they're right. Because of this, testing is widely used, but this
-% isn't enough to guarantee correctness. The only way to be sure that
-% there are no bugs is to construct a proof that the collector does do
-% what it is supposed to do.
+% concerns. Despite this, formal verification of garbage collectors is
+% a rarity, with most implementations relying on testing.
 \end{frame}
 
 \subsection{Garbage Collection}
@@ -126,99 +118,27 @@
 
   \only<2>{
     \begin{figure}[h!]
-      \centering
-      \includegraphics{../csw/heap2}
+      \begin{columns}
+        \begin{column}{0.5\textwidth}
+          \centering
+          \includegraphics[scale=0.8]{../csw/heap2}
+          \caption{Heap with garbage}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+          \centering
+          \includegraphics[scale=0.8]{../csw/heap3}
+          \caption{Garbage collected heap}
+        \end{column}
+      \end{columns}
       \label{fig:heap2}
       \caption{$A$ becomes garbage when one of the roots is changed to
-        point at $B$.}
+        point at $B$. We don't want this.}
     \end{figure}
   }
 
 % A cell might become garbage when roots change, or when another cell
 % is mutated. If a cell is garbage, it's useless. We don't want it any
-% more. We'd much rather reduce the heap to
-
-  \only<3>{
-    \begin{figure}[h!]
-      \centering
-      \includegraphics{../csw/heap3}
-      \label{fig:heap3}
-      \caption{Remove $A$, so the heap is now minimal.}
-    \end{figure}
-  }
-
-% this, as it's smaller.
-\end{frame}
-
-\begin{frame}{Garbage Collection: Mark-Sweep and Copying}
-  \begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{../../dissertation/lit-gc-before}
-    \caption{Heap before garbage collection}
-    \label{fig:lit-gc-before}
-  \end{figure}
-
-% I'll be using a little example to explain the two types of garbage
-% collector I considered: green cells are live, red are garbage, and
-% white are free.
-
-  \only<2>{
-    \begin{figure}[h]
-      \centering
-      \includegraphics[width=\textwidth]{../../dissertation/lit-gc-marksweep}
-      \caption{Heap after mark-sweep collection}
-      \label{fig:lit-gc-marksweep}
-    \end{figure}
-
-    \begin{itemize}
-    \item Cells have a ``mark bit'', initially unset
-    \item Heap is traversed from roots, setting mark bits (marking)
-    \item Heap is traversed totally, freeing unmarked cells (sweeping)
-    \item Removes all garbage
-    \item Takes time proportional to the size of the heap
-    \end{itemize}
-  }
-
-% Mark-sweep collectors date from the early days of Lisp, and work by
-% assigning to every cell a mark bit, which is initially unset. Upon
-% running out of memory, the heap is traversed from the roots, and
-% every cell reached has the mark bit set. Then the heap is traversed
-% again, but this time the entire heap is traversed, and all marked
-% cells are unmarked, and all unmarked cells are freed. This gets rid
-% of all garbage, it's nice and simple to implement, but takes time
-% proportional to the size of the heap, regardless of how many cells
-% actually survive.
-
-  \only<3>{
-    \begin{figure}[h]
-      \centering
-      \includegraphics[width=\textwidth]{../../dissertation/lit-gc-copying}
-      \caption{Heap after copying collection}
-      \label{fig:lit-gc-copying}
-    \end{figure}
-
-    \begin{itemize}
-    \item Divides heap into two ``semispaces''
-    \item Allocation only happens in one at a time
-    \item At GC, live cells are copied to the other space, and the
-      roles swapped
-    \item Takes time proportional to size of the live portion of the
-      heap
-    \item Has a space cost of half the heap
-    \item Potentially reduces cache misses and page faults.
-    \end{itemize}
-  }
-
-% Copying collectors are pretty different, they work by dividing the
-% heap into two equal-sized pieces, in only one of which allocation
-% happens. Upon running out of memory the heap is traversed from the
-% roots, and all cells reached are copied to the other space and
-% pointers updated, then allocation switches to happening in that
-% space. This only takes time proportional to the size of the live
-% portion of the heap, but it has a large space cost. However, by
-% compacting the heap it improves locality of reference, and so can
-% potentially have a side effect of reducing cache misses and page
-% faults.
+% more. We'd much rather remove the extra cell.
 \end{frame}
 
 \subsection{Software Verification}
@@ -240,15 +160,6 @@
 % how the code works, usually in terms of how it manipulates the
 % program state, and a formal model of what the specification
 % describes, and then use some logic to reason about the two.
-
-% There's a slightly different way of approaching this, where you
-% instead start from the formal specification, and keep producing
-% slightly lower-level specifications until you get to code. If you
-% have an unbroken chain of proofs, then by transitivity of
-% refinement, you know that the top level specification and the code
-% are equivalent, even if you haven't directly compared the two.
-
-% Both approaches are good for different things.
 \end{frame}
 
 %% Contributions
@@ -306,6 +217,16 @@
     \lnot\marked{h}{c}) 
   \end{align*}
 
+% Mark-sweep collectors date from the early days of Lisp, and work by
+% assigning to every cell a mark bit, which is initially unset. Upon
+% running out of memory, the heap is traversed from the roots, and
+% every cell reached has the mark bit set. Then the heap is traversed
+% again, but this time the entire heap is traversed, and all marked
+% cells are unmarked, and all unmarked cells are freed. This gets rid
+% of all garbage, it's nice and simple to implement, but takes time
+% proportional to the size of the heap, regardless of how many cells
+% actually survive.
+
 % Garbage collection correctness is expressed here as "For all
 % cells, the cell is on the free list if and only if it was not
 % reachable in the original heap, and if the cell is not on the free
@@ -344,8 +265,7 @@
 % always ahead of the "sweeper", and so I formalised the notion of
 % cells being older or younger than each other by giving to each cell
 % an ID number, set at allocation time. The first cell has an ID of
-% zero, and then other cells take the next available positive integer,
-% so more recently allocated cells have higher IDs.
+% zero, and then other cells take the next available positive integer.
 \end{frame}
 
 \begin{frame}[fragile]{Case Study: Armstrong/Virding}
@@ -371,9 +291,9 @@ while (SCAV != first) {
   Assumption: all cells pointed to by roots have been marked before
   calling this.
 
-% "current" is the head of the free list; and "possibly_mark" follows
-% and marks its argument if it is a pointer. Everything else is fairly
-% self-explanatory.
+% Just a few notes on the algorithm: "current" is the head of the free
+% list; and "possibly_mark" follows and marks its argument if it is a
+% pointer. Everything else is fairly self-explanatory.
 
 % So, the collector simply walks down the history list, freeing or
 % preserving cells as it goes, and because pointers will always point
@@ -401,9 +321,10 @@ while (SCAV != first) {
       c,\ \id~x > \id~\mathtt{SCAV}\right) \implies \lnot\marked{h}{c}
   \end{align*}
 
-% The loop invariant largely formalises what I just said, but there's
-% an extra bit, "first is reachable in the original heap". Why's that
-% there? Well, if we go back to the code,
+% I expressed correctness using a loop invariant, which largely
+% formalises what I just said, but there's an extra bit, "first is
+% reachable in the original heap". Why's that there? Well, if we go
+% back to the code,
 
 %% FLIP BACK TO PRIOR SLIDE
 
@@ -436,16 +357,26 @@ while (SCAV != first) {
 
   Case Study: Fenichel/Yochelson Collector
 
-% Copying correctness is pretty much the same as mark-sweep
-% correctness, except we can update pointers as well. I did this by
-% defining what an allowable address translation function is, and then
-% just using that everywhere. Here I borrowed from Myreen's 2010 paper
-% on copying collectors, but use a slightly weaker definition for the
-% function: he requires it to be an involution, whereas I merely
-% require a total endofunction. This does make the correctness
-% property a bit more awkward to state, but it results in this
-% definition being applicable to more than just copying collectors, as
-% I later discovered.
+% Copying collectors are pretty different, they work by dividing the
+% heap into two equal-sized pieces, in only one of which allocation
+% happens. Upon running out of memory the heap is traversed from the
+% roots, and all cells reached are copied to the other space and
+% pointers updated, then allocation switches to happening in that
+% space. This only takes time proportional to the size of the live
+% portion of the heap, but it has a large space cost. However, by
+% compacting the heap it improves locality of reference, and so can
+% potentially have a side effect of reducing cache misses and page
+% faults.
+
+% Correctness is pretty much the same as mark-sweep correctness,
+% except we can update pointers as well. I did this by defining what
+% an allowable address translation function is, and then just using
+% that everywhere. Here I borrowed from Myreen's 2010 paper on copying
+% collectors, but use a slightly weaker definition for the function:
+% he requires it to be an involution, whereas I merely require a total
+% endofunction. This does make the correctness property a bit more
+% awkward to state, but it results in this definition being applicable
+% to more than just copying collectors, as I later discovered.
 \end{frame}
 
 \subsection{Generalising Correctness}
@@ -485,13 +416,9 @@ while (SCAV != first) {
 % If we can mutate the metadata, we can promote a cell to the next
 % generation by incrementing this tag in the collector, whereas in the
 % copying formalism we would be unable to do this, as only pointers
-% can be mutated. This would have to happen outside of the garbage
-% collector, in some separate `generation incrementer', but
-% separating these two things doesn't appear to make much sense, and
-% is just an inconvenience imposed by an overly-strict formalism. By
-% relaxing this restriction, we can reason about this behaviour in the
-% same way as we reason about the rest of the garbage collection
-% behaviour.
+% can be mutated. By relaxing this restriction, we can reason about
+% this behaviour in the same way as we reason about the rest of the
+% garbage collection behaviour.
 \end{frame}
 
 %% Results
@@ -517,10 +444,9 @@ while (SCAV != first) {
 
 % Rather than just assume the proofs were done and perfect, I
 % implemented the two collectors in C and checked a variety of
-% assertions, under a heavy garbage collection load. I found an
-% invariant for copying correctness due to a bug in my initial
-% implementation: specifically, that there should be no
-% inter-semispace pointers.
+% assertions, under a heavy garbage collection load: which actually
+% led to me discovering an invariant for copying collectors which I
+% hadn't considered.
 
 % Sadly, the properties checked aren't quite what I used in my proofs,
 % as doing that would have required making a copy of the heap before
@@ -655,12 +581,10 @@ collect(p):
 
 \begin{frame}[fragile]{Case Study: Fenichel/Yochelson}
   \begin{align*}
-    \forall c \in h,\ \forall w \in c,\ &\lnot\free{c} \implies
-    (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
-    &\quad\quad\quad\quad \land \type{w} \neq \typointer
-    \iff h[w] = h'[f^{-1}(w)])\\
-    &\land \lnot\free{c} \iff c \in
-    \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}
+    &\forall c \in h,\ \forall w \in c,\\\
+    &\quad\lnot\free{c} \implies (\type{w} = \typointer \iff h[w] = f(h'[f^{-1}(w)])\\
+    &\quad\land \type{w} \neq \typointer \iff h[w] = h'[f^{-1}(w)])\\
+    &\quad\land \lnot\free{c} \iff c \in \reach{h'}{\{\mathtt{roots}[i]~|~\forall 0 \leq i < k\}}
   \end{align*}
 
 % The loop invariant I considered is for the loop in gc, and states
