@@ -139,6 +139,9 @@
 % A cell might become garbage when roots change, or when another cell
 % is mutated. If a cell is garbage, it's useless. We don't want it any
 % more. We'd much rather remove the extra cell.
+
+% Garbage collectors typically maintain a list of unallocated cells,
+% called the free list, which is then used by the allocator.
 \end{frame}
 
 \subsection{Software Verification}
@@ -497,6 +500,8 @@ while (SCAV != first) {
 % Are there any questions? There are some further slides, not part of
 % the presentation proper, giving further information about the case
 % studies if anyone would be interested.
+
+% Thank you.
 \end{frame}
 
 %% Extra slides, for if there is time (unlikely)
